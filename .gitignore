@@ -1,0 +1,22 @@
+# macOS / exFAT cruft
+._*
+.DS_Store
+# dependencies (regenerable)
+node_modules/
+# large media — stays local only
+*.mp4
+*.mov
+*.m4a
+*.download/
+_work2/
+GMT2026*
+Galilee*
+Strings_of_Hope_Workshop*
+*.zip
+# Jacob Collier raw transcripts — internal study only, never published
+jacob-corpus/transcripts/
+# logs / temp
+*.log
+*.tmp
+.netlify/
+.git-local/

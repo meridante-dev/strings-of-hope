@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAF8F2" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141109" />
+<title>Modes · Strings of Hope</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="phone">
+    <div class="topbar" data-view="home" role="button" tabindex="0" aria-label="Home">
+      <img class="lyre" src="img/lyre.png" alt="" />
+      <span class="brand">Strings of Hope</span>
+    </div>
+
+    <!-- ================= HOME ================= -->
+    <section id="view-home" class="view home2">
+      <header class="home-top reveal">
+        <div><div class="home-greet" id="homeGreet">Welcome</div><div class="home-date" id="homeDate"></div>
+          <button class="home-hebdate" id="homeHebDate" data-view="hebrew" hidden></button></div>
+        <div class="home-streak" id="homeStreak"></div>
+      </header>
+
+      <button class="today-card reveal" id="todayCard"></button>
+
+      <button class="song-card reveal" id="songCard" data-view="tehillim"></button>
+
+      <div class="verse-band reveal" id="verseCard"></div>
+
+      <div class="bento reveal">
+        <button class="tile b-modes" data-view="modes">
+          <svg class="mini-wheel" viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="9"  r="5" class="mw-root"/><circle cx="50.4" cy="17.4" r="4"/><circle cx="54.9" cy="37.2" r="4"/>
+            <circle cx="42.2" cy="53" r="4"/><circle cx="21.8" cy="53" r="4"/><circle cx="9.1" cy="37.2" r="4"/><circle cx="13.6" cy="17.4" r="4"/>
+          </svg>
+          <div class="tile-t">Modes</div><div class="tile-d">The modal wheel</div>
+        </button>
+        <button class="tile b-drone" data-view="drone">
+          <div class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+          <div class="tile-t">Drone</div>
+        </button>
+        <button class="tile b-rhythm" data-view="rhythm">
+          <div class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 14a7 7 0 0114 0"/><path d="M12 14V8"/><path d="M12 14l3.5 3.5"/></svg></div>
+          <div class="tile-t">Rhythm</div>
+        </button>
+        <button class="tile b-coach feature" data-view="coach">
+          <div class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a8 8 0 01-8 8H7l-4 2 1.5-4A8 8 0 1121 12z"/><path d="M9 11h6M9 14h4"/></svg></div>
+          <div class="tile-wide-tx"><div class="tile-t">Harpie</div><div class="tile-d">AI Harp Coach — ask for a sound, a session, a concept</div></div>
+        </button>
+        <button class="tile b-practice" data-view="practice">
+          <div class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <div class="tile-wide-tx"><div class="tile-t">Practice Room</div><div class="tile-d">A guided 5–90 minute session</div></div>
+        </button>
+      </div>
+
+      <div class="home-sec-h reveal">Everything</div>
+      <div class="icongrid reveal">
+        <button class="ico ico-feat" data-view="sightread"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="17" r="2.3" fill="currentColor" stroke="none"/><path d="M11 17V8l4-1.4" /><path d="M18 4.5l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7.7-1.6z" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Sight Read</span></button>
+        <button class="ico ico-feat" data-view="meditation"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8.5" opacity=".5"/><path d="M12 1.5v2M12 20.5v2M1.5 12h2M20.5 12h2"/></svg></span><span class="ico-l">Meditation</span></button>
+        <button class="ico" data-view="tehillim"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11a2 2 0 012 2v14H7a2 2 0 01-2-2V4z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><span class="ico-l">Tehillim</span></button>
+        <button class="ico" data-view="hebrew"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/><path d="M12 12l1.2 2.4 2.6.3-1.9 1.8.5 2.6L12 18l-2.4 1.1.5-2.6-1.9-1.8 2.6-.3L12 12z" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Hebrew Date</span></button>
+        <button class="ico ico-feat" data-view="learn"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5a2 2 0 012-2h8a2 2 0 012 2v15l-6-3-6 3V5z"/><path d="M16 7h2a2 2 0 012 2v11"/></svg></span><span class="ico-l">Learn Modes</span></button>
+        <button class="ico ico-feat" data-view="theory"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 18V7M9 18V4M14 18v-8M19 18V9"/><circle cx="4" cy="18" r="1.6" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="18" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Music Theory</span></button>
+        <button class="ico" data-view="harp"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V5a4 4 0 014-4M19 21c-2-9-8-11-10-12M9 21h10"/></svg></span><span class="ico-l">Tuning</span></button>
+        <button class="ico ico-feat" data-view="circle"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="3.4" r="1.7" fill="currentColor" stroke="none"/><circle cx="19.4" cy="7.7" r="1.5" fill="currentColor" stroke="none"/><circle cx="19.4" cy="16.3" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="20.6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4.6" cy="16.3" r="1.5" fill="currentColor" stroke="none"/><circle cx="4.6" cy="7.7" r="1.5" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Circle of 5ths</span></button>
+        <button class="ico ico-feat" data-view="eartraining"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 13a8 8 0 0116 0v4a2 2 0 01-2 2h-1a1 1 0 01-1-1v-3a1 1 0 011-1h2M4 13v3a2 2 0 002 2h1a1 1 0 001-1v-3a1 1 0 00-1-1H4"/></svg></span><span class="ico-l">Ear Training</span></button>
+        <button class="ico" data-view="scales"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 18V6M9 18V9M14 18V4M19 18v-7"/></svg></span><span class="ico-l">Scales</span></button>
+        <button class="ico" data-view="tuner"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3a3 3 0 00-3 3v5a3 3 0 006 0V6a3 3 0 00-3-3z"/><path d="M6 11a6 6 0 0012 0M12 17v4"/></svg></span><span class="ico-l">Tuner</span></button>
+        <button class="ico" data-view="levers"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 4v7M7 20v-5M17 20v-7M17 9V4"/><circle cx="7" cy="13" r="2"/><circle cx="17" cy="7" r="2"/></svg></span><span class="ico-l">Levers</span></button>
+        <button class="ico" data-view="repertoire"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 4h11a2 2 0 012 2v14l-4-2-4 2V6a2 2 0 00-2-2H6z"/><path d="M6 4a2 2 0 00-2 2v12"/></svg></span><span class="ico-l">Repertoire</span></button>
+        <button class="ico" data-view="journal"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5z"/><path d="M9 3v18"/></svg></span><span class="ico-l">Journal</span></button>
+        <button class="ico" data-view="profile"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V5a4 4 0 014-4M19 21c-2-9-8-11-10-12M9 21h10"/><circle cx="17" cy="6" r="2.5"/></svg></span><span class="ico-l">My Harp</span></button>
+        <button class="ico" data-view="compass"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Jerusalem</span></button>
+      </div>
+
+      <footer class="reveal">
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= MODES ================= -->
+    <section id="view-modes" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Theory 101</div>
+        <h1>Modes</h1>
+        <p class="sub">Every modal world, on one wheel.</p>
+      </header>
+
+      <section class="card chooser reveal">
+        <div class="ch-q">What key are you tuned to?</div>
+        <div class="keychips" id="keyChips"></div>
+        <div class="ch-q ch-q2">Scale world</div>
+        <div class="worldchips" id="worldChips"></div>
+        <p class="world-blurb" id="worldBlurb"></p>
+      </section>
+
+      <div class="section-label reveal"><span class="n">I</span><h2>The Wheel</h2><span class="hint">choose a mode</span></div>
+
+      <div class="mode-switch reveal"></div>
+
+      <section class="card wheel-card reveal">
+        <div class="ruler"></div>
+        <div class="wheel-wrap">
+          <svg viewBox="-140 -150 280 300">
+            <path class="topmark" d="M0 -140 l-8 -13 l16 0 Z"></path>
+            <g id="ringG"></g>
+          </svg>
+          <div class="wheel-center">
+            <div class="name" id="wcName">Ionian</div>
+            <div class="role" id="wcRole">root C · first mode</div>
+            <div class="flavour-line" id="wcFlavor">the major scale itself</div>
+          </div>
+        </div>
+        <button class="wheel-drone" id="wheelDrone">
+          <svg class="dp-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="dp-stop" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+          <span>Hear the drone</span>
+        </button>
+      </section>
+
+      <div id="harpHint"></div>
+
+      <div class="section-label reveal"><span class="n">II</span><h2>What makes it special</h2><span class="hint">its colour</span></div>
+      <section class="card diffcard reveal"><div id="diffBody"></div></section>
+
+      <div class="section-label reveal"><span class="n">III</span><h2>Practice this mode</h2><span class="hint">drone · groove · play</span></div>
+      <section class="card practice-card reveal" id="modePractice"></section>
+
+      <div class="section-label reveal"><span class="n">IV</span><h2>The Modes</h2><span class="hint">tap to spin</span></div>
+      <div class="rail" id="rail"></div>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= SCALES ================= -->
+    <section id="view-scales" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Theory 101</div>
+        <h1>Scales</h1>
+        <p class="sub">Pick a key — meet its notes and its chords.</p>
+      </header>
+
+      <div class="keybar" id="keybar"></div>
+      <div id="keyBody"></div>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= TUNING EXPLORER ================= -->
+    <section id="view-harp" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Lever Harp</div>
+        <h1>Tuning Explorer</h1>
+        <p class="sub">Discover the worlds your harp can play.</p>
+      </header>
+
+      <div class="base-seg reveal" id="baseSeg"></div>
+      <p class="base-blurb reveal" id="baseBlurb"></p>
+      <div class="cat-chips reveal" id="catChips"></div>
+      <div id="tuneBody"></div>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+    <!-- ================= MUSIC THEORY COURSE ================= -->
+    <section id="view-theory" class="view">
+      <div id="theoryHub">
+        <header class="hero reveal">
+          <div class="kicker">Learn · Music Theory</div>
+          <h1>Music Theory</h1>
+          <p class="sub">A four-semester course — from your first notes to the avant-garde — plus the science of sound.</p>
+        </header>
+        <div class="theory-units reveal" id="theoryUnits"></div>
+        <p class="heb-credit reveal" id="theoryCredit"></p>
+        <footer class="reveal">
+          <img class="ly" src="img/lyre.png" alt="" />
+          <div class="ftag">Believe in your dreams.</div>
+          <div class="cc">Strings of Hope</div>
+        </footer>
+      </div>
+      <div id="theoryRun" hidden>
+        <div class="jrn-head">
+          <div class="jrn-progress" id="theoryProgress"></div>
+          <button class="jrn-exit" id="theoryExit" aria-label="Back to chapters">✕</button>
+        </div>
+        <div class="jrn-stage" id="theoryStage"></div>
+        <button class="thy-ask" id="theoryAsk" aria-label="Ask Harpie about this lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 01-8 8H7l-4 2 1.5-4A8 8 0 1121 12z"/></svg></button>
+        <div class="jrn-nav">
+          <button id="theoryBack" class="jrn-btn ghost">‹ Back</button>
+          <button id="theoryNext" class="jrn-btn">Next ›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= EAR TRAINING ================= -->
+    <section id="view-eartraining" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Tool · Listen</div>
+        <h1>Ear Training</h1>
+        <p class="sub">Train your ear to recognise what you hear.</p>
+      </header>
+      <div class="et-tabs reveal">
+        <button class="et-tab on" data-etmode="interval">Intervals</button>
+        <button class="et-tab" data-etmode="chord">Chords</button>
+      </div>
+      <div class="et-play reveal">
+        <button class="et-bigplay" id="etPlay"><span class="et-bp-i">▶</span><span id="etPlayLabel">Play</span></button>
+        <button class="et-replay" id="etReplay" hidden>↻ Replay</button>
+      </div>
+      <div class="et-grid reveal" id="etGrid"></div>
+      <div class="et-feedback reveal" id="etFeedback"></div>
+      <div class="et-foot reveal">
+        <div class="et-score" id="etScore">Score 0 / 0</div>
+        <button class="et-next" id="etNext" hidden>Next ›</button>
+      </div>
+      <p class="et-harp reveal">A lever harpist who can name intervals by ear can pick out tunes, find chords, and tune by listening for the beats. Train a few minutes a day.</p>
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= CIRCLE OF FIFTHS ================= -->
+    <section id="view-circle" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Tool · Keys</div>
+        <h1>Circle of Fifths</h1>
+        <p class="sub">Your harp’s map of every key.</p>
+      </header>
+      <div class="cof-svg reveal" id="cofSvg"></div>
+      <p class="cof-intro reveal" id="cofIntro"></p>
+      <div class="cof-panel reveal" id="cofPanel"></div>
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= SIMCHA'S MODES COURSE ================= -->
+    <section id="view-learn" class="view">
+      <div id="learnHub">
+        <header class="hero reveal">
+          <div class="kicker">The Teaching · with Simcha Tzuf</div>
+          <h1>A Journey<br>Through the Modes</h1>
+          <p class="sub">A pure modes course — six chapters, harp in hand.</p>
+        </header>
+        <div class="learn-chapters reveal" id="learnChapters"></div>
+        <footer class="reveal">
+          <img class="ly" src="img/lyre.png" alt="" />
+          <div class="ftag">Believe in your dreams.</div>
+          <div class="cc">Strings of Hope</div>
+        </footer>
+      </div>
+      <div id="learnRun" hidden>
+        <div class="jrn-head">
+          <div class="jrn-progress" id="learnProgress"></div>
+          <button class="jrn-exit" id="learnExit" aria-label="Back to chapters">✕</button>
+        </div>
+        <div class="jrn-stage" id="learnStage"></div>
+        <div class="jrn-nav">
+          <button id="learnBack" class="jrn-btn ghost">‹ Back</button>
+          <button id="learnNext" class="jrn-btn">Next ›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= JOURNEY (guided play-through) ================= -->
+    <section id="view-journey" class="view">
+      <div class="jrn-head">
+        <div class="jrn-progress"></div>
+        <button class="jrn-exit" data-view="home" aria-label="Exit journey">✕</button>
+      </div>
+      <div class="jrn-stage" id="jrnStage"></div>
+      <div class="jrn-nav">
+        <button id="jrnBack" class="jrn-btn ghost">‹ Back</button>
+        <button id="jrnNext" class="jrn-btn">Next ›</button>
+      </div>
+    </section>
+
+    <!-- ================= DRONE STUDIO ================= -->
+    <section id="view-drone" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Drone Studio</div>
+        <h1>Drone</h1>
+      </header>
+
+      <div class="drone-hero atmos-peaceful reveal" id="droneHero">
+        <div class="dh-veil"></div>
+        <div class="dh-content">
+          <div class="dh-name" id="droneRoot">D + A</div>
+          <div class="dh-meta" id="droneMeta">Fifth · Warm Pad</div>
+          <button class="dh-play" id="dronePlay" aria-label="Play / stop drone">
+            <svg class="dp-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="dp-stop" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="drone-volrow reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg>
+        <input class="drone-vol" id="droneVol" type="range" min="0" max="100" value="50" />
+      </div>
+
+      <div class="section-label reveal"><h2>Root</h2><span class="hint">the note that sings</span></div>
+      <div class="keychips reveal" id="droneKeys"></div>
+
+      <div class="section-label reveal"><h2>Voicing</h2><span class="hint">how full</span></div>
+      <div class="dchips reveal" id="droneTypes"></div>
+
+      <div class="section-label reveal"><h2>Sound</h2><span class="hint">recorded or synth</span></div>
+      <div class="dchips reveal" id="droneVoices"></div>
+
+      <div class="section-label reveal"><h2>Mood</h2><span class="hint">the atmosphere</span></div>
+      <div class="dchips reveal" id="droneMoods"></div>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= RHYTHM ENGINE ================= -->
+    <section id="view-rhythm" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Rhythm Engine</div>
+        <h1>Rhythm</h1>
+        <p class="sub">A pulse to practice with.</p>
+      </header>
+
+      <section class="card rhythm-card reveal">
+        <div class="bpm-row">
+          <button class="bpm-btn" id="bpmDown" aria-label="Slower">−</button>
+          <div class="bpm-display"><span class="bpm-num" id="bpmNum">64</span><span class="bpm-lbl">BPM</span></div>
+          <button class="bpm-btn" id="bpmUp" aria-label="Faster">+</button>
+        </div>
+        <div class="rhythm-meter" id="rhythmMeter">4/4 Meditative</div>
+        <div class="metro-dial">
+          <svg viewBox="0 0 220 220" aria-hidden="true">
+            <circle class="md-bg" cx="110" cy="110" r="100"/>
+            <circle class="md-ring" cx="110" cy="110" r="88"/>
+            <g id="metroDots"></g>
+          </svg>
+          <button class="metro-play" id="rhythmPlay" aria-label="Start / stop">
+            <svg class="dp-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="dp-stop" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+          </button>
+        </div>
+        <div class="rhythm-tools">
+          <button class="tap-btn" id="tapBtn">Tap tempo</button>
+        </div>
+        <div class="drone-volrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg>
+          <input class="drone-vol" id="rhythmVol" type="range" min="0" max="100" value="60" />
+        </div>
+      </section>
+
+      <div class="section-label reveal"><span class="n">I</span><h2>Grooves</h2><span class="hint">tap a feel</span></div>
+      <div class="dchips reveal" id="rhythmPresets"></div>
+      <p class="rhythm-note reveal">Leave a drone playing and these grooves lock right onto it.</p>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= PRACTICE ROOM ================= -->
+    <section id="view-practice" class="view">
+      <div id="prSetup">
+        <header class="hero reveal">
+          <div class="kicker">Practice Room</div>
+          <h1>Practice</h1>
+          <p class="sub">A guided session, start to finish.</p>
+        </header>
+        <div class="section-label reveal"><span class="n">I</span><h2>How long today?</h2></div>
+        <div class="dchips reveal" id="prDurations"></div>
+        <div class="section-label reveal"><span class="n">II</span><h2>Today’s focus</h2><span class="hint">from your wheel</span></div>
+        <section class="card pr-focus reveal" id="prFocus"></section>
+        <button class="pr-begin reveal" id="prBegin">Begin session</button>
+        <footer class="reveal">
+          <img class="ly" src="img/lyre.png" alt="" />
+          <div class="ftag">Believe in your dreams.</div>
+          <div class="cc">Strings of Hope</div>
+        </footer>
+      </div>
+
+      <div id="prRun" hidden>
+        <div class="jrn-head">
+          <div class="jrn-progress" id="prProgress"></div>
+          <button class="jrn-exit" id="prExit" aria-label="End session">✕</button>
+        </div>
+        <div class="pr-stage" id="prStage"></div>
+        <div class="jrn-nav">
+          <button id="prBack" class="jrn-btn ghost">‹ Back</button>
+          <button id="prPause" class="jrn-btn ghost">Pause</button>
+          <button id="prNext" class="jrn-btn">Next ›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REPERTOIRE HELPER ================= -->
+    <section id="view-repertoire" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Repertoire Helper</div>
+        <h1>Repertoire</h1>
+        <p class="sub">Will this song play on your harp?</p>
+      </header>
+
+      <div class="base-seg reveal" id="repBaseSeg"></div>
+
+      <div class="section-label reveal"><span class="n">I</span><h2>Song key</h2></div>
+      <div class="keychips reveal" id="repKeys"></div>
+      <div class="dchips reveal" id="repQual" style="margin-top:12px"></div>
+
+      <div class="section-label reveal"><span class="n">II</span><h2>The verdict</h2></div>
+      <section class="card rep-card reveal" id="repResult"></section>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= HARP TUNER ================= -->
+    <section id="view-tuner" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Harp Tuner</div>
+        <h1>Tuner</h1>
+        <p class="sub">Tune with every lever down.</p>
+      </header>
+
+      <div class="lever-reminder reveal">Set <b>all levers down</b> first — then tune each open string to its note below.</div>
+
+      <section class="card tuner-card reveal">
+        <div class="tuner-gaugewrap">
+          <svg class="tuner-gauge" viewBox="0 6 240 132" aria-hidden="true">
+            <g id="tgTicks"></g>
+            <line class="tg-needle" id="tgNeedle" x1="120" y1="62" x2="120" y2="30" transform="rotate(0 120 124)"/>
+          </svg>
+          <div class="tg-overlay"><div class="tuner-note" id="tunerNote">—</div></div>
+        </div>
+        <div class="tg-scale"><span>♭ −50</span><span>in tune</span><span>+50 ♯</span></div>
+        <div class="tuner-oct" id="tunerOct">tap start, then play a string</div>
+        <div class="tuner-freq" id="tunerFreq">—</div>
+        <button class="drone-play tuner-mic" id="tunerMic" aria-label="Start / stop tuning">
+          <svg class="dp-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>
+          <svg class="dp-stop" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+        </button>
+      </section>
+
+      <div class="section-label reveal"><span class="n">I</span><h2>Calibration</h2><span class="hint">concert pitch</span></div>
+      <div class="dchips reveal" id="tunerCal"></div>
+
+      <div class="section-label reveal"><span class="n">II</span><h2>Your open strings</h2><span class="hint">levers down</span></div>
+      <div class="base-seg reveal" id="tunerBaseSeg"></div>
+      <div class="tuner-strings reveal" id="tunerStrings"></div>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= LEVER CHANGE TRAINER ================= -->
+    <section id="view-levers" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Lever Trainer</div>
+        <h1>Lever Flips</h1>
+        <p class="sub">Change levers cleanly, in time.</p>
+      </header>
+
+      <div class="base-seg reveal" id="ltBaseSeg"></div>
+
+      <div class="section-label reveal"><span class="n">I</span><h2>From → To</h2><span class="hint">major keys</span></div>
+      <div class="lt-row reveal"><span class="lt-lbl">From</span><div class="ltkeys" id="ltFrom"></div></div>
+      <div class="lt-row reveal"><span class="lt-lbl">To</span><div class="ltkeys" id="ltTo"></div></div>
+      <section class="card lt-diff reveal" id="ltDiff"></section>
+
+      <div class="section-label reveal"><span class="n">II</span><h2>The drill</h2><span class="hint">flip in time</span></div>
+      <div class="lt-controls reveal">
+        <div class="lt-tempo"><button class="bpm-btn" id="ltDown" aria-label="Slower">−</button><div class="bpm-display"><span class="bpm-num" id="ltBpm">80</span><span class="bpm-lbl">BPM</span></div><button class="bpm-btn" id="ltUp" aria-label="Faster">+</button></div>
+        <div class="lt-opt-row"><span class="lt-lbl">Bars each</span><div class="dchips" id="ltBars"></div></div>
+        <div class="lt-opt-row"><span class="lt-lbl">Flip</span><div class="dchips" id="ltTiming"></div></div>
+      </div>
+
+      <section class="card lt-stage reveal" id="ltStage"></section>
+      <button class="pr-begin reveal" id="ltStart">Start drill</button>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= HARP PROFILE ================= -->
+    <section id="view-profile" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Harp Profile</div>
+        <h1>Your Harp</h1>
+        <p class="sub">Tune the app to your instrument.</p>
+      </header>
+
+      <section class="card profile-card reveal">
+        <label class="pf-field"><span>Brand / model</span><input id="pfBrand" type="text" placeholder="e.g. Dusty Strings Ravenna" /></label>
+        <label class="pf-field"><span>Strings</span><input id="pfStrings" type="text" inputmode="numeric" placeholder="e.g. 34" /></label>
+      </section>
+
+      <div class="section-label reveal"><span class="n">I</span><h2>Base tuning</h2><span class="hint">all levers down</span></div>
+      <div class="base-seg reveal" id="pfBaseSeg"></div>
+
+      <div class="section-label reveal"><span class="n">II</span><h2>Levers</h2><span class="hint">what your harp has</span></div>
+      <div class="dchips reveal" id="pfLeverMode"></div>
+      <div class="pf-strings reveal" id="pfStringToggles"></div>
+
+      <button class="pr-begin reveal" id="pfSave">Save my harp</button>
+      <div class="pf-saved reveal" id="pfSaved"></div>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= PRACTICE JOURNAL ================= -->
+    <section id="view-journal" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Practice Journal</div>
+        <h1>Journal</h1>
+        <p class="sub">Your practice, remembered.</p>
+      </header>
+      <div id="journalBody"></div>
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= AI HARP COACH ================= -->
+    <section id="view-coach" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Ask your harp anything</div>
+        <h1>Harpie</h1>
+        <p class="sub">AI Harp Coach</p>
+      </header>
+
+      <div class="coach-badge reveal" id="coachBadge">Harpie · trained on the whole app — course, modes, theory &amp; tools</div>
+
+      <div class="coach-inputbar reveal">
+        <input id="coachInput" type="text" placeholder="e.g. I want a Hebrew desert sound" autocomplete="off" />
+        <button id="coachSend" aria-label="Ask"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+      </div>
+      <div class="coach-suggest reveal" id="coachSuggest"></div>
+
+      <div class="coach-convo" id="coachConvo"></div>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= FACE JERUSALEM (COMPASS) ================= -->
+    <section id="view-compass" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Face Jerusalem</div>
+        <h1>Compass</h1>
+        <p class="sub">Turn your heart toward the Holy City.</p>
+      </header>
+
+      <div class="compass-stage reveal">
+        <div class="compass-dial">
+          <span class="cd-n">N</span><span class="cd-e">E</span><span class="cd-s">S</span><span class="cd-w">W</span>
+          <div class="compass-needle" id="compassNeedle"></div>
+          <div class="compass-center"><img class="cc-lyre" src="img/lyre.png" alt="" /></div>
+        </div>
+        <div class="compass-info" id="compassInfo">Tap below and allow location to find the way.</div>
+        <button class="pr-begin" id="compassBtn">Find Jerusalem</button>
+      </div>
+
+      <p class="compass-note reveal">Point the top of your phone where the needle leads — toward the Temple Mount. Hold the device flat for the truest reading.</p>
+
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= DAVIDIC HARP MEDITATION ================= -->
+    <section id="view-meditation" class="view">
+      <div id="medSetup">
+        <header class="hero reveal">
+          <div class="kicker">Davidic Harp Meditation</div>
+          <h1>Meditation</h1>
+          <p class="sub">A mode, a drone, a Scripture — a contemplative harp study.</p>
+        </header>
+        <div class="section-label reveal"><h2>Choose a mode</h2></div>
+        <div class="med-modes reveal" id="medModes"></div>
+        <div class="section-label reveal"><h2>Contemplate</h2><span class="hint">from Sefaria</span></div>
+        <div class="dchips reveal" id="medTexts"></div>
+        <div class="section-label reveal"><h2>How long</h2></div>
+        <div class="dchips reveal" id="medLens"></div>
+        <button class="pr-begin reveal" id="medBegin">Begin the meditation</button>
+        <footer class="reveal">
+          <img class="ly" src="img/lyre.png" alt="" />
+          <div class="ftag">Believe in your dreams.</div>
+          <div class="cc">Strings of Hope</div>
+        </footer>
+      </div>
+      <div id="medRun" hidden>
+        <div class="jrn-head"><div class="jrn-progress" id="medTimer">5:00</div><button class="jrn-exit" id="medExit" aria-label="End">✕</button></div>
+        <div class="med-breath" id="medBreath"><span class="mb-orb"></span><span class="mb-word">breathe</span></div>
+        <section class="card med-wayin" id="medWayin"></section>
+        <div class="med-reflect" id="medReflect"></div>
+        <article class="med-text" id="medText"></article>
+        <div class="med-controls">
+          <button class="sr-tog on" id="medDroneBtn">◌ Drone</button>
+          <button class="sr-tog" id="medNewText">↻ New text</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TEHILLIM — SONG OF THE DAY ================= -->
+    <section id="view-tehillim" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Song of the Day</div>
+        <h1>Tehillah</h1>
+        <p class="sub">The psalm the Levites sang in the Holy Temple today.</p>
+      </header>
+      <div class="teh-days reveal" id="tehDays"></div>
+      <section class="card teh-context reveal" id="tehContext"></section>
+      <article class="teh-scroll reveal" id="tehScroll"></article>
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= HEBREW DATE — ON THIS DAY ================= -->
+    <section id="view-hebrew" class="view">
+      <header class="hero reveal">
+        <div class="kicker">Hebrew Calendar</div>
+        <h1 id="hebBig">—</h1>
+        <p class="sub" id="hebGreg"></p>
+      </header>
+      <div class="heb-sub reveal" id="hebSub"></div>
+      <div class="section-label reveal"><h2>On this day</h2><span class="hint">Torah · Temple · history</span></div>
+      <div class="heb-events reveal" id="hebEvents"></div>
+      <p class="heb-credit reveal">Dates follow traditional Jewish chronology · gathered from Chabad.org. Tehillim: JPS 1917.</p>
+      <footer class="reveal">
+        <img class="ly" src="img/lyre.png" alt="" />
+        <div class="ftag">Believe in your dreams.</div>
+        <div class="cc">Strings of Hope</div>
+      </footer>
+    </section>
+
+    <!-- ================= AI SIGHT READING COACH ================= -->
+    <section id="view-sightread" class="view">
+      <!-- SETUP -->
+      <div id="srSetup">
+        <header class="hero reveal">
+          <div class="kicker">AI Sight Reading Coach</div>
+          <h1>Sight Reading</h1>
+          <p class="sub">Learn to read music with your real harp.</p>
+        </header>
+
+        <p class="sr-intro reveal">Play the notes on your harp and let Strings of Hope listen, guide, and gently correct you — notes, rhythm, timing, tuning, and lever awareness.</p>
+
+        <div class="section-label reveal"><h2>Skill level</h2></div>
+        <div class="dchips reveal" id="srLevel"></div>
+
+        <div class="section-label reveal"><h2>Clef</h2></div>
+        <div class="dchips reveal" id="srClef"></div>
+
+        <div class="section-label reveal"><h2>Practice type</h2></div>
+        <div class="dchips reveal" id="srType"></div>
+
+        <div class="section-label reveal"><h2>Scale &amp; mode</h2><span class="hint">sets your notes</span></div>
+        <div class="dchips reveal" id="srScale"></div>
+
+        <div class="section-label reveal"><h2>Your harp</h2><span class="hint">from My Harp</span></div>
+        <section class="card sr-harp reveal" id="srHarp"></section>
+
+        <div class="section-label reveal"><h2>Session length</h2></div>
+        <div class="dchips reveal" id="srLen"></div>
+
+        <div class="section-label reveal"><h2>Options</h2></div>
+        <div class="sr-opts reveal" id="srOpts"></div>
+
+        <button class="pr-begin reveal" id="srStart">Start Sight Reading</button>
+        <button class="sr-quick reveal" id="srQuick">Begin with one note</button>
+
+        <div class="sr-import reveal">
+          <div class="sr-import-h">Read a real score</div>
+          <p>Import a <b>MusicXML</b> file and read it on your harp — engraved beautifully, with live lever cues for every accidental.</p>
+          <div class="sr-import-btns">
+            <label class="sr-cbtn ghost" for="srFile">Choose a file…</label>
+            <input id="srFile" type="file" accept=".xml,.musicxml,.mxl" hidden>
+            <button class="sr-cbtn ghost" id="srSampleBtn">Try a sample</button>
+          </div>
+        </div>
+
+        <footer class="reveal">
+          <img class="ly" src="img/lyre.png" alt="" />
+          <div class="ftag">Believe in your dreams.</div>
+          <div class="cc">Strings of Hope</div>
+        </footer>
+      </div>
+
+      <!-- EXERCISE STAGE -->
+      <div id="srRun" hidden>
+        <div class="jrn-head">
+          <div class="jrn-progress" id="srProgress"></div>
+          <button class="jrn-exit" id="srExit" aria-label="End session">✕</button>
+        </div>
+
+        <div class="sr-info" id="srInfo"></div>
+
+        <div class="sr-stage">
+          <div class="sr-staffwrap" id="srStaffWrap"></div>
+          <div class="sr-readout" id="srReadout"></div>
+        </div>
+
+        <div class="sr-feedback" id="srFeedback"></div>
+
+        <div class="sr-controls">
+          <button class="sr-mic" id="srMic"><span class="sr-mic-dot"></span><span id="srMicLabel">Tap to listen</span></button>
+          <div class="sr-btnrow">
+            <button class="sr-cbtn" id="srPlay">Start</button>
+            <button class="sr-cbtn ghost" id="srRepeat">Repeat</button>
+            <button class="sr-cbtn ghost" id="srOverride">I played it ✓</button>
+            <button class="sr-cbtn" id="srNext">Next ›</button>
+          </div>
+        </div>
+
+        <div class="sr-panel" id="srPanel">
+          <div class="sr-lever" id="srLever"></div>
+          <div class="sr-toggles">
+            <button class="sr-tog" id="srDroneBtn">◌ Drone</button>
+            <button class="sr-tog" id="srMetroBtn">▣ Metronome</button>
+          </div>
+          <div class="sr-ai">
+            <div class="sr-ai-prompts" id="srPrompts"></div>
+            <div class="sr-ai-out" id="srHintOut"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCORE -->
+      <div id="srScore" hidden>
+        <div class="jrn-head">
+          <div class="jrn-progress">Exercise complete</div>
+          <button class="jrn-exit" id="srScoreExit" aria-label="Close">✕</button>
+        </div>
+        <div class="sr-scorecard" id="srScoreCard"></div>
+        <div class="sr-score-btns" id="srScoreBtns"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="nowplaying" id="nowPlaying" hidden>
+    <span class="np-eq"><i></i><i></i><i></i></span>
+    <div class="np-info"><div class="np-title" id="npTitle"></div><div class="np-sub" id="npSub"></div></div>
+    <button class="np-stop" id="npStop" aria-label="Stop playback"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg></button>
+  </div>
+
+  <nav class="nav">
+    <div class="bar">
+      <button data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Home</button>
+      <button data-view="modes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>Modes</button>
+      <button data-view="scales"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18V6M9 18V9M14 18V4M19 18v-7"/></svg>Scales</button>
+      <button data-view="harp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 21V5a4 4 0 014-4M19 21c-2-9-8-11-10-12M9 21h10"/></svg>Tuning</button>
+      <button data-view="sightread"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="17" r="2.1" fill="currentColor" stroke="none"/><path d="M11 17V8l4-1.4"/></svg>Read</button>
+    </div>
+  </nav>
+
+  <!-- ================= HARPIE LESSON ASSISTANT (overlay) ================= -->
+  <div class="hp-overlay" id="harpiePanel" hidden>
+    <div class="hp-sheet">
+      <div class="hp-head"><span class="hp-title">Harpie</span><span class="hp-ctx" id="hpCtx"></span><button class="hp-close" id="hpClose" aria-label="Close">✕</button></div>
+      <div class="hp-quick" id="hpQuick">
+        <button data-act="simple">Explain simply</button>
+        <button data-act="decode">Decode the terms</button>
+        <button data-act="deeper">Go deeper</button>
+        <button data-act="web">Search the web</button>
+      </div>
+      <div class="hp-body" id="hpBody"></div>
+      <div class="hp-inputbar"><input id="hpInput" type="text" placeholder="Ask about this lesson…" autocomplete="off" /><button id="hpSend" aria-label="Ask"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div>
+    </div>
+  </div>
+
+  <script src="vendor/vexflow.js"></script>
+  <script type="module" src="vendor/soh-engines.js"></script>
+  <script src="tuning.js"></script>
+  <script src="audio.js"></script>
+  <script src="data.js"></script>
+  <script src="jewish.js"></script>
+  <script src="theory.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "modes",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".claude/preview-server.js"],
+      "port": 4137
+    },
+    {
+      "name": "native-expo",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "native", "run", "start"],
+      "port": 8081
+    }
+  ]
+}

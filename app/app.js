@@ -1713,6 +1713,77 @@ function resolveMode(keyName, worldKey, modeIndex){
   const ctx=buildScaleContext(parentName, world);
   return {parentName, world, mode:ctx.modes[modeIndex], modeIndex};
 }
+/* ============================================================
+   NETFLIX-STYLE LEARNING SURFACE — continue hero + content rails
+   ============================================================ */
+function sohProgressSave(kind,data){
+  try{ const p=JSON.parse(localStorage.getItem('soh-progress')||'{}'); p[kind]=Object.assign({},data,{ts:Date.now()}); localStorage.setItem('soh-progress',JSON.stringify(p)); }catch(e){}
+}
+function sohProgressGet(){ try{ return JSON.parse(localStorage.getItem('soh-progress')||'{}'); }catch(e){ return {}; } }
+function nxResume(){
+  const p=sohProgressGet(), cands=[];
+  if(p.theory && typeof THEORY_COURSE!=='undefined'){ const u=THEORY_COURSE[p.theory.sem], ch=u&&u.chapters[p.theory.ch];
+    if(ch) cands.push({ts:p.theory.ts, eyebrow:'Continue · Music Theory', title:ch.title, sub:(u.kicker||'Semester '+u.sem)+' · Chapter '+ch.n,
+      go:()=>{ showView('theory'); openTheoryChapter(p.theory.sem,p.theory.ch); } }); }
+  if(p.jacob && typeof JACOB_MODULES!=='undefined'){ const m=JACOB_MODULES.find(x=>x.n===p.jacob.n);
+    if(m) cands.push({ts:p.jacob.ts, eyebrow:'Continue · Jacob’s Universe', title:m.title, sub:'Module '+m.n+' · '+(m.kicker||''),
+      go:()=>{ showView('jacob'); jacobOpenModule(m.n); } }); }
+  cands.sort((a,b)=>b.ts-a.ts); return cands[0]||null;
+}
+function renderNxHero(){
+  const el=document.getElementById('nxHero'); if(!el) return;
+  let r=nxResume();
+  if(!r){ const f=DAILY_FOCUS[dayOfYear()%DAILY_FOCUS.length], rv=resolveMode(f.k,f.w,f.m);
+    r={ eyebrow:'Today’s practice', title:rv.mode.root+' '+rv.mode.name, sub:rv.mode.mood,
+        go:()=>{ mwKey=rv.parentName; mwWorld=rv.world; rebuildModes(false); setMode(rv.modeIndex,false); prTotal=20; showView('practice'); } }; }
+  el.innerHTML=`<span class="nx-strings" aria-hidden="true"></span><span class="nx-glow" aria-hidden="true"></span>
+    <span class="nxh-eyebrow">${r.eyebrow}</span>
+    <span class="nxh-title">${r.title}</span>
+    <span class="nxh-sub">${r.sub||''}</span>
+    <span class="nxh-cta">▶&nbsp; ${r.eyebrow.startsWith('Continue')?'Continue':'Begin'}</span>`;
+  el.onclick=()=>{ r.go(); buzz(); };
+}
+const NX_TOOLS=[
+  {v:'coach',t:'Harpie',d:'AI Harp Coach'},{v:'practice',t:'Practice Room',d:'Guided session'},
+  {v:'sightread',t:'Sight Reading',d:'It listens as you play'},{v:'eartraining',t:'Ear Training',d:'Name what you hear'},
+  {v:'circle',t:'Circle of 5ths',d:'Your map of keys'},{v:'modes',t:'Modes Wheel',d:'Seven colours'},
+  {v:'scales',t:'Scales',d:'Build any scale'},{v:'tuner',t:'Tuner',d:'A440, by ear or mic'},
+  {v:'levers',t:'Levers',d:'Set any key'},{v:'drone',t:'Drone',d:'A bed to play over'},{v:'rhythm',t:'Rhythm',d:'Find the pocket'},
+];
+const NX_SACRED=[
+  {v:'meditation',t:'Meditation',d:'Davidic harp & drone'},{v:'tehillim',t:'Tehillim',d:'Psalm of the day'},
+  {v:'hebrew',t:'Hebrew Date',d:'On this day'},{v:'compass',t:'Jerusalem',d:'Face the Holy City'},
+  {v:'journal',t:'Journal',d:'Your practice log'},{v:'repertoire',t:'Repertoire',d:'Pieces you play'},{v:'profile',t:'My Harp',d:'Tuning & levers'},
+];
+function nxCard(cls,kick,title,sub,badge){
+  return `<button class="nx-card ${cls}"><span class="nxc-kick">${kick||''}</span><span class="nxc-t">${title}</span><span class="nxc-s">${sub||''}</span>${badge?`<span class="nxc-badge">${badge}</span>`:''}</button>`;
+}
+function renderNxRails(){
+  const host=document.getElementById('nxRails'); if(!host) return; host.innerHTML='';
+  const rail=(title,view,cardsHtml,binder)=>{
+    const w=document.createElement('div'); w.className='nx-rail reveal in';
+    w.innerHTML=`<div class="nx-rail-h"><span>${title}</span>${view?`<button class="nx-all" data-v="${view}">All ›</button>`:''}</div><div class="nx-row">${cardsHtml}</div>`;
+    if(view) w.querySelector('.nx-all').addEventListener('click',()=>{ showView(view); buzz(); });
+    host.appendChild(w); if(binder) binder(w);
+  };
+  if(typeof JACOB_MODULES!=='undefined'){
+    rail('Jacob’s Universe','jacob', JACOB_MODULES.map(m=>nxCard('nx-c1', m.kicker||('Module '+m.n), m.title, '', m.toy?'▶ play':'')).join(''),
+      w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView('jacob'); jacobOpenModule(JACOB_MODULES[i].n); buzz(); })));
+  }
+  if(typeof THEORY_COURSE!=='undefined'){
+    rail('Music Theory','theory', THEORY_COURSE.map(u=>nxCard('nx-c2', u.kicker||('Semester '+u.sem), u.title, u.chapters.length+' chapters','')).join(''),
+      w=>w.querySelectorAll('.nx-card').forEach(b=>b.addEventListener('click',()=>{ showView('theory'); buzz(); })));
+  }
+  if(typeof SIMCHA_COURSE!=='undefined'){
+    rail('Simcha’s Modes Course','learn', SIMCHA_COURSE.map(c=>nxCard('nx-c3', c.sub||'', c.title, c.lessons.length+' lessons','')).join(''),
+      w=>w.querySelectorAll('.nx-card').forEach(b=>b.addEventListener('click',()=>{ showView('learn'); buzz(); })));
+  }
+  rail('Practice & Tools',null, NX_TOOLS.map(t=>nxCard('nx-c4','',t.t,t.d,'')).join(''),
+    w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView(NX_TOOLS[i].v); buzz(); })));
+  rail('Sacred & Daily',null, NX_SACRED.map(t=>nxCard('nx-c5','',t.t,t.d,'')).join(''),
+    w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView(NX_SACRED[i].v); buzz(); })));
+}
+
 function renderHome(){
   const d=new Date(), h=d.getHours();
   const greet = h<5?'Still awake' : h<12?'Good morning' : h<17?'Good afternoon' : h<21?'Good evening' : 'A quiet night';
@@ -1731,6 +1802,8 @@ function renderHome(){
     tc.onclick=()=>{ mwKey=r.parentName; mwWorld=r.world; rebuildModes(false); setMode(r.modeIndex,false); prTotal=20; showView('practice'); buzz(); };
   }
   renderHomeHebrew(d);
+  renderNxHero();
+  renderNxRails();
   renderSongCard(d);
   renderVerse();
 }
@@ -2039,6 +2112,7 @@ function buildTheoryHub(){
   triggerReveals(document.getElementById('view-theory'));
 }
 function openTheoryChapter(ui,ci){
+  if(typeof sohProgressSave==='function') sohProgressSave('theory',{sem:ui,ch:ci});
   theorySem=ui; theoryCh=ci; theoryLi=0;
   const ch=THEORY_COURSE[ui].chapters[ci];
   theoryLessons = ch.quiz && ch.quiz.length ? ch.lessons.concat([{quiz:ch.quiz, h:'Check your understanding'}]) : ch.lessons.slice();
@@ -2310,6 +2384,7 @@ function buildJacob(){
 }
 function jacobOpenModule(n){
   const m=JACOB_MODULES.find(x=>x.n===n); const stage=document.getElementById('jacobStage'); if(!m||!stage) return;
+  if(typeof sohProgressSave==='function') sohProgressSave('jacob',{n:n});
   const links=(m.links||[]).map(l=>`<a class="ju-link" href="${l.url}" target="_blank" rel="noopener noreferrer">▶ ${l.label}</a>`).join('');
   stage.innerHTML=`<div class="ju-slide jrn-in">
     <div class="ju-crumb">${m.kicker||'Module '+m.n}</div>

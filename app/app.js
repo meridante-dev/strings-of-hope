@@ -1538,7 +1538,7 @@ const SohAI = {
     if(this.state!=='ready' || !this.engine) return null;
     const sys = `You are Harpie, the warm, expert AI lever-harp coach inside the Strings of Hope app. `
       + `You know the app's full music-theory course (5 units, 42 chapters — fundamentals, harmony, chromatic harmony, counterpoint & 20th-century, and the science of sound), the seven modes and Simcha's modal teaching, the interactive Circle of Fifths, tuning systems & the harmonic series, ear training, sight-reading and all the practice tools. `
-      + `The player's harp base tuning is ${tuneBase}. Answer in 2-5 short, precise, harp-specific sentences, grounded ONLY in the app material below. Always give one concrete next step or exercise, and never shame the player.`
+      + `${typeof sohProfileLine==='function'?sohProfileLine():`The player's harp base tuning is ${tuneBase}.`} Answer in 2-5 short, precise, harp-specific sentences, grounded ONLY in the app material below. Always give one concrete next step or exercise, and never shame the player.`
       + `\n\nApp material relevant to this question:\n${context||'(general lever-harp guidance)'}`;
     try{
       const chunks = await this.engine.chat.completions.create({ stream:true, temperature:0.6, max_tokens:280,
@@ -1817,7 +1817,9 @@ function renderHome(){
   const ge=document.getElementById('homeGreet'); if(ge) ge.textContent=greet;
   const de=document.getElementById('homeDate'); if(de) de.textContent=d.toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
   const s=journalStats(), st=document.getElementById('homeStreak');
-  if(st) st.innerHTML = s.streak>0 ? `<span class="sk-dot"></span>${s.streak}-day streak` : (s.sessions ? `${s.sessions} ${s.sessions===1?'session':'sessions'}` : 'Begin today');
+  if(st){ let lv=null; try{ lv=sohLevel(); }catch(e){}
+    st.innerHTML = s.streak>0 ? `<span class="sk-dot"></span>${s.streak}-day flame${lv?` · ${lv.name}`:''}` : (lv&&lv.n>1?`✦ ${lv.name}`:(s.sessions?`${s.sessions} ${s.sessions===1?'session':'sessions'}`:'Begin today'));
+    st.style.cursor='pointer'; st.onclick=()=>{ if(typeof sohOnboardOpen==='function') sohOnboardOpen(); }; st.title='Your harp profile'; }
   const f=DAILY_FOCUS[dayOfYear()%DAILY_FOCUS.length], r=resolveMode(f.k,f.w,f.m), m=r.mode;
   const tc=document.getElementById('todayCard');
   if(tc){
@@ -1830,9 +1832,16 @@ function renderHome(){
   }
   renderHomeHebrew(d);
   renderNxHero();
+  try{ if(typeof buildTodayPath==='function') buildTodayPath(); }catch(e){}
   renderNxRails();
   renderSongCard(d);
   renderVerse();
+  try{
+    if(typeof sohProfile==='function' && !sohProfile().harp && !window._sohObSeen){
+      window._sohObSeen=true;
+      setTimeout(()=>sohOnboardOpen(), 600);
+    }
+  }catch(e){}
 }
 
 /* ============================================================
@@ -2527,7 +2536,8 @@ function showView(name){
     else if(typeof lt!=='undefined' && lt.running) ltStop();
     if(name==='rhythm') Metro.onBeat=rhythmBeat;
     if(name==='profile') buildProfile();
-    if(name==='journal') buildJournal();
+    if(name==='journal'){ buildJournal(); if(typeof renderBadges==='function') renderBadges(); }
+    if(typeof sohVisit==='function') sohVisit(name);
     if(name==='home') renderHome();
     if(name==='compass') compassRender();
     if(name==='sightread') srEnter(); else if(typeof srLeave==='function') srLeave();
@@ -3261,3 +3271,135 @@ function sohThemeSet(t){
     b.addEventListener('click',e=>{ e.stopPropagation(); e.preventDefault();
       sohThemeSet(document.documentElement.dataset.theme==='light'?'dark':'light'); buzz(); }); }
 })();
+
+/* ============================================================
+   HARP PROFILE + ONBOARDING — the app knows your instrument
+   ============================================================ */
+const SOH_HARPS=[
+  {id:'22-lap',t:'22-string lap harp',strings:22},{id:'25-lap',t:'25-string lap harp',strings:25},
+  {id:'27-lap',t:'27-string lap harp',strings:27},{id:'29-lap',t:'29-string lap harp',strings:29},
+  {id:'34-lever',t:'34-string lever harp',strings:34},{id:'36-lever',t:'36/38-string lever harp',strings:36},
+  {id:'pedal',t:'Pedal harp',strings:47},{id:'unsure',t:'I’m not sure yet',strings:34},
+];
+const SOH_STYLES=['Jewish · Hebraic','Contemplative','Celtic','Folk','Classical','Worship','Sephardic · Middle Eastern','Jazz','Improvisation','Therapeutic'];
+function sohProfile(){ try{ return JSON.parse(localStorage.getItem('soh-profile')||'{}'); }catch(e){ return {}; } }
+function sohProfileSave(p){ try{ localStorage.setItem('soh-profile',JSON.stringify(p)); }catch(e){} }
+function sohProfileLine(){
+  const P=sohProfile(); if(!P.harp) return `The player's harp base tuning is ${tuneBase}.`;
+  const h=SOH_HARPS.find(x=>x.id===P.harp)||SOH_HARPS[4];
+  return `The player plays a ${h.t} (${h.strings} strings), tuned in ${P.tuning||'E♭'}${P.styles&&P.styles.length?`, and loves: ${P.styles.join(', ')}`:''}.`;
+}
+let _obStep=0,_obDraft=null,_obBound=false;
+function sohOnboardOpen(){
+  _obStep=0; _obDraft=Object.assign({harp:null,tuning:null,styles:[]},sohProfile());
+  if(!_obBound){ _obBound=true;
+    document.getElementById('obClose')?.addEventListener('click',sohOnboardClose);
+    document.getElementById('obBack')?.addEventListener('click',()=>{ if(_obStep>0){_obStep--;obRender();} });
+    document.getElementById('obNext')?.addEventListener('click',()=>{ if(_obStep<2){_obStep++;obRender();} else obFinish(); });
+  }
+  document.getElementById('obPanel').hidden=false; document.body.classList.add('hp-open'); obRender();
+}
+function sohOnboardClose(){ document.getElementById('obPanel').hidden=true; document.body.classList.remove('hp-open'); }
+function obRender(){
+  const b=document.getElementById('obBody'), lbl=document.getElementById('obStepLabel');
+  const steps=['1 of 3 · your instrument','2 of 3 · your tuning','3 of 3 · what calls you'];
+  if(lbl) lbl.textContent=steps[_obStep];
+  document.getElementById('obBack').style.visibility=_obStep?'visible':'hidden';
+  document.getElementById('obNext').textContent=_obStep<2?'Next ›':'Begin ✦';
+  if(_obStep===0) b.innerHTML=`<div class="ob-q">What harp do you play?</div><div class="ob-opts">${SOH_HARPS.map(h=>`<button class="ob-opt${_obDraft.harp===h.id?' on':''}" data-v="${h.id}">${h.t}</button>`).join('')}</div>`;
+  else if(_obStep===1) b.innerHTML=`<div class="ob-q">How is it tuned?</div><div class="ob-opts">${['E♭','C','Other / not sure'].map(t=>`<button class="ob-opt${_obDraft.tuning===t?' on':''}" data-v="${t}">${t==='E♭'?'E♭ major — three flats, the classic lever tuning':t==='C'?'C major — all naturals':'Other / not sure'}</button>`).join('')}</div>`;
+  else b.innerHTML=`<div class="ob-q">Which styles are calling you? <span class="ob-multi">choose any</span></div><div class="ob-opts ob-grid">${SOH_STYLES.map(s=>`<button class="ob-opt${_obDraft.styles.includes(s)?' on':''}" data-v="${s}">${s}</button>`).join('')}</div>`;
+  b.querySelectorAll('.ob-opt').forEach(o=>o.addEventListener('click',()=>{
+    const v=o.dataset.v;
+    if(_obStep===0) _obDraft.harp=v;
+    else if(_obStep===1) _obDraft.tuning=v;
+    else { const i=_obDraft.styles.indexOf(v); if(i>=0)_obDraft.styles.splice(i,1); else _obDraft.styles.push(v); }
+    obRender(); buzz();
+  }));
+}
+function obFinish(){
+  if(!_obDraft.harp) _obDraft.harp='34-lever';
+  sohProfileSave(_obDraft);
+  if(_obDraft.tuning==='C'&&typeof tuneBase!=='undefined'){ tuneBase='C'; tuneScales=generateScales('C'); }
+  sohOnboardClose(); renderHome(); buzz();
+}
+
+/* ============================================================
+   TODAY'S HARP PATH — the daily loop (Duolingo habit, harpist soul)
+   ============================================================ */
+function todayPathSteps(){
+  const P=sohProfile(), day=dayOfYear(), steps=[];
+  steps.push({id:'tune',t:'Tune & settle',m:2,v:'tuner'});
+  steps.push({id:'warm',t:'Warm hands — slow arpeggios',m:4,v:'practice'});
+  steps.push([{id:'sight',t:'Sight-reading',m:5,v:'sightread'},{id:'ear',t:'Ear training',m:5,v:'eartraining'},{id:'rhythm',t:'Rhythm — find the pocket',m:5,v:'rhythm'}][day%3]);
+  const r=nxResume();
+  if(r) steps.push({id:'lesson',t:'Lesson · '+r.title,m:6,go:r.go});
+  else steps.push({id:'lesson',t:'Begin a lesson',m:6,v:'theory'});
+  const soulful=(P.styles||[]).some(s=>/Jewish|Contemplative|Worship|Therapeutic/.test(s));
+  steps.push(soulful? {id:'soul',t:'Contemplative close — drone & breath',m:4,v:'meditation'}
+                    : {id:'improv',t:'Improvise on the wheel',m:4,v:'modes'});
+  return steps;
+}
+function todayPathKey(){ return 'soh-path-'+new Date().toISOString().slice(0,10); }
+function buildTodayPath(){
+  const host=document.getElementById('todayPath'); if(!host) return;
+  const steps=todayPathSteps(); let done={};
+  try{ done=JSON.parse(localStorage.getItem(todayPathKey())||'{}'); }catch(e){}
+  const total=steps.reduce((a,s)=>a+s.m,0), left=steps.filter(s=>!done[s.id]).reduce((a,s)=>a+s.m,0);
+  const all=steps.every(s=>done[s.id]);
+  host.innerHTML=`<div class="tp-panel">
+    <div class="tp-head"><span class="tp-kick">Today’s Harp Path</span><span class="tp-min">${all?'complete ✦':left+' of '+total+' min left'}</span></div>
+    ${steps.map((s,i)=>`<div class="tp-row${done[s.id]?' done':''}" data-i="${i}">
+      <button class="tp-check" data-i="${i}" aria-label="Mark done">${done[s.id]?'✓':''}</button>
+      <span class="tp-t">${s.t}</span><span class="tp-m">${s.m} min</span></div>`).join('')}
+    ${all?`<div class="tp-bless">You walked the whole path today. Your harp is remembering you.</div>`:''}
+  </div>`;
+  host.querySelectorAll('.tp-row').forEach(row=>row.addEventListener('click',e=>{
+    if(e.target.classList.contains('tp-check')) return;
+    const s=steps[+row.dataset.i]; if(s.go) s.go(); else showView(s.v); buzz();
+  }));
+  host.querySelectorAll('.tp-check').forEach(c=>c.addEventListener('click',()=>{
+    const s=steps[+c.dataset.i]; const d=(()=>{try{return JSON.parse(localStorage.getItem(todayPathKey())||'{}')}catch(e){return{}}})();
+    d[s.id]=!d[s.id]; try{ localStorage.setItem(todayPathKey(),JSON.stringify(d)); }catch(e){}
+    if(steps.every(x=>d[x.id])){ try{ localStorage.setItem('soh-paths-walked', String(1+parseInt(localStorage.getItem('soh-paths-walked')||'0'))); }catch(e){} }
+    buildTodayPath(); buzz();
+  }));
+}
+
+/* ============================================================
+   PILGRIMAGE — levels & badges (gentle, never shame)
+   ============================================================ */
+const SOH_LEVELS=['Beginning','Listening','Placing','Melody','Harmony','Resonance','Song','Ascent','Service','Radiance'];
+function sohVisited(){ try{ return JSON.parse(localStorage.getItem('soh-visited')||'[]'); }catch(e){ return []; } }
+function sohVisit(name){
+  try{ const v=new Set(sohVisited()); if(!v.has(name)){ v.add(name); localStorage.setItem('soh-visited',JSON.stringify([...v])); } }catch(e){}
+}
+const SOH_BADGES=[
+  {id:'flame1', t:'First Flame',        d:'Your first practice session', test:s=>s.sessions>=1},
+  {id:'flame7', t:'Seven-Day Flame',    d:'Practised seven days in a row', test:s=>s.streak>=7},
+  {id:'theory', t:'Theory Seed',        d:'Began the theory course', test:()=>!!sohProgressGet().theory},
+  {id:'jacob',  t:'Universe Voyager',   d:'Entered Jacob’s Universe', test:()=>!!sohProgressGet().jacob},
+  {id:'lever',  t:'Lever Explorer',     d:'Explored the lever chart', test:()=>sohVisited().includes('levers')},
+  {id:'read',   t:'Reading Seed',       d:'Tried sight-reading', test:()=>sohVisited().includes('sightread')},
+  {id:'ear',    t:'Listening Ear',      d:'Trained your ear', test:()=>sohVisited().includes('eartraining')},
+  {id:'nigun',  t:'First Nigun',        d:'Sat with the meditation drone', test:()=>sohVisited().includes('meditation')},
+  {id:'circle', t:'Circle Walker',      d:'Walked the Circle of Fifths', test:()=>sohVisited().includes('circle')},
+  {id:'path',   t:'Path Complete',      d:'Walked a full daily path', test:()=>parseInt(localStorage.getItem('soh-paths-walked')||'0')>=1},
+];
+function sohEarned(){ const s=journalStats(); return SOH_BADGES.filter(b=>{ try{return b.test(s);}catch(e){return false;} }); }
+function sohLevel(){
+  const s=journalStats(), earned=sohEarned().length;
+  const score=(s.sessions||0)*2+(s.streak||0)+earned*3+(parseInt(localStorage.getItem('soh-paths-walked')||'0'))*4;
+  const th=[0,3,7,12,18,26,36,48,62,80]; let li=0;
+  th.forEach((t,i)=>{ if(score>=t) li=i; });
+  return {name:SOH_LEVELS[li], n:li+1, score};
+}
+function renderBadges(){
+  const host=document.getElementById('sohBadges'); if(!host) return;
+  const earned=new Set(sohEarned().map(b=>b.id)), lv=sohLevel();
+  host.innerHTML=`<div class="bg-panel">
+    <div class="tp-kick">Your pilgrimage</div>
+    <div class="bg-level">Level ${lv.n} · <b>${lv.name}</b></div>
+    <div class="bg-grid">${SOH_BADGES.map(b=>`<div class="bg-badge${earned.has(b.id)?' on':''}"><span class="bg-i">${earned.has(b.id)?'✦':'·'}</span><span class="bg-t">${b.t}</span><span class="bg-d">${b.d}</span></div>`).join('')}</div>
+  </div>`;
+}

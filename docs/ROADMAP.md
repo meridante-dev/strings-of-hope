@@ -9,6 +9,14 @@ North star: **the world's premium lever-harp learning platform** — Netflix-gra
 - ✅ Netflix-style Home: cinematic **Continue-learning hero** (espresso + gold harp-string glow), horizontal **content rails** (Jacob's Universe · Music Theory · Simcha's Course · Practice & Tools · Sacred & Daily), poster cards, **progress tracking** (`soh-progress`).
 - ✅ GitHub repo + full history (media & raw transcripts excluded by design).
 
+## Phase 1.5 — Vision adoption: "the harp Swiss army knife" (SHIPPED 2026-07-03)
+Adopted from the full product-vision doc (Duolingo habit × Yousician feedback × tonebase depth × Netflix library):
+- ✅ **Harp profile + onboarding** (3-step wizard: instrument 22-str lap→pedal · tuning · styles; auto-opens for new users; tap the streak pill to edit; syncs `tuneBase`).
+- ✅ **Today's Harp Path** — the daily loop: composed, timed, checkable plan (tune → warm → rotating drill (sight/ear/rhythm) → resume lesson → style-aware close); per-day persistence; completion blessing.
+- ✅ **Pilgrimage gamification** — levels (Beginning→Radiance), 10 badges, gentle streak-flame language ("your harp is remembering you"); rendered in Journal.
+- ✅ **Personalized Harpie** — the AI coach now knows harp type, string count, tuning, and loved styles.
+- Deliberately NOT adopted yet (need backend/accounts): community, teacher dashboard, uploads, certificates-as-documents, payments → Phase 5. Real-time audio feedback: already partially AHEAD (sight-reading pitch detection live); full scoring → Phase 4.
+
 ## Phase 2 — Overhaul the inner surfaces (next)
 1. **Course hubs as cinema**: Theory & Jacob hubs get poster-grid treatment, per-chapter progress rings, "up next" logic (needs per-lesson completion tracking, not just last-visited).
 2. **Lesson player polish**: chapter art headers, refined stepper (progress bar not dots for long chapters), end-of-chapter "Next up" card (Netflix autoplay-style), completion celebrations.

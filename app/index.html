@@ -30,6 +30,8 @@
 
       <button class="nx-hero reveal" id="nxHero" aria-label="Continue learning"></button>
 
+      <div id="todayPath" class="reveal"></div>
+
       <div id="nxRails"></div>
 
       <div class="nx-rail-h reveal"><span>Today</span></div>
@@ -585,6 +587,7 @@
         <p class="sub">Your practice, remembered.</p>
       </header>
       <div id="journalBody"></div>
+      <div id="sohBadges"></div>
       <footer class="reveal">
         <img class="ly" src="img/lyre.png" alt="" />
         <div class="ftag">Believe in your dreams.</div>
@@ -832,6 +835,15 @@
       <button data-view="sightread"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="17" r="2.1" fill="currentColor" stroke="none"/><path d="M11 17V8l4-1.4"/></svg>Read</button>
     </div>
   </nav>
+
+  <!-- ================= HARP PROFILE ONBOARDING (overlay) ================= -->
+  <div class="hp-overlay" id="obPanel" hidden>
+    <div class="hp-sheet ob-sheet">
+      <div class="hp-head"><span class="hp-title">Your harp</span><span class="hp-ctx" id="obStepLabel"></span><button class="hp-close" id="obClose" aria-label="Close">✕</button></div>
+      <div class="ob-body" id="obBody"></div>
+      <div class="ob-nav"><button class="jrn-btn ghost" id="obBack">‹ Back</button><button class="jrn-btn" id="obNext">Next ›</button></div>
+    </div>
+  </div>
 
   <!-- ================= HARPIE LESSON ASSISTANT (overlay) ================= -->
   <div class="hp-overlay" id="harpiePanel" hidden>

@@ -1,26 +1,25 @@
-# ▶ RESUME HERE — Jacob's Universe
-*Paused 2026-06-25. Read this first to pick up exactly where we left off.*
+# ▶ RESUME HERE — Strings of Hope
+*Checkpoint 2026-07-03 (evening). Working tree clean, all pushed, deploy verified live.*
 
-## Where we are
-- **Workflow:** OFF Netlify (low credits). Preview locally on the `modes` server (port 4137) + screenshots in Claude Code. Config in `.claude/launch.json` (servers: `modes`, `native-expo`).
-- **Corpus mapped:** see `docs/jacob-corpus.csv` (18 rows) + `docs/jacob-concept-map.md` (the real content).
-  - **7 deep-mapped:** JC001 (WIRED 5-Levels/Harmony), JC002 (SUHMM-Lydian, fan analysis), JC009 (Emotional Playground), JC012 (Mexico City), JC013 (GRAMMY U), JC014 (Qwest 2019), JC016 (Whitacre conversation).
-  - **6 transcripts gathered, not yet mapped:** JC003–JC005 (interviews), JC010 (Sydney), JC011 (NYU/Sony), JC017 (USC/Belasco) — in `jacob-corpus/transcripts/`.
-  - **Pending re-fetch (YouTube rate-limited):** JC007 Moon River, JC008 Berklee full, JC015/JC018 USC "Music & Mindset" (likely dup). Re-run the caption fetch when the rate limit clears.
+## Live & repo
+- **App:** https://meridante-dev.github.io/strings-of-hope/ (public, auto-deploys on every push to main; the Pages queue is flaky — the verify loop auto-reruns failed deploys)
+- **Repo:** https://github.com/meridante-dev/strings-of-hope (public) · last commit `9444614`
+- Workflow: local build → Playwright screenshots from a scratchpad COPY (macOS blocks headless Chromium on the Ultra Touch volume) → user approves visuals → commit/push. **No Netlify.**
 
-## Decisions locked
-1. **Placement:** Jacob's Universe is a **top-level section** — its own home-grid tile + `view`, alongside Music Theory / Modes / Circle of Fifths. (NOT a unit inside the theory course.)
-2. **First build:** scaffold the section shell **+ build the flagship "One Note, Many Chords" toy** end-to-end, verify in local preview.
+## State of the world (all shipped & live)
+- **Design:** Dark Luxe · Judean Desert identity + Klaf light toggle (☀/☾ topbar) + procedural SVG art on all cards. Jacob's Universe art = **heavenly clouds** (user direction: clouds, not planets).
+- **Core loop:** harp-profile onboarding (auto-opens; edit via streak pill) · Today's Harp Path (daily checkable plan) · pilgrimage levels/badges (Journal) · Harpie personalized by profile.
+- **Phase 2.1:** per-lesson completion (`soh-lessons`) → chapter n/m + ✓, unit progress bars, Jacob seen-✓.
+- **Phase 3 started:** June Lee Pts 1–3 deep-mapped (`docs/jacob-concept-map.md` batch 3); **Negative-Harmony Mirror toy live** (Module 3). Corpus 10/18 mapped.
 
-## The build blueprint (full detail in `docs/jacob-concept-map.md`)
-11 modules: 0 Big Idea · **1 One Note, Many Chords ⭐** · 2 Light & Dark · 3 Major=5ths/Minor=4ths (+Negative Harmony) · 4 Give Every Note Somewhere to Go · 5 Voicings & Inversions · 6 Reharmonization · 7 Harmony from Nature · 8 Beyond the 12 Notes · 9 Groove & the Pocket · 10 Audience Choir & Mindset.
-Toy build order: ① One-Note-Many-Chords ⭐ · ② Light/Dark circle (extend existing Circle of Fifths) · ③ Negative-Harmony Mirror · ④ Reharm Lab · ⑤ Give-the-note-an-exit · ⑥ Overtone chord builder.
+## ⏳ AWAITING USER ANSWERS — OMT integration (4 questions asked)
+Open Music Theory V2 scanned: **CC BY-SA 4.0, NO NC clause** → commercial OK; adaptations stay BY-SA, per-chapter author attribution required.
+1. **Scope:** new unit "Theory in the Real World" (~10 chapters we lack: pop schemas, fragile/absent/emergent tonics, galant schemas, Tonnetz, pop form, orchestration→harp, drumbeats, sight-singing) — RECOMMENDED — vs full second course?
+2. **Mic chord tests:** ship arpeggio-based (monophonic engine, reliable) first — RECOMMENDED — then polyphonic chromagram as beta?
+3. **Gamification:** extend pilgrimage vs add scored challenge track w/ mastery %? (lean: challenge track on top)
+4. **Priority:** OMT next vs finish Jacob modules 2–10 (Light/Dark + Reharm Lab toys specced)?
 
-## NEXT ACTION when we resume
-1. Add a `view-jacob` section + a home-grid tile (`data-view="jacob"`) + a `showView('jacob')` hook.
-2. Build a module list (the 11 modules) reusing the lesson stepper + Harpie side-bubble.
-3. Build **Module 1 "One Note, Many Chords"**: hold one harp string ringing (reuse `harpPluck`/`Drone`), swap chords beneath it via pads, name the feeling. Lever-harp-mapped; listening-trail deep-links from the concept map.
-4. Verify in local preview (port 4137), screenshot. No Netlify.
-
-## Copyright posture (unchanged)
-Teach concepts in our own words; deep-link out to Jacob's videos with timestamps; transcripts are internal study only (do not republish). JC002 is a fan analysis (commentary) — cite the embedded Jacob clip.
+## Next actions (whichever priority wins)
+- **Jacob path:** modules 2–10 full lessons; Light/Dark toy (extend Circle of Fifths); Reharm Lab; add Jacob KB to Harpie `buildHarperKB()`; map JC010/011/017; re-fetch JC007/008/015/018 (rate-limited).
+- **OMT path:** per answers above; per-chapter attribution pattern like Hutchinson/Schmidt-Jones credits.
+- Backlog: mic engine upgrade for chords (pitchy = monophonic; polyphonic needs chromagram), song library w/ harp-type compatibility, Phase 5 backend (community/teacher).

@@ -1755,8 +1755,35 @@ const NX_SACRED=[
   {v:'hebrew',t:'Hebrew Date',d:'On this day'},{v:'compass',t:'Jerusalem',d:'Face the Holy City'},
   {v:'journal',t:'Journal',d:'Your practice log'},{v:'repertoire',t:'Repertoire',d:'Pieces you play'},{v:'profile',t:'My Harp',d:'Tuning & levers'},
 ];
-function nxCard(cls,kick,title,sub,badge){
-  return `<button class="nx-card ${cls}"><span class="nxc-kick">${kick||''}</span><span class="nxc-t">${title}</span><span class="nxc-s">${sub||''}</span>${badge?`<span class="nxc-badge">${badge}</span>`:''}</button>`;
+/* — procedural module art: painted scenes in the desert-hero language — */
+const SOH_ART={
+  c1:{sky:['#191030','#3A2560','#7A4A8F'], sun:'#E8C87F', hill:['#241640','#170E2B','#0D0719'], motif:'orbit'},  /* Jacob — indigo night   */
+  c2:{sky:['#241708','#5B3A14','#A8702E'], sun:'#F2CD8A', hill:['#3A2812','#281A0B','#170F06'], motif:'sun'},    /* Theory — amber dawn    */
+  c3:{sky:['#12211A','#2C4A38','#5D7D5A'], sun:'#E9D9A0', hill:['#22382C','#16261D','#0C1510'], motif:'sun'},    /* Simcha — oasis         */
+  c4:{sky:['#1F1408','#43290E','#7A5220'], sun:'#ECC27A', hill:['#33220E','#231708','#120B04'], motif:'strings'},/* Tools — bronze         */
+  c5:{sky:['#0B1226','#1C2A4D','#3D4F7D'], sun:'#F0E3B2', hill:['#141D36','#0D1425','#070B16'], motif:'stars'},  /* Sacred — night blue    */
+};
+let _sohArtId=0;
+function sohArt(cat,i){
+  const a=SOH_ART[cat]||SOH_ART.c2, s=(i*137+29)%100, uid='a'+(_sohArtId++);
+  const sx=50+((s*3.1)%290), sy=30+((s*1.7)%42), r=13+(s%11);
+  const d1=118-(s%22), d2=150-(s%16), d3=178-(s%10);
+  let motif='';
+  if(a.motif==='stars') motif=[...Array(8)].map((_,k)=>{const x=(s*7+k*53)%370+10,y=(k*29+s*3)%78+8;return `<circle cx='${x}' cy='${y}' r='1.3' fill='${a.sun}' opacity='.85'/>`;}).join('');
+  else if(a.motif==='orbit') motif=`<ellipse cx='${sx}' cy='${sy}' rx='${r+17}' ry='${(r+17)/2.7}' fill='none' stroke='${a.sun}' stroke-width='1.1' opacity='.5' transform='rotate(-16 ${sx} ${sy})'/>`;
+  else if(a.motif==='strings') motif=[0,1,2,3].map(k=>`<line x1='${30+k*26}' y1='0' x2='${64+k*26}' y2='220' stroke='${a.sun}' stroke-width='.8' opacity='.16'/>`).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs><linearGradient id="${uid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a.sky[0]}"/><stop offset=".55" stop-color="${a.sky[1]}"/><stop offset="1" stop-color="${a.sky[2]}"/></linearGradient></defs>
+    <rect width="390" height="220" fill="url(#${uid})"/>
+    <circle cx="${sx}" cy="${sy}" r="${r*2.5}" fill="${a.sun}" opacity=".13"/>
+    <circle cx="${sx}" cy="${sy}" r="${r}" fill="${a.sun}" opacity=".55"/>${motif}
+    <path d="M0,${d1} Q95,${d1-26} 190,${d1} T390,${d1-8} V220 H0 Z" fill="${a.hill[0]}" opacity=".82"/>
+    <path d="M0,${d2} Q130,${d2-24} 240,${d2} T390,${d2-6} V220 H0 Z" fill="${a.hill[1]}" opacity=".93"/>
+    <path d="M0,${d3} Q120,${d3-16} 230,${d3} T390,${d3-4} V220 H0 Z" fill="${a.hill[2]}"/>
+  </svg>`;
+}
+function nxCard(cls,kick,title,sub,badge,art){
+  return `<button class="nx-card ${cls}">${art?`<span class="nxc-art">${art}</span><span class="nxc-scrim"></span>`:''}<span class="nxc-kick">${kick||''}</span><span class="nxc-t">${title}</span><span class="nxc-s">${sub||''}</span>${badge?`<span class="nxc-badge">${badge}</span>`:''}</button>`;
 }
 function renderNxRails(){
   const host=document.getElementById('nxRails'); if(!host) return; host.innerHTML='';
@@ -1767,20 +1794,20 @@ function renderNxRails(){
     host.appendChild(w); if(binder) binder(w);
   };
   if(typeof JACOB_MODULES!=='undefined'){
-    rail('Jacob’s Universe','jacob', JACOB_MODULES.map(m=>nxCard('nx-c1', m.kicker||('Module '+m.n), m.title, '', m.toy?'▶ play':'')).join(''),
+    rail('Jacob’s Universe','jacob', JACOB_MODULES.map(m=>nxCard('nx-c1', m.kicker||('Module '+m.n), m.title, '', m.toy?'▶ play':'', sohArt('c1',m.n))).join(''),
       w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView('jacob'); jacobOpenModule(JACOB_MODULES[i].n); buzz(); })));
   }
   if(typeof THEORY_COURSE!=='undefined'){
-    rail('Music Theory','theory', THEORY_COURSE.map(u=>nxCard('nx-c2', u.kicker||('Semester '+u.sem), u.title, u.chapters.length+' chapters','')).join(''),
+    rail('Music Theory','theory', THEORY_COURSE.map(u=>nxCard('nx-c2', u.kicker||('Semester '+u.sem), u.title, u.chapters.length+' chapters','', sohArt('c2',u.sem))).join(''),
       w=>w.querySelectorAll('.nx-card').forEach(b=>b.addEventListener('click',()=>{ showView('theory'); buzz(); })));
   }
   if(typeof SIMCHA_COURSE!=='undefined'){
-    rail('Simcha’s Modes Course','learn', SIMCHA_COURSE.map(c=>nxCard('nx-c3', c.sub||'', c.title, c.lessons.length+' lessons','')).join(''),
+    rail('Simcha’s Modes Course','learn', SIMCHA_COURSE.map((c,ci)=>nxCard('nx-c3', c.sub||'', c.title, c.lessons.length+' lessons','', sohArt('c3',ci))).join(''),
       w=>w.querySelectorAll('.nx-card').forEach(b=>b.addEventListener('click',()=>{ showView('learn'); buzz(); })));
   }
-  rail('Practice & Tools',null, NX_TOOLS.map(t=>nxCard('nx-c4','',t.t,t.d,'')).join(''),
+  rail('Practice & Tools',null, NX_TOOLS.map((t,i)=>nxCard('nx-c4','',t.t,t.d,'', sohArt('c4',i))).join(''),
     w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView(NX_TOOLS[i].v); buzz(); })));
-  rail('Sacred & Daily',null, NX_SACRED.map(t=>nxCard('nx-c5','',t.t,t.d,'')).join(''),
+  rail('Sacred & Daily',null, NX_SACRED.map((t,i)=>nxCard('nx-c5','',t.t,t.d,'', sohArt('c5',i))).join(''),
     w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView(NX_SACRED[i].v); buzz(); })));
 }
 
@@ -2373,7 +2400,8 @@ function buildJacob(){
   host.innerHTML='';
   JACOB_MODULES.forEach(m=>{
     const b=document.createElement('button'); b.className='ju-card'+(m.toy?' toy':'');
-    b.innerHTML=`<div class="ju-card-top"><span class="ju-n">${m.n}</span><span class="ju-kick">${m.kicker||''}</span>${m.toy?'<span class="ju-toy-tag">▶ play</span>':''}</div>
+    b.innerHTML=`<span class="nxc-art">${sohArt('c1',m.n)}</span><span class="nxc-scrim"></span>
+      <div class="ju-card-top"><span class="ju-n">${m.n}</span><span class="ju-kick">${m.kicker||''}</span>${m.toy?'<span class="ju-toy-tag">▶ play</span>':''}</div>
       <div class="ju-card-t">${m.title}</div>`;
     b.addEventListener('click',()=>jacobOpenModule(m.n));
     host.appendChild(b);
@@ -3217,3 +3245,19 @@ addSwipe(document.querySelector('#view-modes .wheel-wrap'), {
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
 showView('home');
 observeReveals();
+
+/* ============================================================
+   THEME TOGGLE — Dark Luxe (default) ⇄ Klaf parchment light
+   ============================================================ */
+function sohThemeSet(t){
+  if(t==='light') document.documentElement.dataset.theme='light';
+  else delete document.documentElement.dataset.theme;
+  try{ localStorage.setItem('soh-theme', t==='light'?'light':'dark'); }catch(e){}
+  const b=document.getElementById('themeToggle'); if(b) b.textContent = t==='light' ? '☾' : '☀';
+}
+(function initTheme(){
+  const cur=document.documentElement.dataset.theme==='light'?'light':'dark';
+  const b=document.getElementById('themeToggle'); if(b){ b.textContent=cur==='light'?'☾':'☀';
+    b.addEventListener('click',e=>{ e.stopPropagation(); e.preventDefault();
+      sohThemeSet(document.documentElement.dataset.theme==='light'?'dark':'light'); buzz(); }); }
+})();

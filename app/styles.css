@@ -1546,3 +1546,56 @@ body{
 /* inscription voice for rail titles — quiet Cinzel over serif */
 .nx-rail-h span{ letter-spacing:.02em }
 .feat-strip span{ font-family:"Cinzel",serif }
+
+/* ============================================================
+   KLAF · light-brown parchment theme (manual toggle) + module art
+   ============================================================ */
+[data-theme="light"]{
+  color-scheme:light;
+  --bg-0:#EFE3CB; --bg-1:#E3D3B2; --bg-glow:#FBF3DF;
+  --surface:#F9F2E0; --surface-2:#F2E8D0;
+  --ink:#2B2212; --ink-soft:#6E5F45; --ink-faint:#98876A;
+  --line:rgba(90,66,24,.15); --line-2:rgba(90,66,24,.26);
+  --gold:#A87F35; --gold-deep:#7E5E22; --gold-soft:#D9C081aa;
+  --gold-grad-a:#DAB876; --gold-grad-b:#A87F35;
+  --shadow:rgba(80,58,20,.15); --shadow-2:rgba(80,58,20,.24);
+  --petal:#EADDBE; --petal-stroke:rgba(90,66,24,.12); --petal-root:#EFDFB4;
+  --on-accent:#2B2008;
+  --m1:#A87F35; --m2:#4F7A6B; --m3:#7A6383; --m4:#A06B60;
+  --m5:#B08438; --m6:#5E7488; --m7:#75793F;
+  --grain:.04;
+}
+/* the desert at day — same dunes, morning sky */
+[data-theme="light"] .nx-hero{
+  background:linear-gradient(180deg,#9db9d6 0%,#dcc194 40%,#cf9a55 66%,#8a5a28 100%);
+}
+[data-theme="light"] .nx-hero::after{
+  background:linear-gradient(180deg, rgba(43,26,8,.02) 25%, rgba(43,26,8,.5) 100%);
+}
+[data-theme="light"] .nxh-heb{ color:#6d4c17; opacity:.2 }
+
+/* theme toggle — quiet moon/sun in the topbar */
+.theme-toggle{
+  position:absolute; right:14px; top:calc(50% + env(safe-area-inset-top)/2); transform:translateY(-50%);
+  width:34px; height:34px; border-radius:50%; display:grid; place-items:center;
+  font-size:15px; line-height:1; cursor:pointer; color:var(--gold-deep);
+  background:var(--surface); border:1px solid var(--line-2);
+  box-shadow:0 4px 12px -6px var(--shadow-2);
+}
+.theme-toggle:active{ transform:translateY(-50%) scale(.92) }
+
+/* — module art: painted scenes inside poster & module cards — */
+.nx-card,.ju-card{ position:relative; overflow:hidden }
+.nxc-art{ position:absolute; inset:0; pointer-events:none }
+.nxc-art svg{ width:100%; height:100%; display:block }
+.nxc-scrim{ position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(180deg, transparent 26%, rgba(10,7,3,.55) 62%, rgba(10,7,3,.86) 100%) }
+.nx-card>.nxc-kick,.nx-card>.nxc-t,.nx-card>.nxc-s,.nx-card>.nxc-badge{ position:relative; z-index:1 }
+.ju-card .ju-card-top,.ju-card .ju-card-t{ position:relative; z-index:1 }
+/* art cards read light-on-scene in BOTH themes */
+.nx-card .nxc-t,.ju-card .ju-card-t{ color:#F3EAD6 }
+.nx-card .nxc-s{ color:rgba(243,234,214,.66) }
+.nx-card .nxc-kick,.ju-card .ju-kick{ color:#D9B876 }
+.ju-card .ju-n{ color:#F3EAD6; background:rgba(233,200,127,.22) }
+[data-theme="light"] .nxh-eyebrow{ color:#5F430F }
+[data-theme="light"] .nxh-sub{ color:rgba(255,247,228,.85) }

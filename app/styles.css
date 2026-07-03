@@ -5,71 +5,42 @@
 /* Shlomo STA"M — Torah-scroll script for sacred Hebrew text */
 @font-face{ font-family:'ShlomoStam'; src:url('fonts/ShlomoStam.ttf') format('truetype'); font-weight:normal; font-style:normal; font-display:swap; }
 :root{
-  color-scheme: light dark;
+  color-scheme: dark;
 
-  /* — light (default) — */
-  --bg-0:#FAF8F2;
-  --bg-1:#F1ECE1;
-  --bg-glow:#FFFFFF;
-  --surface:#FFFFFF;
-  --surface-2:#FBF9F3;
-  --ink:#211C14;
-  --ink-soft:#6B6356;
-  --ink-faint:#9C9384;
-  --line:rgba(45,34,16,.09);
-  --line-2:rgba(45,34,16,.15);
-  --gold:#B28E47;
-  --gold-deep:#8E6F31;
-  --gold-soft:#D9C08160;
-  --gold-grad-a:#D8BC7C;
-  --gold-grad-b:#B08A40;
-  --shadow:rgba(54,40,14,.10);
-  --shadow-2:rgba(54,40,14,.16);
-  --petal:#F1ECE1;
-  --petal-stroke:rgba(45,34,16,.08);
-  --petal-root:#F4E8CB;
-  --on-accent:#2B2008;
+  /* — DARK LUXE · the one theme — espresso night over the Judean desert — */
+  --bg-0:#0F0C07;
+  --bg-1:#16110A;
+  --bg-glow:#221808;
+  --surface:#1B150C;
+  --surface-2:#201A0F;
+  --ink:#EEE6D5;
+  --ink-soft:#A99E87;
+  --ink-faint:#7B7059;
+  --line:rgba(232,214,166,.11);
+  --line-2:rgba(232,214,166,.20);
+  --gold:#D7B463;
+  --gold-deep:#E7CC86;
+  --gold-soft:#6b5224aa;
+  --gold-grad-a:#E9CE85;
+  --gold-grad-b:#C09A4C;
+  --shadow:rgba(0,0,0,.55);
+  --shadow-2:rgba(0,0,0,.7);
+  --petal:#272015;
+  --petal-stroke:rgba(232,214,166,.10);
+  --petal-root:#3A2E18;
+  --on-accent:#1a1304;
 
-  /* — gold-led quiet mode tones — */
-  --m1:#B28E47; /* Ionian   · gold      */
-  --m2:#5E8C7E; /* Dorian   · sage      */
-  --m3:#86708F; /* Phrygian · dusty plum*/
-  --m4:#AE7C72; /* Lydian   · rose clay */
-  --m5:#BE9248; /* Mixolyd  · amber     */
-  --m6:#6E8398; /* Aeolian  · slate     */
-  --m7:#838755; /* Locrian  · moss      */
+  /* — gold-led mode tones (night palette) — */
+  --m1:#D7B463; /* Ionian   · gold      */
+  --m2:#7DB0A0; /* Dorian   · sage      */
+  --m3:#A892B2; /* Phrygian · dusty plum*/
+  --m4:#CC9A8F; /* Lydian   · rose clay */
+  --m5:#DCB068; /* Mixolyd  · amber     */
+  --m6:#8FA6BD; /* Aeolian  · slate     */
+  --m7:#A9AC76; /* Locrian  · moss      */
 
-  --grain:.035;
+  --grain:.05;
   --ease:cubic-bezier(.22,.61,.27,1);
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg-0:#141109;
-    --bg-1:#1B1710;
-    --bg-glow:#241d12;
-    --surface:#1E190F;
-    --surface-2:#231D12;
-    --ink:#EEE6D5;
-    --ink-soft:#A99E87;
-    --ink-faint:#7B7059;
-    --line:rgba(232,214,166,.11);
-    --line-2:rgba(232,214,166,.20);
-    --gold:#D7B463;
-    --gold-deep:#E7CC86;
-    --gold-soft:#6b5224aa;
-    --gold-grad-a:#E9CE85;
-    --gold-grad-b:#C09A4C;
-    --shadow:rgba(0,0,0,.55);
-    --shadow-2:rgba(0,0,0,.7);
-    --petal:#272015;
-    --petal-stroke:rgba(232,214,166,.10);
-    --petal-root:#3A2E18;
-    --on-accent:#1a1304;
-
-    --m1:#D7B463; --m2:#7DB0A0; --m3:#A892B2; --m4:#CC9A8F;
-    --m5:#DCB068; --m6:#8FA6BD; --m7:#A9AC76;
-    --grain:.05;
-  }
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1457,3 +1428,121 @@ footer .cc{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.32em;text-tr
 .nx-c4{ background:radial-gradient(130% 120% at 100% 0%, color-mix(in srgb,#8e6f31 12%,var(--surface)), var(--surface) 62%) }
 .nx-c5{ background:radial-gradient(130% 120% at 100% 0%, color-mix(in srgb,#6e8398 13%,var(--surface)), var(--surface) 62%) }
 @media (prefers-reduced-motion:reduce){ .nx-card,.nx-hero{ transition:none } }
+
+/* ============================================================
+   PREMIUM PASS — world-class instrument-panel language
+   (studied from the parchment + dark-luxe dashboard mockups)
+   ============================================================ */
+
+/* — micro-labels: the letter-spaced uppercase DNA on every panel — */
+.kicker,.sc-lead,.verse-label,.thy-crumb,.ju-crumb,.ju-kick,.nxc-kick,.nxh-eyebrow,
+.ju-sec-t,.cof-sec-t,.thy-harp-l,.cof-lever-l,.tc-day,.teh-ref,.ju-held-k,.hp-title+.hp-ctx{
+  letter-spacing:.17em; font-weight:700;
+}
+.kicker{ font-size:11px }
+
+/* — instrument-panel cards: hairline + layered soft depth, calmer radius — */
+.song-card,.verse-band,.verse-card,.nx-card,.ju-card,.ju-toy,.teh-psalm,.teh-context,
+.thy-ch,.cof-lever,.thy-harp,.et-opt,.ju-link,.cof-link,.hp-sheet{
+  border-radius:20px;
+  box-shadow:0 1px 2px var(--shadow), 0 16px 40px -26px var(--shadow-2);
+}
+.thy-ch,.et-opt,.ju-link,.cof-link{ border-radius:16px }
+.song-card,.verse-band{ border:1px solid var(--line) }
+
+/* — segmented chips: one pill language everywhere — */
+.et-tab,.teh-day,.coach-sug,.hp-quick button,.ju-chord,.cof-partner,.thy-q-rev{
+  border-radius:999px;
+}
+.et-tab.on,.teh-day.on,.ju-chord.on{
+  background:linear-gradient(160deg,var(--gold-grad-a),var(--gold-grad-b));
+  color:var(--on-accent); border-color:transparent;
+  box-shadow:0 6px 16px -6px var(--gold-soft);
+}
+
+/* — gold CTAs: one gradient, one glow — */
+.jrn-btn:not(.ghost),.et-bigplay,.cof-cta:not(.ghost),.et-next,.nxh-cta,.td-cta{
+  background:linear-gradient(160deg,var(--gold-grad-a),var(--gold-grad-b));
+  color:var(--on-accent); border:none;
+  box-shadow:0 10px 24px -10px var(--gold-soft), inset 0 1px 0 rgba(255,255,255,.28);
+}
+
+/* — topbar & bottom nav: quiet glass — */
+.topbar{
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav{
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+}
+
+/* — the hero: desert-dusk horizon under the harp strings — */
+.nx-hero{ border-radius:28px; min-height:224px }
+.nx-hero::after{
+  content:''; position:absolute; inset:auto 0 0 0; height:58%;
+  background:linear-gradient(180deg, transparent, rgba(146,84,34,.28) 62%, rgba(196,124,58,.34));
+  pointer-events:none;
+}
+.nx-strings{ opacity:.38 }
+.nxh-eyebrow,.nxh-title,.nxh-sub,.nxh-cta{ z-index:1 }
+
+/* — poster cards: lift on touch, finer kickers — */
+.nx-card{ min-height:178px; border:1px solid var(--line);
+  transition:transform .18s var(--ease), box-shadow .18s var(--ease) }
+@media (hover:hover){
+  .nx-card:hover{ transform:translateY(-3px); box-shadow:0 6px 14px var(--shadow), 0 26px 48px -24px var(--shadow-2) }
+  .ju-card:hover,.thy-ch:hover{ transform:translateY(-2px) }
+}
+
+/* — big display data: serif, tabular — */
+.ju-held-n,.cof-name,.nxh-title{ font-variant-numeric:tabular-nums }
+
+/* — feature strip (brand promise, from the mockups) — */
+.feat-strip{
+  display:flex; justify-content:center; gap:22px; flex-wrap:wrap;
+  margin:26px auto 4px; padding:14px 10px; max-width:34rem;
+  border-top:1px solid var(--line);
+}
+.feat-strip span{ font-size:10.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint) }
+.feat-strip b{ color:var(--gold-deep) }
+
+/* — craft floor: focus & reduced motion — */
+:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; border-radius:4px }
+@media (prefers-reduced-motion:reduce){
+  .nx-card,.ju-card,.thy-ch{ transition:none }
+}
+
+/* ============================================================
+   DARK LUXE · JUDEAN DESERT — the signature scene
+   Painted dusk: amber sun, layered dunes, gold strings, תקוה
+   ============================================================ */
+.nx-hero{
+  background:linear-gradient(180deg,#1a1207 0%,#2e1d0c 38%,#553114 64%,#7d4b1f 80%,#241608 100%);
+  min-height:236px;
+}
+.nx-hero::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 236' preserveAspectRatio='xMidYMax slice'%3E%3Ccircle cx='302' cy='96' r='72' fill='%23e8a458' opacity='.16'/%3E%3Ccircle cx='302' cy='96' r='40' fill='%23eeb066' opacity='.42'/%3E%3Ccircle cx='302' cy='96' r='22' fill='%23f7cd8e' opacity='.65'/%3E%3Cpath d='M0,148 Q95,118 190,146 T390,138 V236 H0 Z' fill='%233a2812' opacity='.75'/%3E%3Cpath d='M0,178 Q130,148 240,180 T390,170 V236 H0 Z' fill='%23281a0b' opacity='.9'/%3E%3Cpath d='M0,208 Q120,188 230,210 T390,203 V236 H0 Z' fill='%23180f06'/%3E%3C/svg%3E") bottom / cover no-repeat;
+}
+.nx-hero::after{
+  background:linear-gradient(180deg, rgba(15,10,5,.10) 30%, rgba(10,7,3,.52) 100%);
+}
+.nx-strings{ opacity:.22 }
+.nxh-heb{
+  position:absolute; right:16px; top:2px; z-index:0; pointer-events:none;
+  font-family:'ShlomoStam',serif; font-size:92px; line-height:1;
+  color:#e9c87f; opacity:.13;
+}
+
+/* ambient night — a candle-glow above the fold */
+body{
+  background:
+    radial-gradient(120% 60% at 50% -10%, var(--bg-glow) 0%, transparent 58%),
+    radial-gradient(80% 40% at 85% 0%, rgba(180,130,50,.07), transparent 60%),
+    linear-gradient(180deg,var(--bg-0) 0%,var(--bg-1) 100%);
+  background-attachment:fixed;
+}
+
+/* inscription voice for rail titles — quiet Cinzel over serif */
+.nx-rail-h span{ letter-spacing:.02em }
+.feat-strip span{ font-family:"Cinzel",serif }

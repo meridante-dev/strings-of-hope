@@ -1644,3 +1644,11 @@ body{
 .bg-i{ font-size:14px; color:var(--gold-deep) }
 .bg-t{ font-size:13px; font-weight:700; color:var(--ink) }
 .bg-d{ font-size:11px; line-height:1.35; color:var(--ink-faint) }
+
+/* — Phase 2.1: completion markers & progress bars — */
+.tc-p{ flex:0 0 auto; font-size:11px; font-weight:700; color:var(--ink-faint); font-variant-numeric:tabular-nums }
+.tc-p.done{ color:var(--gold-deep) }
+.nxc-bar{ position:relative; z-index:1; display:block; height:3px; border-radius:2px; overflow:hidden;
+  background:rgba(243,234,214,.18); margin-top:6px }
+.nxc-bar i{ display:block; height:100%; background:linear-gradient(90deg,var(--gold-grad-a),var(--gold-grad-b)) }
+.ju-done{ font-size:11px; font-weight:800; color:#F3EAD6; background:rgba(233,200,127,.24); border-radius:999px; padding:3px 8px }

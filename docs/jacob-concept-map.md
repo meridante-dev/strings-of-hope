@@ -146,3 +146,39 @@ The same ideas recur across all 7 mapped videos — that consensus IS the curric
 **Interactive toys to build (priority order):** 1) One-Note-Many-Chords ⭐ · 2) Light/Dark circle (extend existing) · 3) Negative-Harmony Mirror · 4) Reharm Lab · 5) Give-the-note-an-exit · 6) Overtone chord builder · 7) Quantize on/off groove.
 
 **Backlog (not yet mapped):** JC003–JC005 (interviews), JC008 Berklee, JC010 Sydney, JC011 NYU/Sony, JC015/JC018 USC, JC017 Belasco + re-fetch JC007/JC008/JC015. Map opportunistically to enrich modules.
+
+---
+
+# Batch 3 — the June Lee interviews (JC003–JC005) · the deepest theory vein
+
+## JC003 — June Lee Interview Pt 1 (12:42) — NEGATIVE HARMONY
+**Theme:** harmony as geography — brightness/darkness on the circle of fifths.
+- **Bright/dark axis** [00:14]: up in fifths brightens, down darkens; plagal "hugs", perfect "arrives".
+- **SUHMM Lydian** [00:42]: Lydian that never stops rising — "optimum brightness"; Super-Locrian mirror spirals flatward.
+- **Negative harmony, the famous passage** [01:36–03:26]: from Ernst Levy — mirror each NOTE around the axis between tonic and dominant (in C: between E♭/E). G7 → Fm6; "converts everything perfect to plagal"; equal gravity because voice-leading mirrors (B rises to C ↔ A♭ sinks to G). A7–D7–G7–C → E♭m6–B♭m6–Fm6–C.
+- **Major=fifths, minor=fourths** [03:28]: minor-ness = how far flatward you travel, not the third.
+- **Minor-9th placement as emotional choice** [05:02]; **B pentatonic over Cmaj13** [06:22] (superimposition, pentatonics a m3 apart = max contrast); **harmonizer forced true voice-leading** [08:43]; **microtonal voice-leading** [10:11] (only the arrival matters).
+- **→ MIRROR TOY SPEC (built 2026-07-03)**: axis midway tonic–dominant; reflect notes not symbols; animate resolution arrows; "mirror the whole progression" mode; tie to bright/dark wheel. ✅ Shipped v1 as Module 3 toy.
+
+## JC004 — June Lee Interview Pt 2 (38:37) — BEYOND THE GRID
+**Theme:** bending tuning, time and voice-leading away from equal-tempered, quantized defaults — for emotion.
+- **Negative harmony as polarity** [00:18–05:30]: overtone + "undertone" series; Steve Coleman uses it melodically ("C negative major" ≈ G Phrygian).
+- **Just intonation vs equal temperament** [05:36]: piano "isn't in tune"; pure M3 ≈ −14¢, natural 7th ≈ −31¢; a just 6/9 chord is impossible (syntonic comma).
+- **Hideaway's hidden A432→A440 lift** [09:15]: retunes upward mid-song; felt as release. (Harp: listening module.)
+- **Wonky grooves** [11:00]: samba/Gnawa uneven subdivisions; "4-2-3" grid of In My Room; proposes “5/4/4” signatures. (Harp: uneven ostinato drills — playable!)
+- **Voice-leading over function** [18:31, 31:02]: Bach chorales; zones (bass/inner/top); Close To You bridge is non-functional but voice-led.
+- **Ears before labels** [22:25]: his mother trained *feeling* before names; "the more chords you know, the more courage it takes to not play them".
+- Modules: Mirror Harmony Lab · Beatless Third (JI ear training) · Wonky Groove Gym · Every-Note-Has-a-Home · Feel-It-First.
+
+## JC005 — June Lee Interview Pt 3 (34:24) — UNDER THE SURFACE
+**Theme:** hidden intention in performance, microtonal tuning choices, layered arrangement craft (In My Room sessions).
+- **Invert the intention** [00:27–05:49]: perform a line with the OPPOSITE emotional verb — dread under charm.
+- **Negative cadence** [19:49]: minor→major arrival as a "negative perfect cadence" (harp: lever-flip Picardy).
+- **Subverting expectation** [06:37]: play the quiet note at the climax; the ear notices the absence.
+- **In the Bleak Midwinter tuning** [09:46]: just intonation by ear; the −14¢ third; drift exaggerated into an upward modulation.
+- **The 30-cent quartal chord** [12:35] (Fascinating Rhythm): stacked pure fourths clash with the ET bass; he left it in.
+- **Found-sound percussion** [16:30]: autoharp-knock snare, slowed claves (harp: soundboard percussion module).
+- **The Herbie chord** [22:34]: DΔ/E♭ polychord functioning as a dominant.
+- **Bass a fifth below** [26:26]: re-rooting lifts all overtones "one more color".
+
+**Corpus status:** 10 of 18 mapped. Remaining gathered: JC010 Sydney, JC011 NYU/Sony, JC017 Belasco. Pending re-fetch: JC007/JC008/JC015/JC018.

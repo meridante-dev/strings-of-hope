@@ -1720,6 +1720,9 @@ function sohProgressSave(kind,data){
   try{ const p=JSON.parse(localStorage.getItem('soh-progress')||'{}'); p[kind]=Object.assign({},data,{ts:Date.now()}); localStorage.setItem('soh-progress',JSON.stringify(p)); }catch(e){}
 }
 function sohProgressGet(){ try{ return JSON.parse(localStorage.getItem('soh-progress')||'{}'); }catch(e){ return {}; } }
+function sohChapterProg(n){ try{ const d=JSON.parse(localStorage.getItem('soh-lessons')||'{}')['t'+n]; return d?{seen:d.seen,total:d.total,done:d.seen>=d.total}:null; }catch(e){ return null; } }
+function sohUnitProg(u){ const t=u.chapters.length; let done=0; u.chapters.forEach(c=>{ const p=sohChapterProg(c.n); if(p&&p.done) done++; }); return {done,t,pct:Math.round(done/t*100)}; }
+function jacobSeen(n){ try{ return JSON.parse(localStorage.getItem('soh-jacob-seen')||'[]').includes(n); }catch(e){ return false; } }
 function nxResume(){
   const p=sohProgressGet(), cands=[];
   if(p.theory && typeof THEORY_COURSE!=='undefined'){ const u=THEORY_COURSE[p.theory.sem], ch=u&&u.chapters[p.theory.ch];
@@ -1757,7 +1760,7 @@ const NX_SACRED=[
 ];
 /* — procedural module art: painted scenes in the desert-hero language — */
 const SOH_ART={
-  c1:{sky:['#191030','#3A2560','#7A4A8F'], sun:'#E8C87F', hill:['#241640','#170E2B','#0D0719'], motif:'orbit'},  /* Jacob — indigo night   */
+  c1:{sky:['#1B1440','#3B2D6E','#8873B5'], sun:'#F2E7C8', hill:['#241640','#170E2B','#0D0719'], motif:'clouds'}, /* Jacob — heavenly clouds */
   c2:{sky:['#241708','#5B3A14','#A8702E'], sun:'#F2CD8A', hill:['#3A2812','#281A0B','#170F06'], motif:'sun'},    /* Theory — amber dawn    */
   c3:{sky:['#12211A','#2C4A38','#5D7D5A'], sun:'#E9D9A0', hill:['#22382C','#16261D','#0C1510'], motif:'sun'},    /* Simcha — oasis         */
   c4:{sky:['#1F1408','#43290E','#7A5220'], sun:'#ECC27A', hill:['#33220E','#231708','#120B04'], motif:'strings'},/* Tools — bronze         */
@@ -1768,18 +1771,27 @@ function sohArt(cat,i){
   const a=SOH_ART[cat]||SOH_ART.c2, s=(i*137+29)%100, uid='a'+(_sohArtId++);
   const sx=50+((s*3.1)%290), sy=30+((s*1.7)%42), r=13+(s%11);
   const d1=118-(s%22), d2=150-(s%16), d3=178-(s%10);
-  let motif='';
+  let motif='', ground;
   if(a.motif==='stars') motif=[...Array(8)].map((_,k)=>{const x=(s*7+k*53)%370+10,y=(k*29+s*3)%78+8;return `<circle cx='${x}' cy='${y}' r='1.3' fill='${a.sun}' opacity='.85'/>`;}).join('');
-  else if(a.motif==='orbit') motif=`<ellipse cx='${sx}' cy='${sy}' rx='${r+17}' ry='${(r+17)/2.7}' fill='none' stroke='${a.sun}' stroke-width='1.1' opacity='.5' transform='rotate(-16 ${sx} ${sy})'/>`;
   else if(a.motif==='strings') motif=[0,1,2,3].map(k=>`<line x1='${30+k*26}' y1='0' x2='${64+k*26}' y2='220' stroke='${a.sun}' stroke-width='.8' opacity='.16'/>`).join('');
+  if(a.motif==='clouds'){
+    /* heavenly cloudscape — soft banks drifting in the universe, no dunes */
+    const cl=(x,y,sc,f,o)=>`<g fill='${f}' opacity='${o}'><ellipse cx='${x}' cy='${y}' rx='${36*sc}' ry='${12*sc}'/><ellipse cx='${x-24*sc}' cy='${y+4*sc}' rx='${22*sc}' ry='${9*sc}'/><ellipse cx='${x+25*sc}' cy='${y+5*sc}' rx='${25*sc}' ry='${10*sc}'/><ellipse cx='${x+3*sc}' cy='${y-7*sc}' rx='${18*sc}' ry='${8*sc}'/></g>`;
+    motif=[...Array(6)].map((_,k)=>{const x=(s*11+k*67)%370+10,y=(k*19+s*2)%64+6;return `<circle cx='${x}' cy='${y}' r='1.2' fill='#EDE6FF' opacity='.9'/>`;}).join('');
+    ground = cl(100+(s%70),108,0.9,'#CFC1EE',.30) + cl(280-(s%50),138,1.2,'#B4A2E0',.42)
+           + cl(70+(s%40),176,1.5,'#907CC6',.55) + cl(300-(s%30),198,1.8,'#6F5BA6',.7)
+           + cl(160+(s%60),224,2.2,'#4F3F80',.9);
+  } else {
+    ground = `<path d="M0,${d1} Q95,${d1-26} 190,${d1} T390,${d1-8} V220 H0 Z" fill="${a.hill[0]}" opacity=".82"/>
+    <path d="M0,${d2} Q130,${d2-24} 240,${d2} T390,${d2-6} V220 H0 Z" fill="${a.hill[1]}" opacity=".93"/>
+    <path d="M0,${d3} Q120,${d3-16} 230,${d3} T390,${d3-4} V220 H0 Z" fill="${a.hill[2]}"/>`;
+  }
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
     <defs><linearGradient id="${uid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a.sky[0]}"/><stop offset=".55" stop-color="${a.sky[1]}"/><stop offset="1" stop-color="${a.sky[2]}"/></linearGradient></defs>
     <rect width="390" height="220" fill="url(#${uid})"/>
     <circle cx="${sx}" cy="${sy}" r="${r*2.5}" fill="${a.sun}" opacity=".13"/>
     <circle cx="${sx}" cy="${sy}" r="${r}" fill="${a.sun}" opacity=".55"/>${motif}
-    <path d="M0,${d1} Q95,${d1-26} 190,${d1} T390,${d1-8} V220 H0 Z" fill="${a.hill[0]}" opacity=".82"/>
-    <path d="M0,${d2} Q130,${d2-24} 240,${d2} T390,${d2-6} V220 H0 Z" fill="${a.hill[1]}" opacity=".93"/>
-    <path d="M0,${d3} Q120,${d3-16} 230,${d3} T390,${d3-4} V220 H0 Z" fill="${a.hill[2]}"/>
+    ${ground}
   </svg>`;
 }
 function nxCard(cls,kick,title,sub,badge,art){
@@ -1794,11 +1806,13 @@ function renderNxRails(){
     host.appendChild(w); if(binder) binder(w);
   };
   if(typeof JACOB_MODULES!=='undefined'){
-    rail('Jacob’s Universe','jacob', JACOB_MODULES.map(m=>nxCard('nx-c1', m.kicker||('Module '+m.n), m.title, '', m.toy?'▶ play':'', sohArt('c1',m.n))).join(''),
+    rail('Jacob’s Universe','jacob', JACOB_MODULES.map(m=>nxCard('nx-c1', m.kicker||('Module '+m.n), m.title, '', m.toy?'▶ play':(jacobSeen(m.n)?'✓':''), sohArt('c1',m.n))).join(''),
       w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView('jacob'); jacobOpenModule(JACOB_MODULES[i].n); buzz(); })));
   }
   if(typeof THEORY_COURSE!=='undefined'){
-    rail('Music Theory','theory', THEORY_COURSE.map(u=>nxCard('nx-c2', u.kicker||('Semester '+u.sem), u.title, u.chapters.length+' chapters','', sohArt('c2',u.sem))).join(''),
+    rail('Music Theory','theory', THEORY_COURSE.map(u=>{ const pr=sohUnitProg(u);
+      const sub=`${pr.done}/${pr.t} chapters`+(pr.done?`<span class="nxc-bar"><i style="width:${pr.pct}%"></i></span>`:'');
+      return nxCard('nx-c2', u.kicker||('Semester '+u.sem), u.title, sub,'', sohArt('c2',u.sem)); }).join(''),
       w=>w.querySelectorAll('.nx-card').forEach(b=>b.addEventListener('click',()=>{ showView('theory'); buzz(); })));
   }
   if(typeof SIMCHA_COURSE!=='undefined'){
@@ -2140,7 +2154,9 @@ function buildTheoryHub(){
     grp.innerHTML=`<div class="thy-unit-h"><span class="thy-sem">${kicker}</span><div class="thy-unit-t">${unit.title}</div><div class="thy-unit-s">${unit.sub}</div>${srcNote}</div>`;
     const list=document.createElement('div'); list.className='thy-chs';
     unit.chapters.forEach((ch,ci)=>{ const b=document.createElement('button'); b.className='thy-ch';
-      b.innerHTML=`<span class="tc-n">${ch.n}</span><span class="tc-t">${ch.title}</span><span class="tc-go">›</span>`;
+      const p=(typeof sohChapterProg==='function')?sohChapterProg(ch.n):null;
+      const mark=p?(p.done?'<span class="tc-p done">✓</span>':`<span class="tc-p">${p.seen}/${p.total}</span>`):'';
+      b.innerHTML=`<span class="tc-n">${ch.n}</span><span class="tc-t">${ch.title}</span>${mark}<span class="tc-go">›</span>`;
       b.addEventListener('click',()=>openTheoryChapter(ui,ci)); list.appendChild(b); });
     grp.appendChild(list); host.appendChild(grp);
   });
@@ -2191,6 +2207,9 @@ function renderTheoryLesson(dir){
     ${inner}</div>`;
   const slide=stage.firstElementChild; if(slide){ slide.classList.add('jrn-in'); if(dir===1)slide.classList.add('from-right'); else if(dir===-1)slide.classList.add('from-left'); }
   if(L.staff) theoryRenderStaff(L.staff,'theoryStaff');
+  try{ const k='t'+ch.n, d=JSON.parse(localStorage.getItem('soh-lessons')||'{}');
+    d[k]={seen:Math.max((d[k]&&d[k].seen)||0, theoryLi+1), total:theoryLessons.length};
+    localStorage.setItem('soh-lessons',JSON.stringify(d)); }catch(e){}
   document.querySelectorAll('#theoryProgress .jdot').forEach((d,i)=>d.classList.toggle('on',i===theoryLi));
   document.getElementById('theoryBack').textContent = theoryLi===0 ? '‹ Chapters' : '‹ Back';
   const more = theoryCh<THEORY_COURSE[theorySem].chapters.length-1 || theorySem<THEORY_COURSE.length-1;
@@ -2410,7 +2429,7 @@ function buildJacob(){
   JACOB_MODULES.forEach(m=>{
     const b=document.createElement('button'); b.className='ju-card'+(m.toy?' toy':'');
     b.innerHTML=`<span class="nxc-art">${sohArt('c1',m.n)}</span><span class="nxc-scrim"></span>
-      <div class="ju-card-top"><span class="ju-n">${m.n}</span><span class="ju-kick">${m.kicker||''}</span>${m.toy?'<span class="ju-toy-tag">▶ play</span>':''}</div>
+      <div class="ju-card-top"><span class="ju-n">${m.n}</span><span class="ju-kick">${m.kicker||''}</span>${m.toy?'<span class="ju-toy-tag">▶ play</span>':(jacobSeen(m.n)?'<span class="ju-done">✓</span>':'')}</div>
       <div class="ju-card-t">${m.title}</div>`;
     b.addEventListener('click',()=>jacobOpenModule(m.n));
     host.appendChild(b);
@@ -2422,18 +2441,45 @@ function buildJacob(){
 function jacobOpenModule(n){
   const m=JACOB_MODULES.find(x=>x.n===n); const stage=document.getElementById('jacobStage'); if(!m||!stage) return;
   if(typeof sohProgressSave==='function') sohProgressSave('jacob',{n:n});
+  try{ const v=new Set(JSON.parse(localStorage.getItem('soh-jacob-seen')||'[]')); v.add(n); localStorage.setItem('soh-jacob-seen',JSON.stringify([...v])); }catch(e){}
   const links=(m.links||[]).map(l=>`<a class="ju-link" href="${l.url}" target="_blank" rel="noopener noreferrer">▶ ${l.label}</a>`).join('');
   stage.innerHTML=`<div class="ju-slide jrn-in">
     <div class="ju-crumb">${m.kicker||'Module '+m.n}</div>
     <h2 class="learn-h">${m.title}</h2>
     <p class="jrn-lead ju-idea">${m.idea}</p>
     <div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div><p>${m.harp}</p></div>
-    ${m.toy==='oneNote'?jacobOneNoteHTML():''}
+    ${m.toy==='oneNote'?jacobOneNoteHTML():''}${m.toy==='mirror'?jacobMirrorHTML():''}
     ${links?`<div class="ju-sec-t">Watch Jacob</div><div class="ju-links">${links}</div>`:''}
   </div>`;
   document.getElementById('jacobHub').hidden=true; document.getElementById('jacobDetail').hidden=false;
   if(m.toy==='oneNote') jacobBindOneNote();
+  if(m.toy==='mirror') jacobBindMirror();
   window.scrollTo(0,0); buzz();
+}
+/* --- Toy: Negative-Harmony Mirror (June Lee Pt 1 spec) --- */
+function jacobMirrorHTML(){
+  const pads=JU_MIRROR.pads.map((p,i)=>`<button class="ju-chord" data-i="${i}">${p.label}</button>`).join('');
+  return `<div class="ju-toy">
+    <div class="ju-held"><span class="ju-held-k">The mirror</span><span class="ju-held-n">C ↔ G</span><span class="ju-held-s">${JU_MIRROR.axis}</span></div>
+    <div class="ju-pads">${pads}</div>
+    <div class="ju-readout" id="juMirrorOut"><span class="ju-feel">Tap a cadence →</span><span class="ju-role">hear the chord, then its reflection.</span></div>
+  </div>`;
+}
+function jacobPlayMirror(i){
+  const p=JU_MIRROR.pads[i]; if(!p || typeof audioCtx!=='function') return;
+  const ac=audioCtx(), t0=ac.currentTime+0.05;
+  p.o.forEach((m,k)=>harpPluck(etMidiFreq(m), t0+k*0.09, 1.5));
+  p.m.forEach((m,k)=>harpPluck(etMidiFreq(m), t0+1.35+k*0.09, 2.4));
+}
+function jacobBindMirror(){
+  const stage=document.getElementById('jacobStage'); if(!stage) return;
+  stage.querySelectorAll('.ju-chord').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.i, p=JU_MIRROR.pads[i];
+    stage.querySelectorAll('.ju-chord').forEach(x=>x.classList.toggle('on',x===b));
+    jacobPlayMirror(i);
+    const r=document.getElementById('juMirrorOut'); if(r) r.innerHTML=`<span class="ju-feel">${p.name}</span><span class="ju-role">${p.feel}</span>`;
+    buzz();
+  }));
 }
 function jacobBack(){ document.getElementById('jacobDetail').hidden=true; document.getElementById('jacobHub').hidden=false; window.scrollTo(0,0); }
 /* --- Toy: One Note, Many Chords --- */

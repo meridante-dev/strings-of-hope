@@ -20,7 +20,21 @@ const JU_ONE_NOTE = {
   ]
 };
 
-/* The 11-module spine. n:0 is the intro. Module 1 carries the toy. links = watch-on-YouTube (timestamped). */
+/* Negative-Harmony Mirror toy (in C · axis C–G, the mirror sits between E♭ and E).
+   Reflection: m(pitch-class) = (7 − pc) mod 12. o = original midi, m = mirrored midi. */
+const JU_MIRROR = {
+  axis:'C major · mirrored around the C–G axis — the plane sits between E♭ and E',
+  pads:[
+    { label:'I → i',        name:'C major → C minor', feel:'home, reflected into shadow',            o:[48,52,55],    m:[48,51,55] },
+    { label:'V7 → iv6',     name:'G7 → Fm6',          feel:'the perfect cadence becomes a minor hug', o:[55,59,62,65], m:[53,56,60,62] },
+    { label:'V → iv',       name:'G → F minor',       feel:'arrival becomes sinking',                 o:[55,59,62],    m:[53,56,60] },
+    { label:'IV → v',       name:'F → G minor',       feel:'the amen turns wistful',                  o:[53,57,60],    m:[55,58,62] },
+    { label:'ii → ♭VII',    name:'Dm → B♭ major',     feel:'sorrow flips to warm light',              o:[50,53,57],    m:[46,50,53] },
+    { label:'vi → ♭III',    name:'Am → E♭ major',     feel:'the minor gains a golden twin',           o:[57,60,64],    m:[51,55,58] },
+  ]
+};
+
+/* The 11-module spine. n:0 is the intro. Modules 1 & 3 carry toys. links = watch-on-YouTube (timestamped). */
 const JACOB_MODULES = [
   { n:0, title:'Feeling First', kicker:'Start here',
     idea:'Jacob’s whole approach turns the usual order around: <b>feel the sound first, name the theory second</b>. What you’re drawn to is your compass, and creativity is mostly <b>recombining</b> what you love — not inventing from nothing. Everything here is harmony as <i>emotion</i>.',
@@ -38,11 +52,11 @@ const JACOB_MODULES = [
     harp:'Brightness is how many levers you’ve raised — the sharp-side keys literally sound brighter. Explore it on the Circle of Fifths tool.',
     links:[ {label:'GRAMMY U · context flips the feeling (57:30)', url:'https://youtu.be/VUmLhOXUcqU?t=3450'} ] },
 
-  { n:3, title:'Major = 5ths, Minor = 4ths', kicker:'Negative harmony',
-    idea:'Jacob’s pet duality: stack <b>fifths</b> and a chord opens and brightens (major); stack <b>fourths</b> and it sinks and deepens (minor). Minor is major <b>reflected</b> — the seed of <b>negative harmony</b>, where you mirror a progression around its centre.',
-    harp:'Walk a run in stacked fifths, then in stacked fourths, and feel the mirror flip from sunlight to shadow.',
-    links:[ {label:'Qwest · major=5ths, minor=4ths (4:05)', url:'https://youtu.be/mLJVvjqMjbo?t=245'},
-            {label:'“Super-ultra-hyper-mega-meta” brightness', url:'https://youtu.be/MLunr5WL0kc'} ] },
+  { n:3, title:'Major = 5ths, Minor = 4ths', kicker:'Negative harmony', toy:'mirror',
+    idea:'Jacob’s pet duality: stack <b>fifths</b> and a chord opens and brightens (major); stack <b>fourths</b> and it sinks and deepens (minor). Minor is major <b>reflected</b> — this is <b>negative harmony</b> (from Ernst Levy’s book, which Jacob made famous): mirror every note around the axis <b>between the tonic and dominant</b>, and every chord gains a twin with equal gravity — “it converts everything perfect to plagal.” The leading tone that rises becomes a ♭6 that sinks.',
+    harp:'Try the mirror below — each chord plays, then its reflection. On your E♭-tuned harp every one of these mirrors is reachable without a single retune.',
+    links:[ {label:'June Lee · negative harmony, the famous passage (1:36)', url:'https://youtu.be/DnBr070vcNE?t=96'},
+            {label:'Qwest · major=5ths, minor=4ths (4:05)', url:'https://youtu.be/mLJVvjqMjbo?t=245'} ] },
 
   { n:4, title:'Give Every Note Somewhere to Go', kicker:'Tendency',
     idea:'There are <b>no wrong notes</b> — only notes that haven’t found their resolution yet. Any “illegal” note works if it <b>leans somewhere</b>. And sometimes the most beautiful move is the opposite: <b>leaving notes out</b> until only the skeleton glows.',

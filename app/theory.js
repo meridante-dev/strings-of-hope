@@ -1,8 +1,10 @@
 /* ============================================================
    Strings of Hope — Music Theory course
-   A four-semester curriculum adapted from
+   A six-unit curriculum adapted from
    "Music Theory for the 21st-Century Classroom" by Robert Hutchinson
-   (University of Puget Sound), used under the GNU Free Documentation License.
+   (University of Puget Sound, GFDL), "Understanding Basic Music Theory" by
+   Catherine Schmidt-Jones (CC BY-SA 4.0), and "Open Music Theory," v.2
+   (ed. Gotham, Gullings, Hamm, Hughes, Jarvis, Lavengood & Peterson; CC BY-SA 4.0).
 
    Every lesson carries a `harp` note mapping the concept to the LEVER HARP.
    Every chapter carries a `quiz` (check-your-understanding Q&A).
@@ -508,6 +510,128 @@ const THEORY_COURSE = [
       { h:'Choosing a harp-friendly key', body:'Before transposing, decide <b>which</b> new key. For a singer, find the one that fits their range. For yourself, choose a key your instrument plays well — and, the book notes, harpists (like pianists) “cannot make small tuning adjustments quickly,” so the key must be one your <b>levers can set</b>. Watch accidentals too: a borrowed sharp or flat may need re-spelling in the new key.',
         harp:'Your safe harbour is the eight-key arc from the Circle of Fifths — <b>E♭ B♭ F C G D A E</b>. If a piece lives outside it, transpose into the nearest key on the arc. You keep the music and gain a setting your levers can actually play.',
         action:{label:'Train your ear →', view:'eartraining'} },
+    ]},
+  ]},
+
+  /* ===================== THEORY IN THE REAL WORLD (Open Music Theory v.2) ===================== */
+  { sem:6, kicker:'Real-world', title:'Theory in the Real World', sub:'Pop, groove, blues & the living tradition',
+    src:'Adapted from “Open Music Theory,” v.2 — ed. Mark Gotham, Kyle Gullings, Chelsey Hamm, Bryn Hughes, Brian Jarvis, Megan Lavengood & John Peterson (CC BY-SA 4.0). Pop chapters draw on Drew Nobile’s work; galant schemas follow Robert Gjerdingen; the Tonnetz chapter follows neo-Riemannian theory.', chapters:[
+    { n:43, title:'The Pop Loops & Schemas', quiz:[
+        {q:'Name the four chords of the “Axis” progression.', a:'I–V–vi–IV — the “four chords” behind hundreds of hits. Its rotations vi–IV–I–V and IV–I–V–vi are just the same loop started in a different place.'},
+        {q:'What makes the doo-wop (’50s) progression I–vi–IV–V feel nostalgic?', a:'The vi and IV cushion the trip from home to the dominant, giving a gentle, rocking descent that a generation of ballads made iconic.'},
+        {q:'Why are these loops a lever-harpist’s dream?', a:'A loop stays in one key, so once the levers are set you never touch them again — you just cycle four left-hand root shapes and improvise above.'},
+      ], lessons:[
+      { h:'Why loops rule pop', body:'Where classical music <b>modulates and develops</b>, most popular music <b>loops</b>: a short chord cycle repeats under changing melody and lyrics. The loop is a <b>schema</b> — a stock pattern listeners already know in their bones. Master a handful and you can play along with an enormous slice of recorded music.',
+        harp:'A loop is the harp’s natural habitat. Because it never leaves the key, you set your levers once and the whole song plays lever-free. Learn the four root positions as <b>hand-spans</b> and the loop becomes muscle memory.' },
+      { h:'The famous four', body:'The <b>Axis</b> loop <b>I–V–vi–IV</b> (and its rotations) underpins hundreds of songs. The <b>doo-wop / ’50s</b> loop <b>I–vi–IV–V</b> rocks nostalgically. The <b>lament / Andalusian</b> descent <b>i–VII–VI–V</b> falls darkly step by step. The <b>plagal “Puff” loop</b> and the <b>“stepwise-down” pop-Romanesca</b> round out the core vocabulary.',
+        harp:'Set C or G and try the Axis loop rolled: <b>C–G–Am–F</b>, each chord a warm broken arpeggio. Then switch to the Andalusian in A minor — <b>Am–G–F–E</b> — and feel how the same instrument turns from sunlight to shadow with no lever change.' },
+      { h:'Rotations & the “sensitive” loop', body:'Because a loop has no beginning, <b>where you start it</b> changes its colour. Start the Axis on vi (<b>vi–IV–I–V</b>) and you get the “sensitive female” loop — the same four chords heard as yearning rather than triumphant. This is why one progression can feel like ten different songs.',
+        harp:'Experiment: play the same four strings-worth of chords but <b>begin the phrase on a different one</b>. Damp the bass to reset the ear each time. You’ll hear the “home” shift under your hands — a free composition lesson built into the loop.',
+        action:{label:'Hear functions over a drone →', view:'meditation'} },
+    ]},
+    { n:44, title:'Fragile, Absent & Emergent Tonics', quiz:[
+        {q:'What is a “fragile” tonic?', a:'A tonic that IS present but weakened — never in root position, never on a downbeat, or passed through so quickly the ear never fully rests on it.'},
+        {q:'How can a song have an “absent” tonic?', a:'The loop circles the key but never actually sounds the I chord — the tonic is implied by the other chords yet never arrives, keeping the music suspended.'},
+        {q:'What is an “emergent” tonic?', a:'A tonic withheld through the verse and only revealed at the chorus or drop — the arrival of home becomes the song’s big payoff.'},
+      ], lessons:[
+      { h:'When home won’t sit still', body:'Classical theory assumes a strong, obvious tonic. Modern pop often <b>destabilises</b> it on purpose (an idea from Drew Nobile’s work in OMT). A <b>fragile tonic</b> is there but weak — always inverted, always off the beat. The song has a home, but you’re never quite allowed to rest in it.',
+        harp:'To voice a fragile tonic, <b>avoid the low root</b>. Play the I chord in first inversion (third in the bass) or let it ring only briefly before moving on. The harp’s sustain makes this delicious — the home chord glows, then slips away.' },
+      { h:'The absent tonic', body:'Some loops <b>never play the tonic at all</b>. A progression like <b>IV–V–vi</b> repeated implies a key of I, yet I is never sounded — the ear leans toward a home that never comes. The effect is floating, restless, endlessly “about to arrive.”',
+        harp:'You can <b>hint</b> at the absent tonic with a <b>pedal string</b>: let the low tonic ring quietly underneath while the chords above avoid it. The harp lets you imply the home key with a drone even as your hands refuse to land there.' },
+      { h:'The emergent tonic', body:'The most dramatic option: <b>withhold the tonic until the chorus</b>. The verse wanders through pre-dominants and dominants; then the chorus finally <b>lands on I</b> and the whole song blooms. The tonic “emerges” as the emotional peak.',
+        harp:'Arrange this with <b>texture</b>: keep the verse thin and high, deliberately dodging the low tonic string. When the chorus hits, <b>roll a full low tonic chord</b> — the sudden weight of home under your hands is the payoff the whole verse set up.',
+        action:{label:'Feel the pull of home →', view:'meditation'} },
+    ]},
+    { n:45, title:'Pop Song Form', quiz:[
+        {q:'What do the letters SRDC stand for?', a:'Statement, Restatement, Departure, Conclusion — a four-part phrase model that shapes countless verses and choruses.'},
+        {q:'What is the job of a pre-chorus?', a:'To build tension and momentum between verse and chorus — often by rising, thinning the texture, or leaning on the dominant so the chorus lands harder.'},
+        {q:'What is a “terminal climax”?', a:'A final section (often a last chorus, lifted or re-textured) that tops everything before it — the song’s highest emotional point saved for the end.'},
+      ], lessons:[
+      { h:'The building blocks', body:'Pop songs are assembled from labelled <b>sections</b>: <b>intro, verse, pre-chorus, chorus, bridge, outro</b>. The <b>verse</b> tells the story (new lyrics each time); the <b>chorus</b> is the fixed emotional centre; the <b>bridge</b> provides contrast before the last chorus. Recognising sections is the first step to arranging any song.',
+        harp:'Give each section its own <b>harp texture</b>: sparse single notes for the verse, fuller rolled chords for the chorus, a change of register for the bridge. The listener feels the form even without the lyrics.' },
+      { h:'SRDC — the shape inside a section', body:'Many verses and choruses follow <b>SRDC</b>: a <b>Statement</b>, a <b>Restatement</b> (often varied), a <b>Departure</b> (new material, rising tension), and a <b>Conclusion</b> (cadence home). It’s the pop cousin of the classical <b>sentence</b> — a satisfying miniature journey.',
+        harp:'Play SRDC as a dynamic arc: state gently, restate a touch fuller, <b>build through the departure</b> (climb the strings, quicken the arpeggio), then settle at the conclusion. Your hands trace the emotional shape of the phrase.' },
+      { h:'Tension architecture', body:'Great pop <b>engineers arrival</b>. The <b>pre-chorus</b> lifts you; the <b>chorus</b> pays off; the <b>bridge</b> resets so the final chorus feels new; a <b>terminal climax</b> — a lifted last chorus, key change, or thickened texture — saves the biggest moment for last.',
+        harp:'For a terminal climax, <b>transpose the last chorus up</b> (Circle of Fifths thinking) or move it an octave higher on the harp and roll every chord. Even a solo harp can deliver that “final-chorus lift” that makes a room hold its breath.',
+        action:{label:'Plan a key-lift on the circle →', view:'circle'} },
+    ]},
+    { n:46, title:'The Galant Schemas', quiz:[
+        {q:'What is the “Rule of the Octave”?', a:'A stock harmonisation of the ascending and descending scale in the bass — each scale degree gets its conventional chord, giving a ready-made way to harmonise any bass line.'},
+        {q:'What does a Prinner schema do?', a:'It answers an opening phrase with a stepwise descent (scale degrees 6–5–4–3 in the melody over a falling bass) — the classic “response” gesture of galant music.'},
+        {q:'Why are schemas useful to a harpist?', a:'They’re pre-built two-hand patterns: learn the shape once and you can harmonise, improvise, or ornament in period style without working out every chord from scratch.'},
+      ], lessons:[
+      { h:'Music’s stock phrases', body:'Eighteenth-century composers built music from shared <b>schemas</b> — conventional voice-leading patterns (catalogued by Robert Gjerdingen). They’re the “stock phrases” of galant style: an opening gambit, a response, a cadence. Knowing them lets you hear Mozart’s grammar and improvise in it.',
+        harp:'Schemas are gifts to the harpist because each is a <b>fixed shape</b> for two hands. Learn the pattern in one key and, with your levers set, the same finger-shape works — you’re improvising in Classical style by muscle memory.' },
+      { h:'The core cast', body:'The <b>Romanesca</b> opens with a descending-bass pattern (think Pachelbel). The <b>Prinner</b> answers it with a 6–5–4–3 descent. The <b>Fonte</b> sinks by step (a “falling” sequence), the <b>Monte</b> climbs, and the <b>Ponte</b> holds on the dominant as a “bridge.” Chained together they build whole phrases.',
+        harp:'Try a <b>Romanesca</b> in C: a stepwise-descending bass — <b>C–B–A–G–F–E–D–G</b> — with triads above. It’s the same descent behind “Canon in D” and a hundred pop ballads; on the harp it’s a gorgeous, lever-free walking bass.' },
+      { h:'The Rule of the Octave', body:'The <b>Rule of the Octave</b> gives every bass scale-degree its default chord, so you can harmonise <b>any</b> rising or falling bass line instantly. It’s the practical engine behind figured-bass playing — a look-up table for “what chord goes here.”',
+        harp:'Internalise the Rule and you can <b>harmonise a bass line on sight</b>: walk the low strings up or down and let your right hand place the conventional chord over each. It turns the harp into a continuo instrument.',
+        action:{label:'Review figured bass →', view:'learn'} },
+    ]},
+    { n:47, title:'The Tonnetz & Smooth Chord Moves', quiz:[
+        {q:'What are the three neo-Riemannian moves P, L, and R?', a:'P (Parallel): major↔minor on the same root. L (Leading-tone exchange): move one voice a semitone to swap e.g. C major↔E minor. R (Relative): major↔its relative minor (C↔Am).'},
+        {q:'What do P, L, and R all have in common?', a:'Each changes only ONE note (by a semitone or a whole tone) and keeps the other two — maximally smooth voice leading between triads.'},
+        {q:'Why does minimal voice-leading matter on a lever harp?', a:'The fewer notes that change, the fewer strings and levers you disturb — smooth voice leading literally means an easier, quieter hand.'},
+      ], lessons:[
+      { h:'A map made of thirds', body:'The <b>Tonnetz</b> (“tone-network”) is a lattice where notes are connected by thirds and fifths, and every triangle is a triad. It reveals relationships the circle of fifths hides — especially how <b>chromatic</b> chords far apart in key can sit right next to each other.',
+        harp:'Think of the Tonnetz as a <b>map of nearby chords</b>. When you want a surprising but smooth change, look for the triad that shares two strings with your current one — it’s the neighbouring triangle on the map.' },
+      { h:'P, L, and R', body:'<b>Neo-Riemannian</b> theory names three tiny moves. <b>P</b> (parallel) flips major↔minor on the same root (C↔Cm). <b>L</b> (leading-tone exchange) slides one voice a semitone (C↔Em). <b>R</b> (relative) swaps a chord for its relative (C↔Am). Each changes <b>only one note</b> — the smoothest possible chord change.',
+        harp:'These are the harpist’s secret to <b>lush changes with lazy hands</b>. To go C→Am (an R move), you keep C and E ringing and just move G→A — one string. Chain P, L, R and you glide through far-flung chords barely moving your fingers.' },
+      { h:'Chromatic magic', body:'Composers from Wagner to film scorers use PLR chains to <b>drift through distant keys</b> without a jolt, because each step is nearly motionless. The music feels like it’s <b>floating</b> between tonal centres — the sound of wonder and mystery.',
+        harp:'For a cinematic drift, pick a triad and apply <b>L then R then L…</b>, moving one string at a time. On the harp this becomes a slow, glowing progression where each chord melts into the next — ideal for meditative or “space” textures.',
+        action:{label:'Explore the Circle of Fifths →', view:'circle'} },
+    ]},
+    { n:48, title:'Groove, the Backbeat & the Drum Kit', quiz:[
+        {q:'Where does the “backbeat” fall in 4/4?', a:'On beats 2 and 4 — usually the snare drum. The kick anchors 1 (and often 3); the backbeat on 2 and 4 gives rock and pop their drive.'},
+        {q:'On a drum-set staff, roughly where do kick, snare, and hi-hat sit?', a:'Kick (bass drum) in the lowest space, snare in the middle, and hi-hat/cymbals as x-noteheads up top — a three-layer picture of the groove.'},
+        {q:'How can a solo harp imply a drum groove?', a:'Put the bass note on 1 and 3, a chord “stab” on 2 and 4, and use palm-damping for a percussive, snare-like attack — the harp becomes its own rhythm section.'},
+      ], lessons:[
+      { h:'Feel is theory too', body:'Harmony gets the glory, but <b>groove</b> carries popular music. A groove is a repeating pattern of <b>kick, snare, and hi-hat</b> that defines the feel. Reading and feeling it is as much “theory” as any chord — and it’s where a lot of harpists are weakest.',
+        harp:'The harp is secretly percussive. Every pluck has an <b>attack</b> you can sharpen or soften, and your palm can <b>damp</b> instantly. Treat the low strings as your kick and a mid chord as your snare, and you’ll groove without a drummer.' },
+      { h:'Reading the kit', body:'Drum-set notation stacks the kit on one staff: <b>bass drum</b> low, <b>snare</b> middle, <b>hi-hat/cymbals</b> as ✗ noteheads on top. The classic “money beat” is <b>kick on 1 & 3, snare on 2 & 4, hats on every eighth</b>. Once you see that picture you can read most pop grooves.',
+        harp:'Map the kit onto the harp: a <b>low string on 1 and 3</b> (kick), a <b>bright chord-stab on 2 and 4</b> (snare), and a light, steady <b>eighth-note arpeggio</b> up top (hi-hat). Three simple layers and the groove appears.' },
+      { h:'The backbeat & the pocket', body:'The <b>backbeat</b> — emphasis on 2 and 4 — is the engine of rock, pop, gospel and soul. Sitting exactly in time (or a hair behind) is playing “in the <b>pocket</b>.” The pocket is felt, not calculated: it’s the difference between correct and <b>alive</b>.',
+        harp:'Practise the pocket with the app’s rhythm tool: lock a bass-and-backbeat pattern, then let it <b>breathe</b> a touch behind the click. A harp that grooves is rare and unforgettable — this is how you get there.',
+        action:{label:'Train your timing →', view:'eartraining'} },
+    ]},
+    { n:49, title:'The Blues', quiz:[
+        {q:'Give the chords of a standard 12-bar blues in I.', a:'I–I–I–I · IV–IV–I–I · V–IV–I–V — twelve bars of I, IV and V, the backbone of blues, rock and roll, and jazz.'},
+        {q:'What are the “blue notes”?', a:'Lowered/bent versions of the 3rd, 5th, and 7th scale degrees — pitches that live between the piano’s keys and give the blues its ache.'},
+        {q:'How does a lever harpist reach blue notes?', a:'By flipping a lever mid-piece to lower a note (e.g. ♮→♭ for a flat 7th), or by voicing the blues/minor-pentatonic scale that the current lever setting already provides.'},
+      ], lessons:[
+      { h:'Twelve bars that built modern music', body:'The <b>12-bar blues</b> is a fixed 12-measure loop of <b>I, IV, and V</b> that underlies blues, R&B, rock and roll, and much of jazz. Over it, a singer or soloist uses <b>call and response</b> — a phrase, then an answer. It is arguably the most influential form of the last century.',
+        harp:'Set the harp to a blues-friendly key and the whole 12-bar loop plays with three left-hand roots. Roll each chord or “walk” the bass; the harp gives the blues a shimmering, unexpected voice.' },
+      { h:'Blue notes & the blues scale', body:'The soul of the blues is its <b>blue notes</b> — the flattened 3rd, 5th, and 7th, often <b>bent</b> between pitches. The <b>blues scale</b> (minor pentatonic plus the flat-5 “blue note”) is your improvising palette: 1–♭3–4–♭5–5–♭7.',
+        harp:'A diatonic harp can’t bend, but the <b>levers</b> can give you the flats. Set a minor-pentatonic-friendly tuning and the blue notes are already under your fingers; flip a single lever mid-tune to darken a 7th on cue.' },
+      { h:'Call, response & repetition', body:'Blues lyrics famously follow <b>AAB</b>: a line, the same line repeated, then a rhyming punchline — mirrored by the music’s call-and-response. This <b>repetition-with-variation</b> is the emotional engine, wringing meaning from a tiny amount of material.',
+        harp:'Play call-and-response with <b>yourself</b>: a melodic “call” high on the strings, a chordal “response” low. The harp’s two registers let one player be both voices — a whole blues conversation from a single instrument.',
+        action:{label:'Hear it over a drone →', view:'meditation'} },
+    ]},
+    { n:50, title:'Orchestration & Arranging for Harp', quiz:[
+        {q:'What is “orchestration”?', a:'The art of choosing which instruments play what — assigning register, doubling, and texture so each line sits in its ideal colour and range.'},
+        {q:'Name three idioms only the harp does well.', a:'Any of: sweeping glissandos, ringing harmonics, rolled (arpeggiated) chords, près-de-la-table metallic tones, and long natural sustain/pedal points.'},
+        {q:'When arranging a lead sheet for solo harp, how do you split the hands?', a:'Bass and harmony in the left hand (root plus chord tones), melody in the right — leaving strings ringing to fill the texture between.'},
+      ], lessons:[
+      { h:'The right colour for each line', body:'<b>Orchestration</b> is deciding <b>who plays what</b>. Every instrument has a <b>range</b> and changing <b>timbre</b> across it (dark and rich low, bright and thin high). Good arranging places each line in its sweet spot and uses <b>doubling</b> and <b>register</b> to build a texture that breathes.',
+        harp:'Know your harp’s zones: the <b>low strings</b> are warm and slow to speak, the <b>middle</b> sings, the <b>top</b> sparkles and decays fast. Put the melody where it glows and the bass where it grounds — that’s orchestration on one instrument.' },
+      { h:'What only the harp can do', body:'Arrange <b>to the instrument’s strengths</b>. The harp owns effects no piano or guitar can match: the <b>glissando</b> sweep, ringing <b>harmonics</b>, the <b>rolled chord</b>, the metallic <b>près de la table</b>, and endless <b>sustain</b>. A great harp arrangement isn’t a piano part — it’s written for these idioms.',
+        harp:'When you arrange a song, ask “where does a <b>gliss</b> belong? where a <b>harmonic</b>? where should I let a chord <b>ring untouched</b>?” Build the arrangement around those signature gestures and it will sound native to the harp.' },
+      { h:'From lead sheet to harp arrangement', body:'A <b>lead sheet</b> gives melody + chord symbols. To arrange it: put the <b>bass and harmony in the left hand</b>, the <b>melody in the right</b>, and let the harp’s sustain fill the middle. Choose a <b>texture</b> (block chords, arpeggios, alternating bass) that fits the song’s feel.',
+        harp:'Start simple: <b>left-hand root on the beat, right-hand melody</b>, and one broken-chord pattern for the whole verse. Add rolls and a gliss at the chorus. This four-step recipe turns any lead sheet into a playable, beautiful harp piece.',
+        action:{label:'Find a song’s chords first →', view:'circle'} },
+    ]},
+    { n:51, title:'Sight-Singing & Solfège', quiz:[
+        {q:'In moveable-do solfège, what syllable is always the tonic?', a:'Do — moveable-do assigns Do to the key’s tonic, so the same syllables map onto scale degrees in any key (Do-Re-Mi-Fa-Sol-La-Ti-Do).'},
+        {q:'What is “audiation”?', a:'Hearing music in your mind before (or without) playing it — the inner ear. It’s the skill sight-singing trains, and the foundation of playing by ear.'},
+        {q:'How does the harp help sight-singing?', a:'Its strings are a visible solfège ladder — you can see the scale degrees, sing a line, then check yourself instantly by plucking the string.'},
+      ], lessons:[
+      { h:'The inner ear', body:'<b>Sight-singing</b> means singing music you’ve never heard, from the page. It trains <b>audiation</b> — hearing music in your mind — which is the real engine behind <b>playing by ear</b>, improvising, and memorising. Even if you never “sing well,” the skill transforms your musicianship.',
+        harp:'The harp is the perfect sight-singing partner: <b>sing a note, then pluck the string to check</b>. Because the strings are laid out like a ladder, you can <b>see</b> the interval you’re about to sing — the instrument makes the abstract visible.' },
+      { h:'Solfège & scale degrees', body:'<b>Moveable-do solfège</b> gives each scale degree a syllable — <b>Do-Re-Mi-Fa-Sol-La-Ti</b> — with <b>Do always the tonic</b>. Learn how each degree <b>feels</b> (Ti aches up to Do; Fa leans to Mi; Sol is stable) and you can name and sing any melody by ear, in any key.',
+        harp:'Set your levers, then label the strings <b>Do-Re-Mi…</b> from the tonic. Play and sing the syllables together. Soon you’ll <b>hear a melody and know its solfège</b> — which means you can find it on the strings without sheet music.' },
+      { h:'A daily practice', body:'Build the ear with a simple routine: sing <b>scales</b> in solfège, then <b>arpeggios</b> (Do-Mi-Sol), then short <b>stepwise melodies</b>, always checking against the instrument. A few minutes a day compounds into the ability to <b>play what you hear</b> — the goal behind every other chapter in this course.',
+        harp:'Use the app’s ear-training tool as your check: sing an interval, name it in solfège, then confirm. Pair it with the harp and you close the loop — <b>ear, voice, and hand all speaking the same language</b>.',
+        action:{label:'Open ear training →', view:'eartraining'} },
     ]},
   ]},
 ];

@@ -2145,23 +2145,129 @@ function theoryKeyboardSVG(){
   let blacks=''; [0,1,3,4,5].forEach(i=>{ const x=(i+1)*ww-ww*0.3; blacks+=`<rect x="${x}" y="0" width="${ww*0.6}" height="${wh*0.62}" rx="2" fill="var(--ink)"/>`; });
   return `<svg class="thy-kbd" viewBox="0 0 ${7*ww} ${wh}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="keyboard">${whites}${blacks}${labels}</svg>`;
 }
+/* ===== Theory gamification: XP · ranks · certificates ===== */
+const THEORY_RANKS=[
+  {min:0,    name:'Apprentice of Strings'},
+  {min:150,  name:'Novice Harper'},
+  {min:400,  name:'Student of Theory'},
+  {min:800,  name:'Journeyman Harper'},
+  {min:1300, name:'Adept of Harmony'},
+  {min:2000, name:'Harmonist'},
+  {min:2900, name:'Master Harper'},
+  {min:4000, name:'Loremaster of the Strings'},
+];
+function sohName(){ try{ return (localStorage.getItem('soh-name')||sohProfile().name||'').trim(); }catch(e){ return ''; } }
+function sohSetName(){ try{ const v=prompt('Your name, as it should appear on your certificates:', sohName()); if(v!=null) localStorage.setItem('soh-name', v.trim()); return true; }catch(e){ return false; } }
+function sohTheoryStats(){
+  let xp=0, chDone=0, chTotal=0, unitsDone=0, unitsTotal=0;
+  try{ const d=JSON.parse(localStorage.getItem('soh-lessons')||'{}');
+    (THEORY_COURSE||[]).forEach(u=>{ unitsTotal++; if(sohUnitProg(u).pct>=100) unitsDone++;
+      u.chapters.forEach(c=>{ chTotal++; const e=d['t'+c.n];
+        if(e){ xp+=Math.min(e.seen,e.total)*10; if(e.seen>=e.total){ chDone++; xp+=50; } } }); });
+  }catch(e){}
+  xp += unitsDone*150 + ((unitsTotal>0 && unitsDone===unitsTotal)?400:0);
+  let rank=THEORY_RANKS[0]; THEORY_RANKS.forEach(r=>{ if(xp>=r.min) rank=r; });
+  const ri=THEORY_RANKS.indexOf(rank), next=THEORY_RANKS[ri+1]||null;
+  return { xp, rank:rank.name, rankN:ri+1, rankMin:rank.min, next,
+    chDone, chTotal, pct: chTotal?Math.round(chDone/chTotal*100):0, unitsDone, unitsTotal };
+}
+function sohCertsEarned(){
+  const out=[]; (THEORY_COURSE||[]).forEach(u=>{ if(sohUnitProg(u).pct>=100) out.push({id:'u'+u.sem, unit:u}); });
+  const st=sohTheoryStats(); if(st.unitsTotal>0 && st.unitsDone===st.unitsTotal) out.push({id:'diploma'});
+  return out;
+}
+function sohCertHTML(cert){
+  const name=sohName()||'A Devoted Harper';
+  let date=''; try{ date=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'}); }catch(e){}
+  let title, sub, body, src='';
+  if(cert.id==='diploma'){
+    title='Diploma'; sub='Master of Music Theory';
+    body='has completed every unit of the Strings of Hope Music Theory course — from the first notes to the avant-garde, the science of sound, and theory in the real world — each concept mapped to the lever harp.';
+  } else {
+    const u=cert.unit; title='Certificate of Completion'; sub=u.title;
+    body=`has completed <b>${u.title}</b> — ${u.sub} — comprising ${u.chapters.length} chapters, every one mapped to the lever harp.`;
+    src=u.src||'';
+  }
+  return `<div class="cert-sheet${cert.id==='diploma'?' diploma':''}">
+    <img class="cert-seal" src="img/lyre.png" alt="">
+    <div class="cert-acad">Strings of Hope · Academy of the Lever Harp</div>
+    <div class="cert-title">${title}</div>
+    <div class="cert-rule"></div>
+    <div class="cert-sub">${sub}</div>
+    <div class="cert-pre">This certifies that</div>
+    <button class="cert-name" id="certName" title="Tap to set your name">${name}</button>
+    <div class="cert-body">${body}</div>
+    <div class="cert-foot"><span class="cert-date">${date}</span></div>
+    ${src?`<div class="cert-src">${src}</div>`:''}
+    <div class="cert-sig">Believe in your dreams. · <b>Strings of Hope</b></div>
+  </div>`;
+}
+function sohOpenCert(cert){
+  const ov=document.getElementById('certModal'); if(!ov||!cert) return;
+  ov.querySelector('#certBody').innerHTML=sohCertHTML(cert);
+  ov.hidden=false; document.body.classList.add('cert-open');
+  ov.querySelector('#certName')?.addEventListener('click',()=>{ if(sohSetName()) sohOpenCert(cert); });
+  buzz();
+}
+function sohOpenCertById(id){ sohOpenCert(sohCertsEarned().find(c=>c.id===id)); }
+function sohCloseCert(){ const ov=document.getElementById('certModal'); if(ov){ ov.hidden=true; document.body.classList.remove('cert-open'); const s=ov.querySelector('.cert-scroll'); s&&s.classList.remove('cert-new'); } }
+let _certBound=false;
+function sohBindCert(){ if(_certBound) return; _certBound=true;
+  document.getElementById('certPrint')?.addEventListener('click',()=>{ try{ window.print(); }catch(e){} });
+  document.getElementById('certClose')?.addEventListener('click',sohCloseCert);
+  document.getElementById('certModal')?.addEventListener('click',e=>{ if(e.target.id==='certModal') sohCloseCert(); });
+}
+function sohCertCelebrate(){
+  try{ const earned=sohCertsEarned(), seen=new Set(JSON.parse(localStorage.getItem('soh-certs-seen')||'[]'));
+    const fresh=earned.filter(c=>!seen.has(c.id));
+    earned.forEach(c=>seen.add(c.id)); localStorage.setItem('soh-certs-seen',JSON.stringify([...seen]));
+    if(fresh.length){ const c=fresh.find(x=>x.id==='diploma')||fresh[0]; sohOpenCert(c);
+      const s=document.querySelector('#certModal .cert-scroll'); if(s){ s.classList.add('cert-new'); setTimeout(()=>s.classList.remove('cert-new'),2600); } return true; }
+  }catch(e){}
+  return false;
+}
+function theoryMasterHTML(){
+  const st=sohTheoryStats(), earnedIds=new Set(sohCertsEarned().map(c=>c.id));
+  const seals=(THEORY_COURSE||[]).map(u=>{ const id='u'+u.sem, on=earnedIds.has(id);
+    return `<button class="thy-seal${on?' on':''}" data-cert="${id}"${on?'':' disabled'}>
+      <span class="thy-seal-i">${on?'✦':'🔒'}</span><span class="thy-seal-t">${u.kicker||('Unit '+u.sem)}</span></button>`; }).join('');
+  const dOn=earnedIds.has('diploma');
+  const diploma=`<button class="thy-seal diploma${dOn?' on':''}" data-cert="diploma"${dOn?'':' disabled'}>
+      <span class="thy-seal-i">${dOn?'👑':'🔒'}</span><span class="thy-seal-t">Diploma</span></button>`;
+  const nextTxt=st.next?`${st.next.min-st.xp} XP to ${st.next.name}`:'Highest rank reached';
+  return `<div class="thy-master">
+    <div class="thy-mh"><div><div class="thy-mrank">${st.rank}</div><div class="thy-msub">Level ${st.rankN} · Theory mastery</div></div>
+      <div class="thy-mxp"><span class="thy-mxp-n">${st.xp.toLocaleString()}</span><span class="thy-mxp-l">XP</span></div></div>
+    <div class="thy-mbar"><i style="width:${st.pct}%"></i></div>
+    <div class="thy-mstat"><span>${st.chDone} / ${st.chTotal} chapters · ${st.pct}%</span><span>${nextTxt}</span></div>
+    <div class="thy-seal-lbl">Certificates</div>
+    <div class="thy-seals">${seals}${diploma}</div>
+  </div>`;
+}
 function buildTheoryHub(){
   const host=document.getElementById('theoryUnits'); if(!host || typeof THEORY_COURSE==='undefined') return; host.innerHTML='';
+  const master=document.createElement('div'); master.innerHTML=theoryMasterHTML(); const mp=master.firstElementChild;
+  if(mp){ host.appendChild(mp); mp.querySelectorAll('.thy-seal.on').forEach(b=>b.addEventListener('click',()=>sohOpenCertById(b.dataset.cert))); }
   THEORY_COURSE.forEach((unit,ui)=>{
     const grp=document.createElement('div'); grp.className='thy-unit';
     const kicker = unit.kicker || ('Semester '+unit.sem);
     const srcNote = unit.src ? `<div class="thy-unit-src">${unit.src}</div>` : '';
-    grp.innerHTML=`<div class="thy-unit-h"><span class="thy-sem">${kicker}</span><div class="thy-unit-t">${unit.title}</div><div class="thy-unit-s">${unit.sub}</div>${srcNote}</div>`;
+    const up=(typeof sohUnitProg==='function')?sohUnitProg(unit):{done:0,t:unit.chapters.length,pct:0};
+    const bar=`<div class="thy-unit-prog"><div class="thy-unit-bar"><i style="width:${up.pct}%"></i></div><span class="thy-unit-pct">${up.done}/${up.t}</span></div>`;
+    grp.innerHTML=`<div class="thy-unit-h"><span class="thy-sem">${kicker}</span><div class="thy-unit-t">${unit.title}</div><div class="thy-unit-s">${unit.sub}</div>${bar}${srcNote}</div>`;
     const list=document.createElement('div'); list.className='thy-chs';
-    unit.chapters.forEach((ch,ci)=>{ const b=document.createElement('button'); b.className='thy-ch';
-      const p=(typeof sohChapterProg==='function')?sohChapterProg(ch.n):null;
-      const mark=p?(p.done?'<span class="tc-p done">✓</span>':`<span class="tc-p">${p.seen}/${p.total}</span>`):'';
-      b.innerHTML=`<span class="tc-n">${ch.n}</span><span class="tc-t">${ch.title}</span>${mark}<span class="tc-go">›</span>`;
+    unit.chapters.forEach((ch,ci)=>{ const b=document.createElement('button');
+      const p=(typeof sohChapterProg==='function')?sohChapterProg(ch.n):null; const done=!!(p&&p.done);
+      b.className='thy-ch'+(done?' done':'');
+      const chk=`<span class="tc-check${done?' on':''}">${done?'✓':ch.n}</span>`;
+      const mark=(p&&!done)?`<span class="tc-p">${p.seen}/${p.total}</span>`:'';
+      b.innerHTML=`${chk}<span class="tc-t">${ch.title}</span>${mark}<span class="tc-go">›</span>`;
       b.addEventListener('click',()=>openTheoryChapter(ui,ci)); list.appendChild(b); });
     grp.appendChild(list); host.appendChild(grp);
   });
   const cr=document.getElementById('theoryCredit'); if(cr) cr.textContent=(typeof THEORY_SOURCE!=='undefined')?THEORY_SOURCE:'';
-  triggerReveals(document.getElementById('view-theory'));
+  sohBindCert(); triggerReveals(document.getElementById('view-theory'));
+  try{ sohCertCelebrate(); }catch(e){}
 }
 function openTheoryChapter(ui,ci){
   if(typeof sohProgressSave==='function') sohProgressSave('theory',{sem:ui,ch:ci});

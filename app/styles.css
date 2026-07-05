@@ -1190,6 +1190,96 @@ footer .cc{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.32em;text-tr
 .thy-unit-src{ margin-top:5px;font-size:11.5px;font-style:italic;line-height:1.45;color:var(--ink-faint) }
 .thy-slide .thy-crumb{ font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px }
 .thy-body{ text-align:left;max-width:32rem }
+
+/* ===== Premium theory gamification ===== */
+.thy-master{ max-width:34rem; margin:0 auto 26px; padding:18px 18px 16px; border-radius:22px;
+  background:linear-gradient(158deg,rgba(60,44,20,.42),rgba(30,22,12,.30));
+  border:1px solid var(--line-2); box-shadow:inset 0 1px 0 rgba(255,236,190,.10), 0 10px 30px rgba(0,0,0,.22) }
+.thy-mh{ display:flex;align-items:flex-start;justify-content:space-between;gap:12px }
+.thy-mrank{ font-family:"Playfair Display",serif;font-size:22px;font-weight:600;line-height:1.05;color:var(--ink) }
+.thy-msub{ font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);margin-top:3px }
+.thy-mxp{ flex:0 0 auto;text-align:right;line-height:1 }
+.thy-mxp-n{ font-family:"Playfair Display",serif;font-size:26px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums }
+.thy-mxp-l{ display:block;font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--ink-faint);margin-top:2px }
+.thy-mbar{ position:relative;height:8px;border-radius:5px;overflow:hidden;margin:14px 0 8px;
+  background:color-mix(in srgb,var(--ink) 12%,transparent) }
+.thy-mbar i{ display:block;height:100%;border-radius:5px;transition:width .7s cubic-bezier(.2,.8,.2,1);
+  background:linear-gradient(90deg,var(--gold-grad-a),var(--gold-grad-b));box-shadow:0 0 10px rgba(226,182,92,.5) }
+.thy-mstat{ display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums }
+.thy-seal-lbl{ font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin:16px 0 8px }
+.thy-seals{ display:flex;gap:8px;overflow-x:auto;padding-bottom:3px;-webkit-overflow-scrolling:touch }
+.thy-seals::-webkit-scrollbar{ display:none }
+.thy-seal{ flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:default;
+  width:66px;padding:11px 4px;border-radius:14px;background:var(--surface);border:1px solid var(--line);
+  color:var(--ink-faint);transition:transform .12s,border-color .12s }
+.thy-seal.on{ cursor:pointer;color:var(--ink);border-color:var(--gold-deep);
+  background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 22%,transparent),color-mix(in srgb,var(--gold) 6%,transparent)) }
+.thy-seal.on:active{ transform:scale(.95) }
+.thy-seal.diploma.on{ border-color:var(--gold);box-shadow:0 0 0 1px var(--gold-deep) inset, 0 4px 14px rgba(226,182,92,.28) }
+.thy-seal-i{ font-size:19px;line-height:1 }
+.thy-seal.on .thy-seal-i{ filter:drop-shadow(0 1px 4px rgba(226,182,92,.5)) }
+.thy-seal-t{ font-size:9.5px;font-weight:700;letter-spacing:.02em;text-align:center;line-height:1.15 }
+
+/* Per-unit progress bar */
+.thy-unit-prog{ display:flex;align-items:center;gap:9px;margin-top:9px }
+.thy-unit-bar{ flex:1;height:5px;border-radius:3px;overflow:hidden;background:color-mix(in srgb,var(--ink) 10%,transparent) }
+.thy-unit-bar i{ display:block;height:100%;border-radius:3px;transition:width .7s cubic-bezier(.2,.8,.2,1);
+  background:linear-gradient(90deg,var(--gold-grad-a),var(--gold-grad-b)) }
+.thy-unit-pct{ flex:0 0 auto;font-size:11px;font-weight:700;color:var(--ink-faint);font-variant-numeric:tabular-nums }
+
+/* Premium chapter checkbox */
+.tc-check{ flex:0 0 auto;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;
+  font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--gold-deep);
+  background:color-mix(in srgb,var(--gold) 13%,transparent);border:1px solid transparent;
+  transition:background .2s,color .2s,border-color .2s }
+.thy-ch.done .tc-check.on{ color:#2c2206;border-color:var(--gold-deep);
+  background:linear-gradient(160deg,var(--gold-grad-a),var(--gold-grad-b));
+  box-shadow:0 2px 8px rgba(226,182,92,.35);animation:tcpop .4s cubic-bezier(.2,1.4,.4,1) }
+.thy-ch.done .tc-t{ color:var(--ink-soft) }
+@keyframes tcpop{ 0%{transform:scale(.5);opacity:.4} 60%{transform:scale(1.18)} 100%{transform:scale(1);opacity:1} }
+
+/* ===== Certificate modal ===== */
+.cert-overlay{ position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;
+  padding:20px 16px;overflow-y:auto;background:rgba(12,8,4,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px) }
+.cert-overlay[hidden]{ display:none }
+body.cert-open{ overflow:hidden }
+.cert-scroll{ width:100%;max-width:30rem;margin:auto }
+.cert-scroll.cert-new .cert-sheet{ animation:certrise .8s cubic-bezier(.2,.9,.2,1) }
+@keyframes certrise{ 0%{transform:scale(.86) translateY(18px);opacity:0} 100%{transform:none;opacity:1} }
+.cert-sheet{ position:relative;text-align:center;padding:34px 26px 26px;border-radius:14px;overflow:hidden;
+  background:radial-gradient(120% 80% at 50% 0%, #2a2113 0%, #1c150b 60%, #140f07 100%);
+  border:1px solid var(--gold-deep);
+  box-shadow:0 0 0 4px rgba(20,15,7,.9), 0 0 0 5px rgba(198,158,90,.55), inset 0 1px 0 rgba(255,236,190,.14), 0 24px 60px rgba(0,0,0,.5) }
+.cert-sheet::before{ content:"";position:absolute;inset:9px;border:1px solid rgba(198,158,90,.4);border-radius:8px;pointer-events:none }
+.cert-sheet.diploma{ background:radial-gradient(120% 80% at 50% 0%, #34280f 0%, #1e1608 60%, #140d05 100%) }
+.cert-seal{ width:46px;height:46px;object-fit:contain;opacity:.95;margin:0 auto 10px;display:block;
+  filter:drop-shadow(0 2px 8px rgba(226,182,92,.4)) }
+.cert-acad{ font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold) }
+.cert-title{ font-family:"Playfair Display",serif;font-size:26px;font-weight:700;color:#f4e9d0;margin-top:8px;line-height:1.1 }
+.cert-rule{ width:54px;height:2px;margin:12px auto;border-radius:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent) }
+.cert-sub{ font-family:"Playfair Display",serif;font-style:italic;font-size:16px;color:var(--gold);margin-bottom:16px }
+.cert-pre{ font-size:12px;color:#c9b78f;letter-spacing:.04em }
+.cert-name{ display:block;width:100%;font-family:"Playfair Display",serif;font-size:24px;font-weight:600;
+  color:#f6ecd4;background:none;border:none;border-bottom:1px dashed rgba(198,158,90,.5);
+  padding:4px 0 8px;margin:6px 0 14px;cursor:pointer }
+.cert-body{ font-size:13.5px;line-height:1.6;color:#ddceac;max-width:24rem;margin:0 auto }
+.cert-body b{ color:#f4e9d0 }
+.cert-foot{ margin-top:16px }
+.cert-date{ font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--gold) }
+.cert-src{ font-size:9.5px;font-style:italic;line-height:1.4;color:#9c8b68;margin-top:12px }
+.cert-sig{ font-size:11px;font-style:italic;color:#b7a37c;margin-top:16px }
+.cert-sig b{ font-style:normal;letter-spacing:.06em }
+.cert-actions{ display:flex;gap:10px;margin-top:16px }
+.cert-actions .jrn-btn{ flex:1 }
+
+@media print{
+  body.cert-open>*:not(#certModal){ display:none !important; }
+  .cert-overlay{ position:static;background:#fff;backdrop-filter:none;padding:0;display:block }
+  .cert-actions{ display:none !important }
+  .cert-sheet{ box-shadow:none;border:2px solid #b8925a }
+  .cert-title,.cert-name,.cert-body b{ color:#241a0a !important }
+  .cert-body,.cert-pre{ color:#3a2c14 !important }
+}
 .thy-body b{ color:var(--ink);font-weight:700 }
 .thy-visual{ margin:6px 0 14px;display:flex;justify-content:center }
 .thy-kbd{ width:min(280px,80%);height:auto;filter:drop-shadow(0 6px 14px var(--shadow)) }
@@ -1677,6 +1767,8 @@ body{
 [data-theme="light"] .ju-toy,
 [data-theme="light"] .bg-panel,
 [data-theme="light"] .thy-ch,
+[data-theme="light"] .thy-master,
+[data-theme="light"] .thy-seal,
 [data-theme="light"] .et-opt,
 [data-theme="light"] .ju-link,
 [data-theme="light"] .cof-link,
@@ -1687,6 +1779,10 @@ body{
   -webkit-backdrop-filter:blur(28px) saturate(1.9); backdrop-filter:blur(28px) saturate(1.9);
   border:1px solid rgba(255,255,255,.9);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 1px 1px rgba(110,80,35,.06), 0 24px 48px -24px rgba(110,80,35,.38);
+}
+[data-theme="light"] .thy-seal.on{
+  background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 30%,white),color-mix(in srgb,var(--gold) 10%,white));
+  border-color:var(--gold-deep);
 }
 /* floating glass pill nav — lensing the desert beneath */
 [data-theme="light"] .nav{

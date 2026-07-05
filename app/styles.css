@@ -1548,31 +1548,9 @@ body{
 .feat-strip span{ font-family:"Cinzel",serif }
 
 /* ============================================================
-   KLAF · light-brown parchment theme (manual toggle) + module art
+   Module art + theme toggle (Klaf palette retired → Desert Glass)
    ============================================================ */
-[data-theme="light"]{
-  color-scheme:light;
-  --bg-0:#EFE3CB; --bg-1:#E3D3B2; --bg-glow:#FBF3DF;
-  --surface:#F9F2E0; --surface-2:#F2E8D0;
-  --ink:#2B2212; --ink-soft:#6E5F45; --ink-faint:#98876A;
-  --line:rgba(90,66,24,.15); --line-2:rgba(90,66,24,.26);
-  --gold:#A87F35; --gold-deep:#7E5E22; --gold-soft:#D9C081aa;
-  --gold-grad-a:#DAB876; --gold-grad-b:#A87F35;
-  --shadow:rgba(80,58,20,.15); --shadow-2:rgba(80,58,20,.24);
-  --petal:#EADDBE; --petal-stroke:rgba(90,66,24,.12); --petal-root:#EFDFB4;
-  --on-accent:#2B2008;
-  --m1:#A87F35; --m2:#4F7A6B; --m3:#7A6383; --m4:#A06B60;
-  --m5:#B08438; --m6:#5E7488; --m7:#75793F;
-  --grain:.04;
-}
 /* the desert at day — same dunes, morning sky */
-[data-theme="light"] .nx-hero{
-  background:linear-gradient(180deg,#9db9d6 0%,#dcc194 40%,#cf9a55 66%,#8a5a28 100%);
-}
-[data-theme="light"] .nx-hero::after{
-  background:linear-gradient(180deg, rgba(43,26,8,.02) 25%, rgba(43,26,8,.5) 100%);
-}
-[data-theme="light"] .nxh-heb{ color:#6d4c17; opacity:.2 }
 
 /* theme toggle — quiet moon/sun in the topbar */
 .theme-toggle{
@@ -1597,8 +1575,6 @@ body{
 .nx-card .nxc-s{ color:rgba(243,234,214,.66) }
 .nx-card .nxc-kick,.ju-card .ju-kick{ color:#D9B876 }
 .ju-card .ju-n{ color:#F3EAD6; background:rgba(233,200,127,.22) }
-[data-theme="light"] .nxh-eyebrow{ color:#5F430F }
-[data-theme="light"] .nxh-sub{ color:rgba(255,247,228,.85) }
 
 /* ============================================================
    ONBOARDING · TODAY'S PATH · PILGRIMAGE — daily-loop surfaces
@@ -1652,3 +1628,122 @@ body{
   background:rgba(243,234,214,.18); margin-top:6px }
 .nxc-bar i{ display:block; height:100%; background:linear-gradient(90deg,var(--gold-grad-a),var(--gold-grad-b)) }
 .ju-done{ font-size:11px; font-weight:800; color:#F3EAD6; background:rgba(233,200,127,.24); border-radius:999px; padding:3px 8px }
+
+/* ============================================================
+   DESERT GLASS — the Judean desert, through liquid glass
+   Vivid warm field (amber/terracotta/sky) + Apple-grade frost:
+   heavy blur, specular top edges, floating panels, glass nav.
+   Activated by [data-theme="light"].
+   ============================================================ */
+[data-theme="light"]{
+  color-scheme:light;
+  --bg-0:#F6F0E4; --bg-1:#EFE5D2; --bg-glow:#FFFDF6;
+  --surface:rgba(255,255,255,.62); --surface-2:rgba(255,255,255,.48);
+  --ink:#2A2113; --ink-soft:#6E6046; --ink-faint:#9C8E72;
+  --line:rgba(92,70,30,.10); --line-2:rgba(92,70,30,.17);
+  --gold:#B48C42; --gold-deep:#8A6A2C; --gold-soft:#D9C081aa;
+  --gold-grad-a:#EBCE8E; --gold-grad-b:#BC9349;
+  --shadow:rgba(110,80,35,.13); --shadow-2:rgba(110,80,35,.24);
+  --petal:#F2EADA; --petal-stroke:rgba(92,70,30,.09); --petal-root:#F2E4C4;
+  --on-accent:#2B2008;
+  --m1:#B48C42; --m2:#5E8C7E; --m3:#86708F; --m4:#AE7C72; --m5:#BE9248; --m6:#6E8398; --m7:#838755;
+  --grain:.02;
+}
+/* the vivid desert field — amber sun, terracotta dunes, a strip of desert sky */
+[data-theme="light"] body{
+  background:
+    radial-gradient(80% 50% at 14% -8%, rgba(238,170,84,.50), transparent 62%),
+    radial-gradient(64% 42% at 90% -4%, rgba(140,178,216,.38), transparent 62%),
+    radial-gradient(58% 36% at 84% 30%, rgba(216,120,66,.30), transparent 66%),
+    radial-gradient(66% 40% at 6% 46%, rgba(240,204,120,.30), transparent 68%),
+    radial-gradient(62% 40% at 55% 104%, rgba(196,132,70,.26), transparent 70%),
+    linear-gradient(180deg,#F7F1E5 0%,#EEE2CB 100%);
+  background-attachment:fixed;
+}
+/* liquid-glass panels: heavy frost + saturation lift + specular top edge */
+[data-theme="light"] .tp-panel,
+[data-theme="light"] .song-card,
+[data-theme="light"] .verse-band,
+[data-theme="light"] .teh-psalm,
+[data-theme="light"] .teh-context,
+[data-theme="light"] .cof-lever,
+[data-theme="light"] .thy-harp,
+[data-theme="light"] .ju-toy,
+[data-theme="light"] .bg-panel,
+[data-theme="light"] .thy-ch,
+[data-theme="light"] .et-opt,
+[data-theme="light"] .ju-link,
+[data-theme="light"] .cof-link,
+[data-theme="light"] .cof-ch,
+[data-theme="light"] .hp-sheet,
+[data-theme="light"] .ob-opt{
+  background:linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,253,246,.5));
+  -webkit-backdrop-filter:blur(28px) saturate(1.9); backdrop-filter:blur(28px) saturate(1.9);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 1px 1px rgba(110,80,35,.06), 0 24px 48px -24px rgba(110,80,35,.38);
+}
+/* floating glass pill nav — lensing the desert beneath */
+[data-theme="light"] .nav{
+  background:linear-gradient(180deg, rgba(255,255,255,.66), rgba(255,251,240,.48));
+  -webkit-backdrop-filter:blur(32px) saturate(2); backdrop-filter:blur(32px) saturate(2);
+  border:1px solid rgba(255,255,255,.95);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 24px 48px -18px rgba(110,80,35,.42);
+}
+[data-theme="light"] .topbar{
+  background:linear-gradient(180deg, rgba(247,241,229,.82) 30%, transparent);
+  -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.55);
+}
+/* the hero — golden hour: desert-sky blue melting into amber dunes */
+[data-theme="light"] .nx-hero{
+  background:linear-gradient(180deg,#8FB2D9 0%,#EFC488 40%,#DE9A50 64%,#7A4A20 100%);
+  box-shadow:0 30px 60px -26px rgba(110,80,35,.55);
+}
+[data-theme="light"] .nx-hero::after{
+  background:linear-gradient(180deg, rgba(30,20,8,0) 30%, rgba(30,20,8,.5) 100%);
+}
+[data-theme="light"] .nx-strings{ opacity:.15 }
+[data-theme="light"] .nxh-heb{ color:#FFF6E0; opacity:.24 }
+[data-theme="light"] .nxh-eyebrow{ color:#FFF1CE; text-shadow:0 1px 8px rgba(40,25,8,.4) }
+[data-theme="light"] .nxh-sub{ color:rgba(255,250,240,.92) }
+[data-theme="light"] .nxh-cta{
+  background:linear-gradient(160deg, rgba(255,255,255,.94), rgba(255,240,205,.86));
+  color:#6B4F1B; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  box-shadow:inset 0 1px 0 #fff, 0 12px 28px -10px rgba(40,25,8,.5);
+}
+/* glass chips — translucent pills; active fills with sun-gold */
+[data-theme="light"] .et-tab,
+[data-theme="light"] .teh-day,
+[data-theme="light"] .coach-sug,
+[data-theme="light"] .hp-quick button,
+[data-theme="light"] .ju-chord,
+[data-theme="light"] .cof-partner,
+[data-theme="light"] .thy-q-rev{
+  background:rgba(255,255,255,.5);
+  -webkit-backdrop-filter:blur(14px) saturate(1.6); backdrop-filter:blur(14px) saturate(1.6);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+}
+[data-theme="light"] .et-tab.on,
+[data-theme="light"] .teh-day.on,
+[data-theme="light"] .ju-chord.on{
+  background:linear-gradient(160deg,var(--gold-grad-a),var(--gold-grad-b));
+  border-color:transparent; color:var(--on-accent);
+}
+/* art posters float above the sand with crisp glass rims */
+[data-theme="light"] .nx-card,
+[data-theme="light"] .ju-card{
+  border:1px solid rgba(255,255,255,.8);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 24px 48px -24px rgba(110,80,35,.48);
+}
+[data-theme="light"] .feat-strip{ border-top:1px solid rgba(255,255,255,.8) }
+
+/* ============================================================
+   LIQUID PHYSICS · dark — specular gold edges on the night glass
+   ============================================================ */
+.tp-panel,.ju-toy,.song-card,.verse-band,.hp-sheet{
+  box-shadow:inset 0 1px 0 rgba(233,200,127,.10), 0 1px 2px var(--shadow), 0 16px 40px -26px var(--shadow-2);
+}
+.nav{ -webkit-backdrop-filter:blur(26px) saturate(1.4); backdrop-filter:blur(26px) saturate(1.4);
+  box-shadow:inset 0 1px 0 rgba(233,200,127,.12), 0 18px 40px -18px rgba(0,0,0,.6) }
+.topbar{ -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px) }

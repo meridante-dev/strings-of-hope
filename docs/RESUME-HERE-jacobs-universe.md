@@ -10,7 +10,8 @@
 - **Design:** Dark Luxe · Judean Desert identity + Klaf light toggle (☀/☾ topbar) + procedural SVG art on all cards. Jacob's Universe art = **heavenly clouds** (user direction: clouds, not planets).
 - **Core loop:** harp-profile onboarding (auto-opens; edit via streak pill) · Today's Harp Path (daily checkable plan) · pilgrimage levels/badges (Journal) · Harpie personalized by profile.
 - **Phase 2.1:** per-lesson completion (`soh-lessons`) → chapter n/m + ✓, unit progress bars, Jacob seen-✓.
-- **Phase 3 started:** June Lee Pts 1–3 deep-mapped (`docs/jacob-concept-map.md` batch 3); **Negative-Harmony Mirror toy live** (Module 3). Corpus 10/18 mapped.
+- **Phase 3 started:** June Lee Pts 1–3 deep-mapped (`docs/jacob-concept-map.md` batch 3). Corpus 10/18 mapped.
+- **Jacob toys live (commit `1bb64cc`, deployed):** Negative-Harmony Mirror (Mod 3), **Arrivals** — same chord, two approaches ☀/☁ (Mod 2), **Reharm Lab** — Amazing Grace in 3 escalating levels (Mod 6). **Check-your-understanding quiz on every module (0–10)** with show/hide answers.
 
 ## ⏳ AWAITING USER ANSWERS — OMT integration (4 questions asked)
 Open Music Theory V2 scanned: **CC BY-SA 4.0, NO NC clause** → commercial OK; adaptations stay BY-SA, per-chapter author attribution required.

@@ -13,7 +13,13 @@
 - **Phase 3 started:** June Lee Pts 1–3 deep-mapped (`docs/jacob-concept-map.md` batch 3). Corpus 10/18 mapped.
 - **Jacob toys live (commit `1bb64cc`, deployed):** Negative-Harmony Mirror (Mod 3), **Arrivals** — same chord, two approaches ☀/☁ (Mod 2), **Reharm Lab** — Amazing Grace in 3 escalating levels (Mod 6). **Check-your-understanding quiz on every module (0–10)** with show/hide answers.
 
-## ⏳ AWAITING USER ANSWERS — OMT integration (4 questions asked)
+## ✅ OMT unit SHIPPED (commit `37e3fcf`, live)
+"Theory in the Real World" = **Semester 6** of the Music Theory course (9 harp-mapped chapters, n:43–51, from Open Music Theory v.2, CC BY-SA 4.0, attributed in-app): Pop Loops & Schemas · Fragile/Absent/Emergent Tonics · Pop Song Form (SRDC) · Galant Schemas · The Tonnetz & Smooth Moves · Groove/Backbeat/Drum Kit · The Blues · Orchestration & Arranging for Harp · Sight-Singing & Solfège. Each has a 3-Q quiz + 3 lessons. Renderer was already generic (maps all units, shows `src`). **Still TODO from the OMT ask:** mic-activated chord tests (arpeggio-based first, then polyphonic beta) + a scored challenge track on top of pilgrimage.
+
+## ⚠️ DEPLOY GOTCHA (learned 2026-07-06)
+Do **NOT** `gh run rerun <id> --failed` on the Pages workflow. Each rerun re-uploads the `github-pages` artifact, and `deploy-pages@v4` hard-fails with "Multiple artifacts named github-pages … Artifact count is N". To recover, start a FRESH run: **`gh workflow run pages.yml --ref main`** (workflow_dispatch is enabled). One clean run = one artifact = green.
+
+## ⏳ (RESOLVED) OMT integration — the 4 questions below were answered "yes" & built
 Open Music Theory V2 scanned: **CC BY-SA 4.0, NO NC clause** → commercial OK; adaptations stay BY-SA, per-chapter author attribution required.
 1. **Scope:** new unit "Theory in the Real World" (~10 chapters we lack: pop schemas, fragile/absent/emergent tonics, galant schemas, Tonnetz, pop form, orchestration→harp, drumbeats, sight-singing) — RECOMMENDED — vs full second course?
 2. **Mic chord tests:** ship arpeggio-based (monophonic engine, reliable) first — RECOMMENDED — then polyphonic chromagram as beta?

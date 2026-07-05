@@ -1383,6 +1383,12 @@ footer .cc{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.32em;text-tr
 .ju-readout{ text-align:center;margin-top:15px;min-height:46px }
 .ju-feel{ display:block;font-family:"Playfair Display",serif;font-size:22px;font-weight:600;color:var(--ink) }
 .ju-role{ display:block;font-size:13.5px;line-height:1.5;color:var(--ink-soft);margin-top:3px }
+.ju-rh-tabs{ display:grid;grid-template-columns:repeat(3,1fr);gap:8px }
+.ju-rh-tab{ font:inherit;font-size:12.5px;font-weight:800;letter-spacing:.02em;cursor:pointer;color:var(--ink-soft);background:var(--surface);border:1px solid var(--line-2);border-radius:12px;padding:11px 4px;transition:background .12s,border-color .12s,color .12s }
+.ju-rh-tab:active{ transform:scale(.97) }
+.ju-rh-tab.on{ background:var(--gold);color:#2c2206;border-color:var(--gold-deep) }
+.ju-rh-play{ display:block;width:100%;margin-top:14px;font:inherit;font-size:14px;font-weight:800;letter-spacing:.02em;cursor:pointer;color:#2c2206;background:linear-gradient(180deg,var(--gold),var(--gold-deep));border:none;border-radius:14px;padding:14px 4px }
+.ju-rh-play:active{ transform:scale(.98) }
 
 /* ===== Netflix-style learning surface ===== */
 /* Signature: the Continue hero — deep espresso, lit by gold harp strings */

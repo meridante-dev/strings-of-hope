@@ -2448,13 +2448,80 @@ function jacobOpenModule(n){
     <h2 class="learn-h">${m.title}</h2>
     <p class="jrn-lead ju-idea">${m.idea}</p>
     <div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div><p>${m.harp}</p></div>
-    ${m.toy==='oneNote'?jacobOneNoteHTML():''}${m.toy==='mirror'?jacobMirrorHTML():''}
+    ${m.toy==='oneNote'?jacobOneNoteHTML():''}${m.toy==='mirror'?jacobMirrorHTML():''}${m.toy==='arrivals'?jacobArrivalsHTML():''}${m.toy==='reharm'?jacobReharmHTML():''}
     ${links?`<div class="ju-sec-t">Watch Jacob</div><div class="ju-links">${links}</div>`:''}
+    ${jacobQuizHTML(m.n)}
   </div>`;
   document.getElementById('jacobHub').hidden=true; document.getElementById('jacobDetail').hidden=false;
   if(m.toy==='oneNote') jacobBindOneNote();
   if(m.toy==='mirror') jacobBindMirror();
+  if(m.toy==='arrivals') jacobBindArrivals();
+  if(m.toy==='reharm') jacobBindReharm();
+  jacobBindQuiz();
   window.scrollTo(0,0); buzz();
+}
+/* --- Toy: Arrivals — same chord, different approach (GRAMMY U) --- */
+function jacobArrivalsHTML(){
+  const pads=JU_ARRIVALS.pads.map((p,i)=>`<button class="ju-chord" data-i="${i}">${p.label}</button>`).join('');
+  return `<div class="ju-toy">
+    <div class="ju-held"><span class="ju-held-k">Where you arrive from</span><span class="ju-held-n">☀ ↔ ☁</span><span class="ju-held-s">the same chord, two different lights</span></div>
+    <div class="ju-pads">${pads}</div>
+    <div class="ju-readout" id="juArrOut"><span class="ju-feel">Tap an arrival →</span><span class="ju-role">hear the approach chord lead into it.</span></div>
+  </div>`;
+}
+function jacobBindArrivals(){
+  const stage=document.getElementById('jacobStage'); if(!stage) return;
+  stage.querySelectorAll('.ju-chord').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.i, p=JU_ARRIVALS.pads[i];
+    stage.querySelectorAll('.ju-chord').forEach(x=>x.classList.toggle('on',x===b));
+    if(typeof audioCtx==='function'){ const ac=audioCtx(), t0=ac.currentTime+0.05;
+      p.a.forEach((mm,k)=>harpPluck(etMidiFreq(mm), t0+k*0.09, 1.5));
+      p.b.forEach((mm,k)=>harpPluck(etMidiFreq(mm), t0+1.35+k*0.09, 2.4)); }
+    const r=document.getElementById('juArrOut'); if(r) r.innerHTML=`<span class="ju-feel">${p.feel}</span><span class="ju-role">${p.name} — ${p.role}</span>`;
+    buzz();
+  }));
+}
+/* --- Toy: Reharm Lab — Amazing Grace in three escalating colours --- */
+let _juReharmLevel=0;
+function jacobReharmHTML(){
+  const tabs=JU_REHARM.levels.map((l,i)=>`<button class="ju-rh-tab${i===0?' on':''}" data-i="${i}">${l.label.split(' · ')[0]}</button>`).join('');
+  return `<div class="ju-toy">
+    <div class="ju-held"><span class="ju-held-k">Reharm Lab</span><span class="ju-held-n">Amazing Grace</span><span class="ju-held-s">${JU_REHARM.melody}</span></div>
+    <div class="ju-rh-tabs">${tabs}</div>
+    <div class="ju-readout" id="juRhOut"></div>
+    <button class="ju-rh-play" id="juRhPlay">▶ Play this version</button>
+  </div>`;
+}
+function jacobReharmRender(){
+  const l=JU_REHARM.levels[_juReharmLevel], r=document.getElementById('juRhOut');
+  if(r) r.innerHTML=`<span class="ju-feel">${l.label}</span><span class="ju-role">${l.desc}</span>`;
+  document.querySelectorAll('#jacobStage .ju-rh-tab').forEach((t,i)=>t.classList.toggle('on',i===_juReharmLevel));
+}
+function jacobPlayReharm(){
+  const l=JU_REHARM.levels[_juReharmLevel]; if(!l||typeof audioCtx!=='function') return;
+  const ac=audioCtx(); let t=ac.currentTime+0.06;
+  l.steps.forEach(s=>{ s.ch.forEach((mm,k)=>harpPluck(etMidiFreq(mm), t+k*0.05, 1.5));
+    harpPluck(etMidiFreq(s.mel), t+0.02, 1.7); t+=0.82; });
+}
+function jacobBindReharm(){
+  _juReharmLevel=0; jacobReharmRender();
+  const stage=document.getElementById('jacobStage'); if(!stage) return;
+  stage.querySelectorAll('.ju-rh-tab').forEach(t=>t.addEventListener('click',()=>{ _juReharmLevel=+t.dataset.i; jacobReharmRender(); jacobPlayReharm(); buzz(); }));
+  document.getElementById('juRhPlay')?.addEventListener('click',()=>{ jacobPlayReharm(); buzz(); });
+}
+/* --- Check-your-understanding, per module --- */
+function jacobQuizHTML(n){
+  const qs=(typeof JACOB_QUIZ!=='undefined')?JACOB_QUIZ[n]:null; if(!qs||!qs.length) return '';
+  return `<div class="ju-sec-t">Check your understanding</div><div class="thy-quiz">${qs.map((q,i)=>`
+    <div class="thy-q"><p class="thy-q-q"><span class="thy-q-n">${i+1}</span>${q.q}</p>
+    <button class="thy-q-rev" data-jq="${i}">Show answer</button>
+    <p class="thy-q-a" hidden>${q.a}</p></div>`).join('')}</div>`;
+}
+function jacobBindQuiz(){
+  document.querySelectorAll('#jacobStage .thy-q-rev').forEach(b=>b.addEventListener('click',()=>{
+    const a=b.parentElement.querySelector('.thy-q-a'); if(!a) return;
+    const show=a.hidden; a.hidden=!show; b.textContent=show?'Hide answer':'Show answer'; b.classList.toggle('on',show); buzz();
+  }));
 }
 /* --- Toy: Negative-Harmony Mirror (June Lee Pt 1 spec) --- */
 function jacobMirrorHTML(){

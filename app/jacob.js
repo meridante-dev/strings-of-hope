@@ -47,7 +47,7 @@ const JACOB_MODULES = [
     links:[ {label:'Mexico City · “same note, different chord” (8:10)', url:'https://youtu.be/eVkaNI17ZoI?t=490'},
             {label:'Emotional Playground · “the many D’s” (5:47)', url:'https://youtu.be/KTHrECsMm2w?t=347'} ] },
 
-  { n:2, title:'Light & Dark', kicker:'Brightness',
+  { n:2, title:'Light & Dark', kicker:'Brightness', toy:'arrivals',
     idea:'The circle of fifths is a <b>brightness dial</b>: step toward the sharps and “the sun comes out”; toward the flats and it goes in. And where you <b>arrive from</b> colours the feeling as much as where you land — F major after C feels bright, after D it feels like a cloud.',
     harp:'Brightness is how many levers you’ve raised — the sharp-side keys literally sound brighter. Explore it on the Circle of Fifths tool.',
     links:[ {label:'GRAMMY U · context flips the feeling (57:30)', url:'https://youtu.be/VUmLhOXUcqU?t=3450'} ] },
@@ -70,7 +70,7 @@ const JACOB_MODULES = [
     links:[ {label:'Emotional Playground · voicing order (38:50)', url:'https://youtu.be/KTHrECsMm2w?t=2330'},
             {label:'Qwest · inversions as emotion (1:11)', url:'https://youtu.be/mLJVvjqMjbo?t=71'} ] },
 
-  { n:6, title:'Reharmonization', kicker:'Recolour a song',
+  { n:6, title:'Reharmonization', kicker:'Recolour a song', toy:'reharm',
     idea:'Take a song you know and <b>“destruction-test”</b> it: a strong tune survives being completely rebuilt. Pivot on a shared note, <b>change the context instead of the chord</b>, and find a dozen new emotional routes home.',
     harp:'Reharmonise a simple tune (Amazing Grace, Happy Birthday) with lever flips while the melody string stays put.',
     links:[ {label:'GRAMMY U · reharmonising Happy Birthday (6:00)', url:'https://youtu.be/VUmLhOXUcqU?t=360'},
@@ -99,3 +99,52 @@ const JACOB_MODULES = [
     links:[ {label:'GRAMMY U · conducting the audience choir (19:43)', url:'https://youtu.be/VUmLhOXUcqU?t=1183'},
             {label:'Whitacre · the “golden brick” seed (9:11)', url:'https://youtu.be/sNCNFm17McA?t=551'} ] },
 ];
+
+/* Toy: Arrivals — the same chord feels different depending on where you arrive FROM (GRAMMY U, 57:30) */
+const JU_ARRIVALS = {
+  pads:[
+    { label:'F, from C',   name:'C → F',    feel:'☀ The sun comes out',   role:'Arriving from the bright side — F opens like a window.',      a:[48,52,55],    b:[53,57,60] },
+    { label:'F, from Dm',  name:'Dm → F',   feel:'☁ The sun goes in',     role:'The very same F — but from D minor it clouds over.',          a:[50,53,57],    b:[53,57,60] },
+    { label:'C, from G7',  name:'G7 → C',   feel:'Firm arrival',          role:'The perfect cadence — you walk in the front door.',           a:[55,59,62,65], b:[48,52,55,60] },
+    { label:'C, from Fm6', name:'Fm6 → C',  feel:'The mirror hug',        role:'The negative-harmony arrival — home reached by moonlight.',   a:[53,56,60,62], b:[48,52,55,60] },
+  ]
+};
+
+/* Toy: Reharm Lab — Amazing Grace, recoloured in three escalating levels (destruction-test a strong tune) */
+const JU_REHARM = {
+  melody:'Amazing Grace — the opening phrase, in C',
+  levels:[
+    { label:'Level 1 · Home', desc:'Plain truth: I and IV and V. The tune stands on solid ground.',
+      steps:[ {mel:67,ch:[48,52,55]}, {mel:72,ch:[48,52,55]}, {mel:76,ch:[53,57,60]}, {mel:74,ch:[55,59,62]}, {mel:72,ch:[48,52,55]} ] },
+    { label:'Level 2 · Colour', desc:'Inversions and sevenths — the bass starts to sing its own line.',
+      steps:[ {mel:67,ch:[52,55,60]}, {mel:72,ch:[45,52,55,60]}, {mel:76,ch:[53,57,60,64]}, {mel:74,ch:[55,59,62,65]}, {mel:72,ch:[48,52,55,62]} ] },
+    { label:'Level 3 · Jacob', desc:'“Illegal” beauty — lush extensions, a borrowed chord, the far side of the circle.',
+      steps:[ {mel:67,ch:[48,52,59,62]}, {mel:72,ch:[45,55,60,64]}, {mel:76,ch:[41,48,57,59]}, {mel:74,ch:[44,51,56,62]}, {mel:72,ch:[48,55,62,64]} ] },
+  ]
+};
+
+/* Check-your-understanding — two questions per module (rendered under each module) */
+const JACOB_QUIZ = {
+  0:[ {q:'What comes first in Jacob’s approach — the feeling or the theory label?', a:'The feeling. Name what a sound does to you first; the label is just an interface for your own brain.'},
+      {q:'Where does originality come from, in his view?', a:'Recombining what you love — “you don’t reinvent, you recombine.”'} ],
+  1:[ {q:'Why does the same note feel different over different chords?', a:'Its role changes — root, 3rd, 7th — and with it the tension. Harmonic context, not the note, carries the feeling.'},
+      {q:'What is the harp version of this experiment?', a:'Hold one string ringing and change the chord beneath it — the note recolours without being replayed.'} ],
+  2:[ {q:'Which way is “brighter” on the circle of fifths?', a:'Toward the sharps (clockwise). Toward the flats, the sun goes in.'},
+      {q:'Why can the SAME chord feel sunny once and clouded another time?', a:'Because of where you arrive from — the approach chord sets the light.'} ],
+  3:[ {q:'Where does the negative-harmony mirror axis sit?', a:'Midway between the tonic and dominant — in C, between E♭ and E.'},
+      {q:'What does G7 become when mirrored in C — and what happens to the cadence?', a:'Fm6 — the perfect cadence becomes a minor-plagal one with equal gravity.'} ],
+  4:[ {q:'When is a “wrong” note right?', a:'When it has somewhere to go — any tension works if it resolves.'},
+      {q:'What did Herbie Hancock learn from “butter notes”?', a:'To leave out the obvious notes (3rd and 7th) — space itself becomes the colour.'} ],
+  5:[ {q:'Same notes, different order — what changes?', a:'Everything: register and spacing decide the emotion. A minor 9th placed on purpose is “longing”.'},
+      {q:'What is a stacked tonality?', a:'A bright triad floated over another root (E over G7) — two gravities heard at once.'} ],
+  6:[ {q:'What is the “destruction test”?', a:'A strong song survives being completely reharmonised — rebuild it and it still sings.'},
+      {q:'What is Jacob’s favourite reharm secret?', a:'Change the context, not the chord — keep the note, recolour everything beneath it.'} ],
+  7:[ {q:'Why does a fifth sound so stable?', a:'It sits low in the overtone series — nature tuned it into every string.'},
+      {q:'What is “just” intonation?', a:'Tuning to the pure ratios of the harmonic series — beatless thirds ~14 cents from the piano’s.'} ],
+  8:[ {q:'Can a lever harp play Jacob’s in-between notes?', a:'No — levers move in half steps. These notes live in your voice and your ear; train them by listening.'},
+      {q:'What happens in his Moon River?', a:'The whole song lifts into a key a quarter-tone away — a place “between the piano keys”.'} ],
+  9:[ {q:'Why did J Dilla turn quantise OFF?', a:'The grid kills soul — the push and drag of human timing IS the groove.'},
+      {q:'How do you practise the pocket on a harp?', a:'Loop a small pattern with the rhythm engine, then let it breathe slightly off the grid.'} ],
+  10:[ {q:'What is a “golden brick”?', a:'A tiny seed — a couple of chords — that carries the DNA of a whole piece.'},
+       {q:'What happens when you try to write something dishonest?', a:'You fail — “you end up being honest, you can’t help it.” So start anywhere.'} ],
+};

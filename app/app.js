@@ -1408,6 +1408,19 @@ function buildHarperKB(){
   if(typeof MODE_TEACHING_EXTRA!=='undefined') MODE_TEACHING_EXTRA.forEach(m=>add({type:'mode',title:m.name,view:'modes',text:harperStrip((m.from?m.from+' ':'')+m.note),open:()=>showView('modes')}));
   if(typeof SIMCHA_COURSE!=='undefined') SIMCHA_COURSE.forEach(c=>c.lessons.forEach(L=>{ if(!L.h) return;
     add({type:'simcha',title:L.h,view:'learn',text:harperStrip(L.body||'')+' '+harperStrip(L.harp||''),open:()=>showView('learn')}); }));
+  if(typeof JACOB_MODULES!=='undefined'){
+    JACOB_MODULES.forEach(m=>{
+      const idea=harperStrip(m.idea||''), harp=harperStrip(m.harp||'');
+      const qa=(typeof JACOB_QUIZ!=='undefined'&&JACOB_QUIZ[m.n])?JACOB_QUIZ[m.n].map(x=>x.q+' '+x.a).join(' '):'';
+      const links=(m.links||[]).map(l=>l.label).join(' ');
+      add({type:'jacob',title:m.title,jacobN:m.n,view:'jacob',body:idea,harp,
+        text:'jacob collier '+(m.kicker||'')+' '+idea+' '+harp+' '+qa+' '+links,
+        open:()=>{ showView('jacob'); if(typeof jacobOpenModule==='function') jacobOpenModule(m.n); }}); });
+    add({type:'tool',title:'Jacob’s Universe',view:'jacob',
+      desc:'Harmony the Jacob Collier way — feeling first, one note under many chords, negative harmony, reharmonisation and the pocket — every idea mapped to your lever harp.',
+      text:'jacob collier universe harmony approach feeling first negative harmony reharmonization voicings inversions microtonality overtone series groove pocket brightness',
+      open:()=>showView('jacob')});
+  }
   if(typeof CIRCLE_KEYS!=='undefined') add({type:'tool',title:'Circle of Fifths & playable keys',view:'circle',
     desc:'The Circle of Fifths orders all 12 keys by their sharps and flats. On your lever harp it shows which keys you can reach and the exact levers each one needs — your map for choosing and changing key.',
     text:'circle of fifths key signatures lever recipe reachable keys modulation '+CIRCLE_KEYS.map(k=>k.maj+' '+k.min+' '+k.acc+' '+harperStrip(k.lever)).join(' '),open:()=>showView('circle')});
@@ -1434,12 +1447,13 @@ function harperPath(top){
 function harperExercise(top){
   for(const d of top){ if(d.chN && typeof THEORY_COURSE!=='undefined'){
       for(const u of THEORY_COURSE){ const ch=u.chapters.find(c=>c.n===d.chN); if(ch&&ch.quiz&&ch.quiz.length) return ch.quiz[0].q; } }
+    if(d.type==='jacob' && typeof JACOB_QUIZ!=='undefined' && JACOB_QUIZ[d.jacobN] && JACOB_QUIZ[d.jacobN][0]) return JACOB_QUIZ[d.jacobN][0].q;
     if(d.type==='mode'&&d.teaching) return `On your harp, set the mode and dance around its character note — ${harperTrim(d.teaching.char,140)}`;
   } return null;
 }
 function harperKnowledge(q,top){
   const best=top[0]; let lead;
-  if(best.type==='lesson'){ lead=`<b>${best.title}.</b> ${harperTrim(best.body,260)}`+(best.harp?`<br><span class="cm-k">On your harp</span> ${harperTrim(best.harp,210)}`:''); }
+  if(best.type==='lesson'||best.type==='jacob'){ lead=`<b>${best.title}.</b> ${harperTrim(best.body,260)}`+(best.harp?`<br><span class="cm-k">On your harp</span> ${harperTrim(best.harp,210)}`:''); }
   else if(best.type==='mode'&&best.teaching){ const t=best.teaching; lead=`<b>${best.title}.</b> ${harperStrip(t.framing)}<br><span class="cm-k">Character</span> ${harperTrim(t.char,150)}<br><span class="cm-k">Chord</span> ${harperTrim(t.chord,150)}`; }
   else lead=`<b>${best.title}.</b> ${harperTrim(best.desc||best.text,260)}`;
   const path=harperPath(top), ex=harperExercise(top);

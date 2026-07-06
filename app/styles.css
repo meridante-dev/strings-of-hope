@@ -1460,6 +1460,16 @@ body.cert-open{ overflow:hidden }
 .ju-link{ display:block;text-decoration:none;font-size:13.5px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px }
 .ju-link:active{ transform:scale(.99) }
 
+/* Stepped lesson-path (modules with taught lessons) */
+.ju-dots{ display:flex;justify-content:center;gap:6px;margin-bottom:16px }
+.ju-dots .jdot{ width:7px;height:7px;border-radius:50%;background:var(--line-2);transition:background .2s,transform .2s }
+.ju-dots .jdot.seen{ background:var(--gold-deep) }
+.ju-dots .jdot.on{ background:var(--gold);transform:scale(1.5);box-shadow:0 0 8px rgba(226,182,92,.6) }
+.ju-step-k{ font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px }
+.ju-nav{ display:flex;gap:10px;margin-top:26px }
+.ju-nav .jrn-btn{ flex:1 }
+.ju-prog{ font-size:11px;font-weight:800;color:#f3ead6;background:rgba(0,0,0,.28);border-radius:999px;padding:2px 8px;font-variant-numeric:tabular-nums }
+
 /* Scholarly roots note */
 .ju-note{ margin-top:14px;padding:12px 14px;border-radius:13px;font-size:12.5px;line-height:1.55;color:var(--ink-soft);
   background:color-mix(in srgb,var(--gold) 7%,transparent);border:1px solid var(--line);border-left:2px solid var(--gold-deep) }

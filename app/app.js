@@ -2180,6 +2180,10 @@ function sohTheoryStats(){
         if(e){ xp+=Math.min(e.seen,e.total)*10; if(e.seen>=e.total){ chDone++; xp+=50; } } }); });
   }catch(e){}
   xp += unitsDone*150 + ((unitsTotal>0 && unitsDone===unitsTotal)?400:0);
+  try{ const d=JSON.parse(localStorage.getItem('soh-lessons')||'{}');
+    (typeof JACOB_MODULES!=='undefined'?JACOB_MODULES:[]).forEach(m=>{ const e=d['j'+m.n];
+      if(e){ xp+=Math.min(e.seen,e.total)*8; if(e.seen>=e.total) xp+=40; } });
+  }catch(e){}
   let rank=THEORY_RANKS[0]; THEORY_RANKS.forEach(r=>{ if(xp>=r.min) rank=r; });
   const ri=THEORY_RANKS.indexOf(rank), next=THEORY_RANKS[ri+1]||null;
   return { xp, rank:rank.name, rankN:ri+1, rankMin:rank.min, next,
@@ -2548,8 +2552,12 @@ function buildJacob(){
   host.innerHTML='';
   JACOB_MODULES.forEach(m=>{
     const b=document.createElement('button'); b.className='ju-card'+(m.toy?' toy':'');
+    const hasL=m.lessons&&m.lessons.length, pr=hasL?jacobModuleProg(m.n):null;
+    const tag = hasL
+      ? (pr&&pr.done?'<span class="ju-done">✓</span>':(pr?`<span class="ju-prog">${pr.seen}/${pr.total}</span>`:'<span class="ju-toy-tag">study</span>'))
+      : (m.toy?'<span class="ju-toy-tag">▶ play</span>':(jacobSeen(m.n)?'<span class="ju-done">✓</span>':''));
     b.innerHTML=`<span class="nxc-art">${sohArt('c1',m.n)}</span><span class="nxc-scrim"></span>
-      <div class="ju-card-top"><span class="ju-n">${m.n}</span><span class="ju-kick">${m.kicker||''}</span>${m.toy?'<span class="ju-toy-tag">▶ play</span>':(jacobSeen(m.n)?'<span class="ju-done">✓</span>':'')}</div>
+      <div class="ju-card-top"><span class="ju-n">${m.n}</span><span class="ju-kick">${m.kicker||''}</span>${tag}</div>
       <div class="ju-card-t">${m.title}</div>`;
     b.addEventListener('click',()=>jacobOpenModule(m.n));
     host.appendChild(b);
@@ -2574,29 +2582,80 @@ function jacobLibraryHTML(){
     <div class="ju-lib-title">The library behind the universe</div>
     <p class="ju-lib-intro">${JACOB_LIBRARY.intro}</p></div>${groups}</div>`;
 }
+/* --- shared render helpers (used by single-page & stepped modules) --- */
+function jacobHarpHTML(t){ return `<div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div><p>${t}</p></div>`; }
+function jacobToyHTML(m){ return m.toy==='oneNote'?jacobOneNoteHTML():m.toy==='mirror'?jacobMirrorHTML():m.toy==='arrivals'?jacobArrivalsHTML():m.toy==='reharm'?jacobReharmHTML():''; }
+function jacobBindToy(m){ if(m.toy==='oneNote') jacobBindOneNote(); else if(m.toy==='mirror') jacobBindMirror(); else if(m.toy==='arrivals') jacobBindArrivals(); else if(m.toy==='reharm') jacobBindReharm(); }
+function jacobLinksHTML(m){ const links=(m.links||[]).map(l=>`<a class="ju-link" href="${l.url}" target="_blank" rel="noopener noreferrer">▶ ${l.label}</a>`).join('');
+  return links?`<div class="ju-sec-t">Watch Jacob</div><div class="ju-links">${links}</div>`:''; }
+function jacobDeeperHTML(m){ return (typeof JACOB_DEEPER!=='undefined'&&JACOB_DEEPER[m.n])?`<div class="ju-sec-t">Go deeper</div>${jacobResHTML(JACOB_DEEPER[m.n])}`:''; }
+function jacobModuleMark(n){ try{ const d=JSON.parse(localStorage.getItem('soh-lessons')||'{}'), i=Math.max(1,(_juStep||0)+1);
+    const k='j'+n, cur=(d[k]&&d[k].seen)||0; d[k]={seen:Math.max(cur,i), total:(_juSteps?_juSteps.length:1)};
+    localStorage.setItem('soh-lessons',JSON.stringify(d)); }catch(e){} }
+function jacobModuleProg(n){ try{ const d=JSON.parse(localStorage.getItem('soh-lessons')||'{}')['j'+n]; return d?{seen:d.seen,total:d.total,done:d.seen>=d.total}:null; }catch(e){ return null; } }
+function jacobNextStudyModule(){ try{ const d=JSON.parse(localStorage.getItem('soh-lessons')||'{}');
+    return (typeof JACOB_MODULES!=='undefined'?JACOB_MODULES:[]).find(m=>m.lessons&&m.lessons.length && !(d['j'+m.n]&&d['j'+m.n].seen>=d['j'+m.n].total)) || null; }catch(e){ return null; } }
+
+let _juMod=null, _juSteps=null, _juStep=0;
 function jacobOpenModule(n){
   const m=JACOB_MODULES.find(x=>x.n===n); const stage=document.getElementById('jacobStage'); if(!m||!stage) return;
   if(typeof sohProgressSave==='function') sohProgressSave('jacob',{n:n});
   try{ const v=new Set(JSON.parse(localStorage.getItem('soh-jacob-seen')||'[]')); v.add(n); localStorage.setItem('soh-jacob-seen',JSON.stringify([...v])); }catch(e){}
-  const links=(m.links||[]).map(l=>`<a class="ju-link" href="${l.url}" target="_blank" rel="noopener noreferrer">▶ ${l.label}</a>`).join('');
+  document.getElementById('jacobHub').hidden=true; document.getElementById('jacobDetail').hidden=false;
+  if(m.lessons && m.lessons.length){
+    _juMod=m; _juSteps=[{kind:'intro'}].concat(m.lessons.map(L=>({kind:'lesson',L}))).concat([{kind:'practice'}]); _juStep=0;
+    jacobRenderStep(0);
+  } else { _juMod=null; _juSteps=null; jacobRenderSingle(m); }
+  window.scrollTo(0,0); buzz();
+}
+function jacobRenderSingle(m){
+  const stage=document.getElementById('jacobStage'); if(!stage) return;
   stage.innerHTML=`<div class="ju-slide jrn-in">
     <div class="ju-crumb">${m.kicker||'Module '+m.n}</div>
     <h2 class="learn-h">${m.title}</h2>
     <p class="jrn-lead ju-idea">${m.idea}</p>
-    <div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div><p>${m.harp}</p></div>
+    ${jacobHarpHTML(m.harp)}
     ${m.note?`<div class="ju-note"><span class="ju-note-k">Roots</span> ${m.note}</div>`:''}
-    ${m.toy==='oneNote'?jacobOneNoteHTML():''}${m.toy==='mirror'?jacobMirrorHTML():''}${m.toy==='arrivals'?jacobArrivalsHTML():''}${m.toy==='reharm'?jacobReharmHTML():''}
-    ${links?`<div class="ju-sec-t">Watch Jacob</div><div class="ju-links">${links}</div>`:''}
-    ${(typeof JACOB_DEEPER!=='undefined'&&JACOB_DEEPER[m.n])?`<div class="ju-sec-t">Go deeper</div>${jacobResHTML(JACOB_DEEPER[m.n])}`:''}
+    ${jacobToyHTML(m)}
+    ${jacobLinksHTML(m)}
+    ${jacobDeeperHTML(m)}
     ${jacobQuizHTML(m.n)}
   </div>`;
-  document.getElementById('jacobHub').hidden=true; document.getElementById('jacobDetail').hidden=false;
-  if(m.toy==='oneNote') jacobBindOneNote();
-  if(m.toy==='mirror') jacobBindMirror();
-  if(m.toy==='arrivals') jacobBindArrivals();
-  if(m.toy==='reharm') jacobBindReharm();
-  jacobBindQuiz();
+  jacobBindToy(m); jacobBindQuiz();
+}
+function jacobRenderStep(i){
+  const m=_juMod, stage=document.getElementById('jacobStage'); if(!m||!stage||!_juSteps) return;
+  _juStep=Math.max(0,Math.min(_juSteps.length-1,i)); const N=_juSteps.length, s=_juSteps[_juStep];
+  const dots=_juSteps.map((_,k)=>`<span class="jdot${k===_juStep?' on':''}${k<_juStep?' seen':''}"></span>`).join('');
+  let body='';
+  if(s.kind==='intro'){
+    body=`<h2 class="learn-h">${m.title}</h2><p class="jrn-lead ju-idea">${m.idea}</p>${jacobHarpHTML(m.harp)}${m.note?`<div class="ju-note"><span class="ju-note-k">Roots</span> ${m.note}</div>`:''}`;
+  } else if(s.kind==='lesson'){
+    const L=s.L;
+    body=`<div class="ju-step-k">${L.kick||'Learn'}</div><h2 class="learn-h">${L.h}</h2><p class="jrn-lead ju-idea">${L.body}</p>${L.harp?jacobHarpHTML(L.harp):''}`;
+  } else {
+    body=`<div class="ju-step-k">Practice &amp; explore</div><h2 class="learn-h">Put it under your hands</h2>${jacobToyHTML(m)}${jacobLinksHTML(m)}${jacobDeeperHTML(m)}${jacobQuizHTML(m.n)}`;
+  }
+  stage.innerHTML=`<div class="ju-slide jrn-in">
+    <div class="ju-crumb">${m.kicker||'Module '+m.n} · step ${_juStep+1} of ${N}</div>
+    <div class="ju-dots">${dots}</div>
+    ${body}
+    <div class="ju-nav">
+      <button class="jrn-btn ghost" id="juPrev">${_juStep===0?'‹ All modules':'‹ Back'}</button>
+      <button class="jrn-btn" id="juNext">${_juStep===N-1?'Finish ✓':'Next ›'}</button>
+    </div>
+  </div>`;
+  if(s.kind==='practice'){ jacobBindToy(m); jacobBindQuiz(); }
+  jacobModuleMark(m.n);
+  document.getElementById('juPrev').addEventListener('click',()=>jacobStepGo(-1));
+  document.getElementById('juNext').addEventListener('click',()=>jacobStepGo(1));
   window.scrollTo(0,0); buzz();
+}
+function jacobStepGo(d){
+  if(!_juSteps) return;
+  if(d<0 && _juStep===0){ jacobBack(); return; }
+  if(d>0 && _juStep===_juSteps.length-1){ jacobModuleMark(_juMod.n); jacobBack(); return; }
+  jacobRenderStep(_juStep+d);
 }
 /* --- Toy: Arrivals — same chord, different approach (GRAMMY U) --- */
 function jacobArrivalsHTML(){
@@ -3586,6 +3645,8 @@ function todayPathSteps(){
   const r=nxResume();
   if(r) steps.push({id:'lesson',t:'Lesson · '+r.title,m:6,go:r.go});
   else steps.push({id:'lesson',t:'Begin a lesson',m:6,v:'theory'});
+  if(typeof jacobNextStudyModule==='function'){ const jm=jacobNextStudyModule();
+    if(jm) steps.push({id:'jstudy',t:'Study · '+jm.title,m:5,go:()=>{ showView('jacob'); jacobOpenModule(jm.n); }}); }
   const soulful=(P.styles||[]).some(s=>/Jewish|Contemplative|Worship|Therapeutic/.test(s));
   steps.push(soulful? {id:'soul',t:'Contemplative close — drone & breath',m:4,v:'meditation'}
                     : {id:'improv',t:'Improvise on the wheel',m:4,v:'modes'});

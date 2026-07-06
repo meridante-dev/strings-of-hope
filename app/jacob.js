@@ -55,6 +55,7 @@ const JACOB_MODULES = [
   { n:3, title:'Major = 5ths, Minor = 4ths', kicker:'Negative harmony', toy:'mirror',
     idea:'Jacob’s pet duality: stack <b>fifths</b> and a chord opens and brightens (major); stack <b>fourths</b> and it sinks and deepens (minor). Minor is major <b>reflected</b> — this is <b>negative harmony</b> (from Ernst Levy’s book, which Jacob made famous): mirror every note around the axis <b>between the tonic and dominant</b>, and every chord gains a twin with equal gravity — “it converts everything perfect to plagal.” The leading tone that rises becomes a ♭6 that sinks.',
     harp:'Try the mirror below — each chord plays, then its reflection. On your E♭-tuned harp every one of these mirrors is reachable without a single retune.',
+    note:'The lineage: Hugo Riemann’s harmonic <b>dualism</b> (1893) → Ernst Levy’s <b>polarity</b> → Steve Coleman, who <b>coined “negative harmony”</b> → Barak Schmool, who taught it to Jacob at the Royal Academy. Read the roots in <i>Deeper study</i> below.',
     links:[ {label:'June Lee · negative harmony, the famous passage (1:36)', url:'https://youtu.be/DnBr070vcNE?t=96'},
             {label:'Qwest · major=5ths, minor=4ths (4:05)', url:'https://youtu.be/mLJVvjqMjbo?t=245'} ] },
 
@@ -79,12 +80,14 @@ const JACOB_MODULES = [
   { n:7, title:'Harmony from Nature', kicker:'The overtone series',
     idea:'Harmony isn’t invented — it’s <b>discovered</b> in the overtone series hiding inside every note. A pure fifth sits low in that series, which is why it sounds so stable. “In tune” (just) and the piano’s tempered tuning are subtly different worlds.',
     harp:'Sound a string’s natural harmonics and you’ll hear the chord nature already put there — this deepens our Science of Sound unit.',
+    note:'This is old, deep ground: Riemann derived minor from an <b>undertone</b> series, Partch rebuilt music on the pure ratios of the harmonic series. Both are free to read in <i>Deeper study</i>.',
     links:[ {label:'Qwest · harmonics & temperament (17:48)', url:'https://youtu.be/mLJVvjqMjbo?t=1068'},
             {label:'Whitacre · “Cloudburst = the overtone series” (43:56)', url:'https://youtu.be/sNCNFm17McA?t=2636'} ] },
 
   { n:8, title:'Beyond the 12 Notes', kicker:'Microtonality · candid',
     idea:'Jacob’s signature move is the note <b>between</b> the notes — modulating to a key a <b>quarter-tone</b> away (his Moon River does exactly this). Honestly: a lever harp lives in 12 notes and <b>can’t bend pitch</b> there. So this one is for your <b>ear and your voice</b>.',
     harp:'Candid truth: the diatonic harp can’t play these in-between notes. Train your ear to hear them, and sing them — that’s where they live.',
+    note:'Want the real theory? The <b>cents</b>, the pure ratios, the quarter- and eighth-tones are laid out in an openly-licensed chapter (CC BY, Justin Rubin) linked in <i>Go deeper</i> — legal to learn from, in plain language.',
     links:[ {label:'Mexico City · Moon River half-sharp key (~1:29)', url:'https://youtu.be/eVkaNI17ZoI?t=5340'},
             {label:'GRAMMY U · the key “between” the piano (38:08)', url:'https://youtu.be/VUmLhOXUcqU?t=2288'} ] },
 
@@ -147,4 +150,61 @@ const JACOB_QUIZ = {
       {q:'How do you practise the pocket on a harp?', a:'Loop a small pattern with the rhythm engine, then let it breathe slightly off the grid.'} ],
   10:[ {q:'What is a “golden brick”?', a:'A tiny seed — a couple of chords — that carries the DNA of a whole piece.'},
        {q:'What happens when you try to write something dishonest?', a:'You fail — “you end up being honest, you can’t help it.” So start anywhere.'} ],
+};
+
+/* ============================================================
+   GO DEEPER — curated per-module resources (2nd web scan).
+   Everything is a LINK-OUT to the original author, with attribution.
+   k: watch (video) · read (article/essay) · book (free/public-domain text) · tool (free interactive)
+   ============================================================ */
+const JACOB_DEEPER = {
+  0:[ {k:'watch', label:'WIRED · Jacob answers music-theory questions from Twitter', by:'WIRED', url:'https://www.youtube.com/watch?v=hyXCWYqpId4'},
+      {k:'read',  label:'The Language of Harmony', by:'NPR · TED Radio Hour', url:'https://www.npr.org/programs/ted-radio-hour/1105496499/jacob-collier-the-language-of-harmony'} ],
+  3:[ {k:'watch', label:'The Music Theory of Jacob Collier', by:'Adam Neely', url:'https://www.youtube.com/watch?v=TYuTE_1jvvE'},
+      {k:'watch', label:'Negative Harmony: Riemann, Geometry & Jacob Collier', by:'Adam Neely', url:'https://www.youtube.com/watch?v=q1t173iSqMk'},
+      {k:'book',  label:'A Theory of Harmony (the book Jacob revived) — full text', by:'Ernst Levy · Internet Archive', url:'https://archive.org/details/ErnstLevySiegmundLevarieATheoryOfHarmony'},
+      {k:'read',  label:'Symmetrical Movement Concept — where the term was coined', by:'Steve Coleman · m-base.com', url:'http://m-base.com/essays/symmetrical-movement-concept/'},
+      {k:'read',  label:'Negative harmony: the Levy legacy (myth-busting)', by:'Jazzmodes', url:'https://jazzmodes.wordpress.com/2017/09/20/negative-harmony-part-3-the-levy-legacy/'},
+      {k:'tool',  label:'Mirror any chord — Negative Harmony Calculator', by:'Forrest Balman', url:'https://forrestbalman.github.io/negative-harmony-calculator/'},
+      {k:'tool',  label:'Harmopark — generate the negative of a progression', by:'harmopark.app', url:'https://www.harmopark.app/'} ],
+  5:[ {k:'watch', label:'Why does this voicing feel so good?', by:'June Lee', url:'https://www.youtube.com/watch?v=MmI1Bfxr_vA'} ],
+  6:[ {k:'watch', label:'Reharmonizing hacks using EASY chords', by:'Aimee Nolte', url:'https://www.youtube.com/watch?v=w82U_vkBN-4'},
+      {k:'read',  label:'A Study in Reharmonization (Collier PhD, 2025)', by:'Chris Bandy · OhioLINK', url:'https://etd.ohiolink.edu/acprod/odb_etd/r/etd/search/10?p10_accession_num=kent1743091156028498'} ],
+  7:[ {k:'book',  label:'Harmonic dualism & the undertone series (1893)', by:'Hugo Riemann · IMSLP (public domain)', url:'https://imslp.org/wiki/Vereinfachte_Harmonielehre_(Riemann,_Hugo)'},
+      {k:'book',  label:'Genesis of a Music — just intonation, from the ground up', by:'Harry Partch · Internet Archive', url:'https://archive.org/details/genesisofmusicac0000part'} ],
+  8:[ {k:'watch', label:'How Jacob Collier uses microtonality & temperament', by:'Nahre Sol', url:'https://www.youtube.com/watch?v=NHC2XNGerW4'},
+      {k:'read',  label:'Jacob Collier’s four magical chords (the G½♯ modulation)', by:'Ethan Hein', url:'https://www.ethanhein.com/wp/2019/jacob-colliers-four-magical-chords/'},
+      {k:'read',  label:'Microtonality — the theory, adaptable & free (CC BY)', by:'Justin Rubin · UMN Open', url:'https://open.lib.umn.edu/musiccomposition/chapter/microtonality/'},
+      {k:'read',  label:'“A deliberate effort to break my perfect pitch open”', by:'Jacob Collier · MusicTech', url:'https://musictech.com/news/music/jacob-collier-microtonality-deliberate-effort-break-perfect-pitch-open/'} ],
+  10:[ {k:'tool', label:'Jacob Collier Audience Choir — free instrument', by:'Native Instruments', url:'https://www.native-instruments.com/en/products/komplete/vocal/jacob-collier-audience-choir/'} ],
+};
+
+/* ============================================================
+   DEEPER STUDY — the library behind Jacob's Universe.
+   Public-domain & free-to-read roots + the best breakdowns & tools.
+   Shown on the hub. Distilled in our own words; links go to the source.
+   ============================================================ */
+const JACOB_LIBRARY = {
+  intro:'The roots of Jacob’s thinking — free, public-domain and openly-licensed sources you can read, watch and play with. We teach these ideas in our own words; every link goes to its original author.',
+  groups:[
+    { t:'Foundational texts · free to read', items:[
+      {k:'book', label:'A Theory of Harmony', by:'Ernst Levy — full text on Internet Archive', url:'https://archive.org/details/ErnstLevySiegmundLevarieATheoryOfHarmony'},
+      {k:'read', label:'Symmetrical Movement Concept', by:'Steve Coleman — who coined “negative harmony”', url:'http://m-base.com/essays/symmetrical-movement-concept/'},
+      {k:'book', label:'Harmonic dualism (1893)', by:'Hugo Riemann — public domain, IMSLP', url:'https://imslp.org/wiki/Vereinfachte_Harmonielehre_(Riemann,_Hugo)'},
+      {k:'book', label:'Genesis of a Music', by:'Harry Partch — just intonation', url:'https://archive.org/details/genesisofmusicac0000part'} ]},
+    { t:'Learn the theory · video', items:[
+      {k:'watch', label:'The Music Theory of Jacob Collier', by:'Adam Neely', url:'https://www.youtube.com/watch?v=TYuTE_1jvvE'},
+      {k:'watch', label:'Negative Harmony: Riemann, Geometry & Collier', by:'Adam Neely', url:'https://www.youtube.com/watch?v=q1t173iSqMk'},
+      {k:'watch', label:'Microtonality & temperament', by:'Nahre Sol', url:'https://www.youtube.com/watch?v=NHC2XNGerW4'},
+      {k:'watch', label:'Reharmonizing hacks using easy chords', by:'Aimee Nolte', url:'https://www.youtube.com/watch?v=w82U_vkBN-4'} ]},
+    { t:'Read deeper · articles', items:[
+      {k:'read', label:'Negative harmony: the Levy legacy', by:'Jazzmodes — myth-busting', url:'https://jazzmodes.wordpress.com/2017/09/20/negative-harmony-part-3-the-levy-legacy/'},
+      {k:'read', label:'Jacob Collier’s four magical chords', by:'Ethan Hein', url:'https://www.ethanhein.com/wp/2019/jacob-colliers-four-magical-chords/'},
+      {k:'read', label:'The Master of Microtones', by:'Jamie Xu', url:'https://jamiesxu.medium.com/jacob-collier-the-master-of-microtones-e0680fb1589a'},
+      {k:'read', label:'Microtonality (openly licensed, CC BY)', by:'Justin Rubin · UMN Open', url:'https://open.lib.umn.edu/musiccomposition/chapter/microtonality/'} ]},
+    { t:'Play with it · free tools', items:[
+      {k:'tool', label:'Negative Harmony Calculator', by:'Forrest Balman', url:'https://forrestbalman.github.io/negative-harmony-calculator/'},
+      {k:'tool', label:'Harmopark — harmonic-table playground', by:'harmopark.app', url:'https://www.harmopark.app/'},
+      {k:'tool', label:'Audience Choir — free instrument', by:'Native Instruments', url:'https://www.native-instruments.com/en/products/komplete/vocal/jacob-collier-audience-choir/'} ]},
+  ]
 };

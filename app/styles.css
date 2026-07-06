@@ -1460,6 +1460,36 @@ body.cert-open{ overflow:hidden }
 .ju-link{ display:block;text-decoration:none;font-size:13.5px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px }
 .ju-link:active{ transform:scale(.99) }
 
+/* Scholarly roots note */
+.ju-note{ margin-top:14px;padding:12px 14px;border-radius:13px;font-size:12.5px;line-height:1.55;color:var(--ink-soft);
+  background:color-mix(in srgb,var(--gold) 7%,transparent);border:1px solid var(--line);border-left:2px solid var(--gold-deep) }
+.ju-note-k{ display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);margin-right:7px;vertical-align:1px }
+.ju-note b{ color:var(--ink);font-weight:700 } .ju-note i{ font-style:italic }
+
+/* Go-deeper / library resource rows */
+.ju-res-list{ display:flex;flex-direction:column;gap:8px }
+.ju-res{ display:flex;align-items:center;gap:11px;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:10px 12px;transition:transform .12s,border-color .12s }
+.ju-res:active{ transform:scale(.99) }
+.ju-res-k{ flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:46px;padding:6px 2px;border-radius:9px;
+  font-size:8.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);background:color-mix(in srgb,var(--gold) 13%,transparent) }
+.ju-res-i{ font-size:12px;line-height:1 }
+.ju-res-k.k-watch{ color:#c8683e;background:color-mix(in srgb,#d97a4a 15%,transparent) }
+.ju-res-k.k-tool{ color:#4a8f6b;background:color-mix(in srgb,#4a8f6b 15%,transparent) }
+.ju-res-k.k-book{ color:var(--gold-deep) }
+.ju-res-main{ flex:1;min-width:0;display:flex;flex-direction:column;gap:1px }
+.ju-res-t{ font-size:13px;font-weight:700;color:var(--ink);line-height:1.25 }
+.ju-res-by{ font-size:11px;color:var(--ink-faint) }
+.ju-res-go{ flex:0 0 auto;color:var(--ink-faint);font-size:15px;font-weight:700 }
+
+/* Deeper-study library on the hub */
+.ju-lib{ margin:30px 0 6px }
+.ju-lib-h{ margin-bottom:14px }
+.ju-lib-kick{ font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep) }
+.ju-lib-title{ font-family:"Playfair Display",serif;font-size:22px;font-weight:600;color:var(--ink);margin-top:3px }
+.ju-lib-intro{ font-size:12.5px;line-height:1.55;color:var(--ink-faint);margin-top:5px;max-width:34rem }
+.ju-lib-g{ margin-top:16px }
+.ju-lib-gt{ font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px }
+
 .ju-toy{ margin:18px 0 4px;padding:18px 16px;border-radius:18px;border:1px solid color-mix(in srgb,var(--gold) 30%,var(--line));
   background:color-mix(in srgb,var(--gold) 7%,var(--surface)) }
 .ju-held{ text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:14px }
@@ -1771,6 +1801,7 @@ body{
 [data-theme="light"] .thy-seal,
 [data-theme="light"] .et-opt,
 [data-theme="light"] .ju-link,
+[data-theme="light"] .ju-res,
 [data-theme="light"] .cof-link,
 [data-theme="light"] .cof-ch,
 [data-theme="light"] .hp-sheet,

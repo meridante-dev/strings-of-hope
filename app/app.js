@@ -2554,9 +2554,25 @@ function buildJacob(){
     b.addEventListener('click',()=>jacobOpenModule(m.n));
     host.appendChild(b);
   });
+  const lib=document.getElementById('jacobLibrary'); if(lib) lib.innerHTML=jacobLibraryHTML();
   const cr=document.getElementById('jacobCredit'); if(cr) cr.textContent=(typeof JACOB_SOURCE!=='undefined')?JACOB_SOURCE:'';
   document.getElementById('jacobHub').hidden=false; document.getElementById('jacobDetail').hidden=true;
   triggerReveals(document.getElementById('view-jacob'));
+}
+const JU_KIND={ watch:{i:'▶',t:'Watch'}, read:{i:'❧',t:'Read'}, book:{i:'❦',t:'Read'}, tool:{i:'✦',t:'Try'} };
+function jacobResHTML(list){
+  return `<div class="ju-res-list">${list.map(r=>{ const k=JU_KIND[r.k]||JU_KIND.read;
+    return `<a class="ju-res" href="${r.url}" target="_blank" rel="noopener noreferrer">
+      <span class="ju-res-k k-${r.k}"><span class="ju-res-i">${k.i}</span>${k.t}</span>
+      <span class="ju-res-main"><span class="ju-res-t">${r.label}</span><span class="ju-res-by">${r.by}</span></span>
+      <span class="ju-res-go">↗</span></a>`; }).join('')}</div>`;
+}
+function jacobLibraryHTML(){
+  if(typeof JACOB_LIBRARY==='undefined') return '';
+  const groups=JACOB_LIBRARY.groups.map(g=>`<div class="ju-lib-g"><div class="ju-lib-gt">${g.t}</div>${jacobResHTML(g.items)}</div>`).join('');
+  return `<div class="ju-lib"><div class="ju-lib-h"><span class="ju-lib-kick">Deeper study</span>
+    <div class="ju-lib-title">The library behind the universe</div>
+    <p class="ju-lib-intro">${JACOB_LIBRARY.intro}</p></div>${groups}</div>`;
 }
 function jacobOpenModule(n){
   const m=JACOB_MODULES.find(x=>x.n===n); const stage=document.getElementById('jacobStage'); if(!m||!stage) return;
@@ -2568,8 +2584,10 @@ function jacobOpenModule(n){
     <h2 class="learn-h">${m.title}</h2>
     <p class="jrn-lead ju-idea">${m.idea}</p>
     <div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div><p>${m.harp}</p></div>
+    ${m.note?`<div class="ju-note"><span class="ju-note-k">Roots</span> ${m.note}</div>`:''}
     ${m.toy==='oneNote'?jacobOneNoteHTML():''}${m.toy==='mirror'?jacobMirrorHTML():''}${m.toy==='arrivals'?jacobArrivalsHTML():''}${m.toy==='reharm'?jacobReharmHTML():''}
     ${links?`<div class="ju-sec-t">Watch Jacob</div><div class="ju-links">${links}</div>`:''}
+    ${(typeof JACOB_DEEPER!=='undefined'&&JACOB_DEEPER[m.n])?`<div class="ju-sec-t">Go deeper</div>${jacobResHTML(JACOB_DEEPER[m.n])}`:''}
     ${jacobQuizHTML(m.n)}
   </div>`;
   document.getElementById('jacobHub').hidden=true; document.getElementById('jacobDetail').hidden=false;

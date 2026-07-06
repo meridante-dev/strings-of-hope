@@ -74,6 +74,7 @@
         <button class="ico ico-feat" data-view="learn"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5a2 2 0 012-2h8a2 2 0 012 2v15l-6-3-6 3V5z"/><path d="M16 7h2a2 2 0 012 2v11"/></svg></span><span class="ico-l">Learn Modes</span></button>
         <button class="ico ico-feat" data-view="theory"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 18V7M9 18V4M14 18v-8M19 18V9"/><circle cx="4" cy="18" r="1.6" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="18" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Music Theory</span></button>
         <button class="ico ico-feat" data-view="jacob"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.3"/><ellipse cx="12" cy="12" rx="10" ry="4.3" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.3" transform="rotate(120 12 12)"/></svg></span><span class="ico-l">Jacob’s Universe</span></button>
+        <button class="ico ico-feat" data-view="shamayim"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V6a5 5 0 015-5M19 21C17 10 11 8 9 7M9 21h10"/><circle cx="17.5" cy="4.5" r="1" fill="currentColor" stroke="none"/><circle cx="20.5" cy="8" r="0.8" fill="currentColor" stroke="none"/><circle cx="14.5" cy="3" r="0.7" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Shamayim Harp</span></button>
         <button class="ico" data-view="harp"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V5a4 4 0 014-4M19 21c-2-9-8-11-10-12M9 21h10"/></svg></span><span class="ico-l">Tuning</span></button>
         <button class="ico ico-feat" data-view="circle"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="3.4" r="1.7" fill="currentColor" stroke="none"/><circle cx="19.4" cy="7.7" r="1.5" fill="currentColor" stroke="none"/><circle cx="19.4" cy="16.3" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="20.6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4.6" cy="16.3" r="1.5" fill="currentColor" stroke="none"/><circle cx="4.6" cy="7.7" r="1.5" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Circle of 5ths</span></button>
         <button class="ico ico-feat" data-view="eartraining"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 13a8 8 0 0116 0v4a2 2 0 01-2 2h-1a1 1 0 01-1-1v-3a1 1 0 011-1h2M4 13v3a2 2 0 002 2h1a1 1 0 001-1v-3a1 1 0 00-1-1H4"/></svg></span><span class="ico-l">Ear Training</span></button>
@@ -240,6 +241,30 @@
       <div id="jacobDetail" hidden>
         <button class="ju-back" id="jacobBack">‹ All modules</button>
         <div class="ju-stage" id="jacobStage"></div>
+      </div>
+    </section>
+
+    <!-- ================= SHAMAYIM HARP ================= -->
+    <section id="view-shamayim" class="view">
+      <div id="shamayimHub">
+        <div class="shy-sky reveal">
+          <div class="shy-heb">שָׁמַיִם</div>
+          <h1 class="shy-title">Shamayim Harp</h1>
+          <div class="shy-sub">The Heavenly Harp</div>
+          <p class="shy-lead" id="shamayimLead"></p>
+        </div>
+        <div class="shy-levels reveal" id="shamayimLevels"></div>
+        <div class="reveal" id="shamayimSources"></div>
+        <p class="heb-credit reveal" id="shamayimCredit"></p>
+        <footer class="reveal">
+          <img class="ly" src="img/lyre.png" alt="" />
+          <div class="ftag">The Harp Project · Edenrise</div>
+          <div class="cc">Strings of Hope</div>
+        </footer>
+      </div>
+      <div id="shamayimDetail" hidden>
+        <button class="ju-back" id="shamayimBack">‹ The five worlds</button>
+        <div class="shy-stage" id="shamayimStage"></div>
       </div>
     </section>
 
@@ -879,6 +904,7 @@
   <script src="jewish.js"></script>
   <script src="theory.js"></script>
   <script src="jacob.js"></script>
+  <script src="shamayim.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

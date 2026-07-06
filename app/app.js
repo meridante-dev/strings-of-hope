@@ -2831,6 +2831,87 @@ function initCompass(){ document.getElementById('compassBtn')?.addEventListener(
    ROUTING
    ============================================================ */
 function revealNow(root){ if(!root) return; root.querySelectorAll('.reveal:not(.in)').forEach(el=>{ el.classList.add('in'); try{ io.unobserve(el); }catch(e){} }); }
+/* ============================================================
+   SHAMAYIM HARP — the five-worlds contemplative journey
+   ============================================================ */
+function shyArt(n){
+  let s=(n*2654435761)>>>0; const rnd=()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; };
+  const g='shy'+n;
+  let stars=''; for(let i=0;i<16;i++){ const x=(rnd()*100).toFixed(1), y=(rnd()*70).toFixed(1), r=(0.3+rnd()*1.1).toFixed(2), o=(0.4+rnd()*0.6).toFixed(2);
+    stars+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity="${o}"/>`; }
+  let strings=''; for(let i=0;i<5;i++){ const x=(20+i*15+rnd()*4).toFixed(1); strings+=`<line x1="${x}" y1="34" x2="${(x*1+6).toFixed(1)}" y2="100" stroke="url(#gs${g})" stroke-width="0.5" opacity="0.5"/>`; }
+  return `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="${g}" cx="70%" cy="18%" r="90%">
+        <stop offset="0%" stop-color="#3a4d7a"/><stop offset="42%" stop-color="#1a2140"/><stop offset="100%" stop-color="#0a0a18"/>
+      </radialGradient>
+      <linearGradient id="gs${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e2b65c" stop-opacity="0.9"/><stop offset="100%" stop-color="#e2b65c" stop-opacity="0"/></linearGradient>
+    </defs>
+    <rect width="100" height="100" fill="url(#${g})"/>${stars}
+    <circle cx="72" cy="16" r="9" fill="#f3ead6" opacity="0.16"/><circle cx="72" cy="16" r="4.5" fill="#f6ecd4" opacity="0.5"/>
+    ${strings}</svg>`;
+}
+let _shyBound=false, _shyN=0;
+function shamayimSeen(n){ try{ return JSON.parse(localStorage.getItem('soh-shamayim-seen')||'[]').includes(n); }catch(e){ return false; } }
+function shamayimMarkSeen(n){ try{ const v=new Set(JSON.parse(localStorage.getItem('soh-shamayim-seen')||'[]')); v.add(n); localStorage.setItem('soh-shamayim-seen',JSON.stringify([...v])); }catch(e){} }
+function shyLibraryHTML(){
+  if(typeof SHAMAYIM_SOURCES==='undefined') return '';
+  const groups=SHAMAYIM_SOURCES.groups.map(g=>`<div class="ju-lib-g"><div class="ju-lib-gt">${g.t}</div>${jacobResHTML(g.items)}</div>`).join('');
+  return `<div class="ju-lib"><div class="ju-lib-h"><span class="ju-lib-kick">Foundations</span>
+    <div class="ju-lib-title">The ground beneath the journey</div>
+    <p class="ju-lib-intro">${SHAMAYIM_SOURCES.intro}</p></div>${groups}</div>`;
+}
+function buildShamayim(){
+  const host=document.getElementById('shamayimLevels'); if(!host || typeof SHAMAYIM_LEVELS==='undefined') return;
+  const lead=document.getElementById('shamayimLead'); if(lead&&typeof SHAMAYIM_INTRO!=='undefined') lead.innerHTML=SHAMAYIM_INTRO.lead;
+  host.innerHTML='';
+  SHAMAYIM_LEVELS.forEach(lv=>{ const b=document.createElement('button'); b.className='shy-card';
+    b.innerHTML=`<span class="shy-card-art">${shyArt(lv.n)}</span><span class="shy-card-scrim"></span>
+      <div class="shy-card-top"><span class="shy-card-n">${lv.n}</span><span class="shy-card-kick">${lv.kicker||''}</span>${shamayimSeen(lv.n)?'<span class="shy-done">✦</span>':''}</div>
+      <div class="shy-card-heb">${lv.heb}</div>
+      <div class="shy-card-t">${lv.tr}</div>
+      <div class="shy-card-w">${lv.world}</div>`;
+    b.addEventListener('click',()=>shamayimOpenLevel(lv.n)); host.appendChild(b); });
+  const lib=document.getElementById('shamayimSources'); if(lib) lib.innerHTML=shyLibraryHTML();
+  const cr=document.getElementById('shamayimCredit'); if(cr) cr.textContent=(typeof SHAMAYIM_SOURCE!=='undefined')?SHAMAYIM_SOURCE:'';
+  if(!_shyBound){ _shyBound=true; document.getElementById('shamayimBack')?.addEventListener('click',shamayimBack); }
+  document.getElementById('shamayimHub').hidden=false; document.getElementById('shamayimDetail').hidden=true;
+  triggerReveals(document.getElementById('view-shamayim'));
+}
+function shyBlockHTML(b){
+  if(b.k==='lead') return `<p class="shy-lead-big">${b.text}</p>`;
+  if(b.k==='prose') return `<p class="shy-prose">${b.text}</p>`;
+  if(b.k==='resonance') return `<p class="shy-resonance">${b.text}</p>`;
+  if(b.k==='scripture') return `<div class="shy-verse">${b.heb?`<div class="shy-verse-heb">${b.heb}</div>`:''}<p class="shy-verse-en">${b.text}</p><div class="shy-verse-ref">${b.ref}</div></div>`;
+  if(b.k==='science') return `<div class="shy-card2 shy-science"><div class="shy-card-k"><span class="shy-card-i">✦</span>${b.h}</div><p>${b.text}</p>${b.src?`<div class="shy-card-src">${b.src}</div>`:''}</div>`;
+  if(b.k==='tradition') return `<div class="shy-card2 shy-tradition"><div class="shy-card-k"><span class="shy-card-i">✡</span>${b.h}</div><p>${b.text}</p></div>`;
+  if(b.k==='quote') return `<blockquote class="shy-quote">${b.text}${b.by?`<cite>— ${b.by}</cite>`:''}</blockquote>`;
+  return '';
+}
+function shamayimOpenLevel(n){
+  const lv=SHAMAYIM_LEVELS.find(x=>x.n===n); const stage=document.getElementById('shamayimStage'); if(!lv||!stage) return;
+  _shyN=n; shamayimMarkSeen(n); if(typeof sohProgressSave==='function') try{ sohProgressSave('shamayim',{n:n}); }catch(e){}
+  const N=SHAMAYIM_LEVELS.length;
+  const blocks=lv.blocks.map(shyBlockHTML).join('');
+  stage.innerHTML=`<div class="shy-slide jrn-in">
+    <div class="shy-hero">${shyArt(n)}<div class="shy-hero-scrim"></div>
+      <div class="shy-hero-txt"><div class="shy-hero-heb">${lv.heb}</div><div class="shy-hero-tr">${lv.tr}</div><div class="shy-hero-w">${lv.world}</div></div></div>
+    <div class="shy-body">
+      <div class="shy-sub2">${lv.sub}</div>
+      ${blocks}
+      <div class="shy-nav">
+        <button class="jrn-btn ghost" id="shyPrev">${n===1?'‹ The five worlds':'‹ '+SHAMAYIM_LEVELS[n-2].tr}</button>
+        <button class="jrn-btn" id="shyNext">${n===N?'Complete ✦':SHAMAYIM_LEVELS[n].tr+' ›'}</button>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById('shamayimHub').hidden=true; document.getElementById('shamayimDetail').hidden=false;
+  document.getElementById('shyPrev').addEventListener('click',()=>{ if(n===1) shamayimBack(); else shamayimOpenLevel(n-1); });
+  document.getElementById('shyNext').addEventListener('click',()=>{ if(n===N) shamayimBack(); else shamayimOpenLevel(n+1); });
+  window.scrollTo(0,0); buzz();
+}
+function shamayimBack(){ document.getElementById('shamayimDetail').hidden=true; document.getElementById('shamayimHub').hidden=false; buildShamayim(); window.scrollTo(0,0); }
+
 function showView(name){
   if(!document.getElementById('view-'+name)) name='home';                 // never navigate to a missing view
   document.body.classList.remove('in-session');                            // never leave the nav stuck hidden
@@ -2859,6 +2940,7 @@ function showView(name){
     if(name==='circle') buildCircle();
     if(name==='eartraining') etEnter();
     if(name==='jacob') jacobEnter();
+    if(name==='shamayim') buildShamayim();
   }catch(err){ console.warn('view init error ('+name+'):', err); }
   try{ window.scrollTo(0,0); }catch(e){}
   observeReveals();

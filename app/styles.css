@@ -1500,6 +1500,67 @@ body.cert-open{ overflow:hidden }
 .ju-lib-g{ margin-top:16px }
 .ju-lib-gt{ font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px }
 
+/* ===== Shamayim Harp — the heavenly, cosmic section ===== */
+.shy-sky{ position:relative;overflow:hidden;text-align:center;border-radius:0 0 30px 30px;margin:-14px -18px 22px;padding:44px 24px 34px;
+  background:radial-gradient(120% 90% at 72% 8%, #3a4d7a 0%, #1a2140 44%, #0a0a18 100%);color:#f3ead6 }
+.shy-sky::after{ content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(1.5px 1.5px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 60% 20%,#fff,transparent),radial-gradient(1.5px 1.5px at 80% 40%,#fff,transparent),radial-gradient(1px 1px at 35% 55%,#fff,transparent),radial-gradient(1px 1px at 90% 15%,#fff,transparent);opacity:.6 }
+.shy-heb{ position:relative;font-family:'ShlomoStam',serif;direction:rtl;font-size:44px;line-height:1;color:#e2b65c;text-shadow:0 0 24px rgba(226,182,92,.4);margin-bottom:8px }
+.shy-title{ position:relative;font-family:"Playfair Display",serif;font-size:34px;font-weight:700;letter-spacing:.01em;margin:0 }
+.shy-sub{ position:relative;font-style:italic;font-size:15px;color:#c9b78f;margin-top:2px }
+.shy-lead{ position:relative;font-size:14px;line-height:1.6;color:#ddceac;max-width:30rem;margin:14px auto 0 }
+.shy-lead b{ color:#f3ead6 }
+
+.shy-levels{ display:flex;flex-direction:column;gap:12px }
+.shy-card{ position:relative;overflow:hidden;text-align:left;cursor:pointer;border:none;border-radius:20px;min-height:118px;padding:16px 18px;color:#f3ead6;
+  box-shadow:0 12px 30px -14px rgba(0,0,0,.6) }
+.shy-card:active{ transform:scale(.99) }
+.shy-card-art{ position:absolute;inset:0;z-index:0 } .shy-card-art svg{ width:100%;height:100% }
+.shy-card-scrim{ position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(10,10,24,.82) 30%,rgba(10,10,24,.35) 100%) }
+.shy-card>*{ position:relative;z-index:2 }
+.shy-card-top{ display:flex;align-items:center;gap:8px }
+.shy-card-n{ width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:11px;font-weight:800;color:#e2b65c;background:rgba(226,182,92,.16) }
+.shy-card-kick{ font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#c9b78f }
+.shy-done{ margin-left:auto;color:#e2b65c;font-size:14px }
+.shy-card-heb{ font-family:'ShlomoStam',serif;direction:rtl;font-size:30px;color:#e2b65c;margin-top:8px;line-height:1 }
+.shy-card-t{ font-family:"Playfair Display",serif;font-size:22px;font-weight:600;margin-top:2px }
+.shy-card-w{ font-size:12.5px;color:#c9b78f;font-style:italic }
+
+/* reader */
+.shy-stage{ margin:0 -18px }
+.shy-hero{ position:relative;height:190px;overflow:hidden }
+.shy-hero svg{ width:100%;height:100% }
+.shy-hero-scrim{ position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,24,.15),rgba(10,10,24,.55) 70%,var(--bg) 100%) }
+.shy-hero-txt{ position:absolute;left:18px;bottom:16px;color:#f3ead6 }
+.shy-hero-heb{ font-family:'ShlomoStam',serif;direction:rtl;font-size:40px;color:#e2b65c;line-height:1;text-shadow:0 0 20px rgba(226,182,92,.4) }
+.shy-hero-tr{ font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#c9b78f;margin-top:6px }
+.shy-hero-w{ font-family:"Playfair Display",serif;font-size:26px;font-weight:600;margin-top:1px }
+.shy-body{ padding:20px 18px 8px;max-width:34rem;margin:0 auto }
+.shy-sub2{ font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px }
+.shy-lead-big{ font-family:"Playfair Display",serif;font-size:20px;line-height:1.5;color:var(--ink);margin:0 0 16px }
+.shy-prose{ font-size:15px;line-height:1.72;color:var(--ink-soft);margin:0 0 15px }
+.shy-prose b{ color:var(--ink);font-weight:700 }
+.shy-resonance{ font-style:italic;font-size:16px;line-height:1.7;color:var(--ink);text-align:center;margin:20px auto;padding:0 8px;max-width:28rem }
+.shy-resonance::before,.shy-resonance::after{ content:"·  ·  ·";display:block;color:var(--gold-deep);font-style:normal;letter-spacing:.3em;opacity:.6;margin:8px 0 }
+
+.shy-verse{ margin:18px 0;padding:16px 18px;border-radius:16px;text-align:center;
+  background:radial-gradient(120% 100% at 50% 0%, rgba(58,77,122,.14), transparent);border:1px solid var(--line);border-top:2px solid var(--gold-deep) }
+.shy-verse-heb{ font-family:'ShlomoStam',serif;direction:rtl;font-size:26px;line-height:1.7;color:var(--ink);margin-bottom:10px }
+.shy-verse-en{ font-size:14.5px;line-height:1.65;font-style:italic;color:var(--ink-soft);margin:0 }
+.shy-verse-ref{ font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);margin-top:9px }
+
+.shy-card2{ margin:16px 0;padding:15px 16px;border-radius:15px;border:1px solid var(--line) }
+.shy-card2 p{ font-size:14px;line-height:1.65;color:var(--ink-soft);margin:0 } .shy-card2 p b{ color:var(--ink) }
+.shy-card-k{ display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px }
+.shy-card-i{ font-size:13px }
+.shy-card-src{ font-size:10.5px;font-style:italic;line-height:1.4;color:var(--ink-faint);margin-top:9px;padding-top:8px;border-top:1px solid var(--line) }
+.shy-science{ background:color-mix(in srgb,#4a6ea0 8%,transparent) } .shy-science .shy-card-k{ color:#6a8fc0 }
+.shy-tradition{ background:color-mix(in srgb,var(--gold) 8%,transparent) } .shy-tradition .shy-card-k{ color:var(--gold-deep) }
+.shy-quote{ margin:18px 0;padding-left:14px;border-left:2px solid var(--gold-deep);font-style:italic;font-size:15px;line-height:1.6;color:var(--ink-soft) }
+.shy-quote cite{ display:block;font-style:normal;font-size:12px;color:var(--ink-faint);margin-top:6px }
+.shy-nav{ display:flex;gap:10px;margin-top:26px } .shy-nav .jrn-btn{ flex:1 }
+[data-theme="light"] .shy-science{ background:rgba(74,110,160,.1) }
+
 .ju-toy{ margin:18px 0 4px;padding:18px 16px;border-radius:18px;border:1px solid color-mix(in srgb,var(--gold) 30%,var(--line));
   background:color-mix(in srgb,var(--gold) 7%,var(--surface)) }
 .ju-held{ text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:14px }

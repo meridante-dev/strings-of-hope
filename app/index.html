@@ -75,6 +75,7 @@
         <button class="ico ico-feat" data-view="theory"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 18V7M9 18V4M14 18v-8M19 18V9"/><circle cx="4" cy="18" r="1.6" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="18" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Music Theory</span></button>
         <button class="ico ico-feat" data-view="jacob"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.3"/><ellipse cx="12" cy="12" rx="10" ry="4.3" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.3" transform="rotate(120 12 12)"/></svg></span><span class="ico-l">Jacob’s Universe</span></button>
         <button class="ico ico-feat" data-view="shamayim"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V6a5 5 0 015-5M19 21C17 10 11 8 9 7M9 21h10"/><circle cx="17.5" cy="4.5" r="1" fill="currentColor" stroke="none"/><circle cx="20.5" cy="8" r="0.8" fill="currentColor" stroke="none"/><circle cx="14.5" cy="3" r="0.7" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Shamayim Harp</span></button>
+        <button class="ico ico-feat" data-view="chen"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v18"/><path d="M7 7l-4 5 4 5"/><path d="M17 7l4 5-4 5"/></svg></span><span class="ico-l">Chen · Symmetry</span></button>
         <button class="ico" data-view="credits"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg></span><span class="ico-l">Credits</span></button>
         <button class="ico" data-view="harp"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V5a4 4 0 014-4M19 21c-2-9-8-11-10-12M9 21h10"/></svg></span><span class="ico-l">Tuning</span></button>
         <button class="ico ico-feat" data-view="circle"><span class="ico-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="3.4" r="1.7" fill="currentColor" stroke="none"/><circle cx="19.4" cy="7.7" r="1.5" fill="currentColor" stroke="none"/><circle cx="19.4" cy="16.3" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="20.6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4.6" cy="16.3" r="1.5" fill="currentColor" stroke="none"/><circle cx="4.6" cy="7.7" r="1.5" fill="currentColor" stroke="none"/></svg></span><span class="ico-l">Circle of 5ths</span></button>
@@ -266,6 +267,31 @@
       <div id="shamayimDetail" hidden>
         <button class="ju-back" id="shamayimBack">‹ The five worlds</button>
         <div class="shy-stage" id="shamayimStage"></div>
+      </div>
+    </section>
+
+    <!-- ================= CHEN · MUSICAL SYMMETRY ================= -->
+    <section id="view-chen" class="view">
+      <div id="chenHub">
+        <div class="chen-head reveal">
+          <div class="chen-heb">חֵן</div>
+          <h1 class="chen-title">Chen</h1>
+          <div class="chen-sub">Musical Symmetry &amp; Grace</div>
+          <div class="chen-teacher" id="chenTeacher"></div>
+          <p class="chen-lead" id="chenLead"></p>
+        </div>
+        <div class="chen-modules reveal" id="chenModules"></div>
+        <div class="reveal" id="chenSources"></div>
+        <p class="heb-credit reveal" id="chenCredit"></p>
+        <footer class="reveal">
+          <img class="ly" src="img/lyre.png" alt="" />
+          <div class="ftag">Grace holds its opposite.</div>
+          <div class="cc">Strings of Hope</div>
+        </footer>
+      </div>
+      <div id="chenDetail" hidden>
+        <button class="ju-back" id="chenBack">‹ All teachings</button>
+        <div class="chen-stage" id="chenStage"></div>
       </div>
     </section>
 
@@ -921,6 +947,7 @@
   <script src="theory.js"></script>
   <script src="jacob.js"></script>
   <script src="shamayim.js"></script>
+  <script src="chen.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

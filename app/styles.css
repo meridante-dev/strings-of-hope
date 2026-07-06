@@ -1573,6 +1573,48 @@ body.cert-open{ overflow:hidden }
 .creds-foot{ max-width:34rem;margin:22px auto 0;font-size:12px;line-height:1.6;font-style:italic;color:var(--ink-faint);text-align:center }
 [data-theme="light"] .creds-item{ background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,253,246,.5));border:1px solid rgba(255,255,255,.9) }
 
+/* ===== Chen · Musical Symmetry (Ariel Cohen Alloro) ===== */
+.chen-head{ position:relative;overflow:hidden;text-align:center;border-radius:0 0 30px 30px;margin:-14px -18px 22px;padding:44px 24px 30px;
+  background:radial-gradient(120% 90% at 50% 12%, #4a361a 0%, #2a1c0c 52%, #140d05 100%);color:#f3ead6 }
+.chen-head::after{ content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,rgba(226,182,92,.4),transparent) }
+.chen-heb{ position:relative;font-family:'ShlomoStam',serif;direction:rtl;font-size:48px;line-height:1;color:#e2b65c;text-shadow:0 0 22px rgba(226,182,92,.4) }
+.chen-title{ position:relative;font-family:"Playfair Display",serif;font-size:34px;font-weight:700;margin:6px 0 0 }
+.chen-sub{ position:relative;font-style:italic;font-size:15px;color:#c9b78f }
+.chen-teacher{ position:relative;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);margin-top:10px }
+.chen-lead{ position:relative;font-size:14px;line-height:1.6;color:#ddceac;max-width:30rem;margin:12px auto 0 } .chen-lead b{ color:#f3ead6 }
+
+.chen-modules{ display:flex;flex-direction:column;gap:12px }
+.chen-card{ position:relative;overflow:hidden;text-align:left;cursor:pointer;border:none;border-radius:20px;min-height:96px;padding:15px 17px;color:#f3ead6;box-shadow:0 12px 28px -14px rgba(0,0,0,.55) }
+.chen-card:active{ transform:scale(.99) }
+.chen-card-art{ position:absolute;inset:0;z-index:0 } .chen-card-art svg{ width:100%;height:100% }
+.chen-card-scrim{ position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(20,13,5,.82) 34%,rgba(20,13,5,.32) 100%) }
+.chen-card>*{ position:relative;z-index:2 }
+.chen-card-top{ display:flex;align-items:center;gap:8px }
+.chen-card-n{ width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:11px;font-weight:800;color:#e2b65c;background:rgba(226,182,92,.16) }
+.chen-card-kick{ font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#c9b78f }
+.chen-toytag{ margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.04em;color:#2c2206;background:linear-gradient(180deg,var(--gold-grad-a),var(--gold-grad-b));border-radius:999px;padding:2px 9px }
+.chen-done{ margin-left:auto;color:#e2b65c;font-size:14px }
+.chen-card-t{ font-family:"Playfair Display",serif;font-size:21px;font-weight:600;margin-top:9px }
+
+.chen-stage{ margin:0 -18px }
+.chen-hero{ position:relative;height:150px;overflow:hidden } .chen-hero svg{ width:100%;height:100% }
+.chen-hero-scrim{ position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,13,5,.2),rgba(20,13,5,.55) 70%,var(--bg) 100%) }
+.chen-hero-txt{ position:absolute;left:18px;bottom:15px;color:#f3ead6 }
+.chen-hero-kick{ font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#c9b78f }
+.chen-hero-t{ font-family:"Playfair Display",serif;font-size:27px;font-weight:600;margin-top:2px }
+.chen-body{ padding:20px 18px 8px;max-width:34rem;margin:0 auto }
+.chen-lead-big{ font-family:"Playfair Display",serif;font-size:19px;line-height:1.5;color:var(--ink);margin:0 0 16px }
+.chen-prose{ font-size:15px;line-height:1.72;color:var(--ink-soft);margin:0 0 15px } .chen-prose b{ color:var(--ink);font-weight:700 }
+.chen-teach{ display:flex;gap:12px;align-items:flex-start;margin:16px 0;padding:14px 16px;border-radius:15px;
+  background:color-mix(in srgb,var(--gold) 9%,transparent);border:1px solid var(--line);border-left:2px solid var(--gold-deep) }
+.chen-teach-i{ flex:0 0 auto;font-family:'ShlomoStam',serif;font-size:22px;color:var(--gold-deep);line-height:1 }
+.chen-teach p{ font-size:14px;line-height:1.6;color:var(--ink);margin:0;font-weight:500 }
+.chen-quote{ margin:18px 0;padding-left:14px;border-left:2px solid var(--gold-deep);font-family:"Playfair Display",serif;font-style:italic;font-size:17px;line-height:1.5;color:var(--ink) }
+.chen-quote cite{ display:block;font-family:var(--sans,sans-serif);font-style:normal;font-size:12px;color:var(--ink-faint);margin-top:8px }
+.chen-resonance{ font-style:italic;font-size:16px;line-height:1.7;color:var(--ink);text-align:center;margin:22px auto;max-width:28rem }
+.chen-scale{ display:grid;grid-template-columns:repeat(3,1fr);gap:8px }
+.chen-retro{ display:grid;grid-template-columns:1fr 1fr;gap:8px }
+
 .ju-toy{ margin:18px 0 4px;padding:18px 16px;border-radius:18px;border:1px solid color-mix(in srgb,var(--gold) 30%,var(--line));
   background:color-mix(in srgb,var(--gold) 7%,var(--surface)) }
 .ju-held{ text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:14px }

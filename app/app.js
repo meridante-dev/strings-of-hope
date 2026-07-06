@@ -2913,6 +2913,109 @@ function shamayimOpenLevel(n){
 function shamayimBack(){ document.getElementById('shamayimDetail').hidden=true; document.getElementById('shamayimHub').hidden=false; buildShamayim(); window.scrollTo(0,0); }
 
 /* ============================================================
+   CHEN — Musical Symmetry & Grace (Ariel Cohen Alloro)
+   ============================================================ */
+function chenArt(n){
+  const g='chn'+n, hue=n%2?'#2a1c0c':'#241a10';
+  let chev=''; for(let i=0;i<6;i++){ const y=18+i*14, o=(0.55-i*0.06).toFixed(2);
+    chev+=`<path d="M50 ${y} L30 ${y+9} M50 ${y} L70 ${y+9}" stroke="#e2b65c" stroke-width="0.7" opacity="${o}" fill="none"/>`; }
+  return `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="${g}" cx="50%" cy="42%" r="75%"><stop offset="0%" stop-color="#4a361a"/><stop offset="55%" stop-color="${hue}"/><stop offset="100%" stop-color="#140d05"/></radialGradient></defs>
+    <rect width="100" height="100" fill="url(#${g})"/>
+    <line x1="50" y1="6" x2="50" y2="94" stroke="#e2b65c" stroke-width="0.5" opacity="0.5"/>${chev}
+    <circle cx="50" cy="50" r="3" fill="#f6ecd4" opacity="0.5"/></svg>`;
+}
+let _chenBound=false;
+function chenSeen(n){ try{ return JSON.parse(localStorage.getItem('soh-chen-seen')||'[]').includes(n); }catch(e){ return false; } }
+function chenMarkSeen(n){ try{ const v=new Set(JSON.parse(localStorage.getItem('soh-chen-seen')||'[]')); v.add(n); localStorage.setItem('soh-chen-seen',JSON.stringify([...v])); }catch(e){} }
+function chenLibraryHTML(){
+  if(typeof CHEN_SOURCES==='undefined') return '';
+  const groups=CHEN_SOURCES.groups.map(g=>`<div class="ju-lib-g"><div class="ju-lib-gt">${g.t}</div>${jacobResHTML(g.items)}</div>`).join('');
+  return `<div class="ju-lib"><div class="ju-lib-h"><span class="ju-lib-kick">Sources</span>
+    <div class="ju-lib-title">Where this comes from</div><p class="ju-lib-intro">${CHEN_SOURCES.intro}</p></div>${groups}</div>`;
+}
+function buildChen(){
+  const host=document.getElementById('chenModules'); if(!host || typeof CHEN_MODULES==='undefined') return;
+  if(typeof CHEN_INTRO!=='undefined'){ const t=document.getElementById('chenTeacher'), l=document.getElementById('chenLead');
+    if(t) t.textContent=CHEN_INTRO.teacher; if(l) l.innerHTML=CHEN_INTRO.lead; }
+  host.innerHTML='';
+  CHEN_MODULES.forEach(m=>{ const b=document.createElement('button'); b.className='chen-card';
+    b.innerHTML=`<span class="chen-card-art">${chenArt(m.n)}</span><span class="chen-card-scrim"></span>
+      <div class="chen-card-top"><span class="chen-card-n">${m.n}</span><span class="chen-card-kick">${m.kicker||''}</span>${m.toy?'<span class="chen-toytag">▶ play</span>':(chenSeen(m.n)?'<span class="chen-done">✦</span>':'')}</div>
+      <div class="chen-card-t">${m.title}</div>`;
+    b.addEventListener('click',()=>chenOpenModule(m.n)); host.appendChild(b); });
+  const lib=document.getElementById('chenSources'); if(lib) lib.innerHTML=chenLibraryHTML();
+  const cr=document.getElementById('chenCredit'); if(cr) cr.textContent=(typeof CHEN_SOURCE!=='undefined')?CHEN_SOURCE:'';
+  if(!_chenBound){ _chenBound=true; document.getElementById('chenBack')?.addEventListener('click',chenBack); }
+  document.getElementById('chenHub').hidden=false; document.getElementById('chenDetail').hidden=true;
+  triggerReveals(document.getElementById('view-chen'));
+}
+/* Toy: the 8-note symmetrical (octatonic) scale */
+function chenOctatonicHTML(){
+  const pads=CHEN_OCTATONIC.degrees.map((d,i)=>`<button class="ju-chord chen-deg" data-i="${i}">${d}</button>`).join('');
+  return `<div class="ju-toy"><div class="ju-held"><span class="ju-held-k">The 8-string scale</span><span class="ju-held-n">חֵן</span><span class="ju-held-s">${CHEN_OCTATONIC.name} — whole, half, whole, half…</span></div>
+    <div class="chen-scale">${pads}</div>
+    <button class="ju-rh-play" id="chenScalePlay">▶ Play the scale</button></div>`;
+}
+function chenBindOctatonic(){
+  const stage=document.getElementById('chenStage'); if(!stage) return;
+  stage.querySelectorAll('.chen-deg').forEach(btn=>btn.addEventListener('click',()=>{ const i=+btn.dataset.i;
+    if(typeof audioCtx==='function') harpPluck(etMidiFreq(CHEN_OCTATONIC.notes[i]), audioCtx().currentTime+0.03, 1.6); buzz(); }));
+  document.getElementById('chenScalePlay')?.addEventListener('click',()=>{ if(typeof audioCtx!=='function') return;
+    const ac=audioCtx(); CHEN_OCTATONIC.notes.forEach((m,k)=>harpPluck(etMidiFreq(m), ac.currentTime+0.05+k*0.28, 1.4)); buzz(); });
+}
+/* Toy: retrograde — forward, then its reverse answers it */
+function chenRetroHTML(){
+  return `<div class="ju-toy"><div class="ju-held"><span class="ju-held-k">Forward &amp; reverse</span><span class="ju-held-n">↔</span><span class="ju-held-s">${CHEN_RETRO.label} — hear it answer itself</span></div>
+    <div class="chen-retro"><button class="ju-rh-tab on" id="chenFwd">▶ Forward</button><button class="ju-rh-tab" id="chenRev">◀ In reverse</button></div>
+    <div class="ju-readout" id="chenRetroOut"><span class="ju-feel">Play forward, then reverse.</span><span class="ju-role">On a symmetrical scale, the reverse becomes the answer.</span></div></div>`;
+}
+function chenPlayMelody(rev){ if(typeof audioCtx!=='function') return; const ac=audioCtx();
+  const seq=rev?[...CHEN_RETRO.melody].reverse():CHEN_RETRO.melody; seq.forEach((m,k)=>harpPluck(etMidiFreq(m), ac.currentTime+0.05+k*0.3, 1.5)); }
+function chenBindRetro(){
+  document.getElementById('chenFwd')?.addEventListener('click',()=>{ chenPlayMelody(false);
+    document.getElementById('chenFwd').classList.add('on'); document.getElementById('chenRev').classList.remove('on');
+    const r=document.getElementById('chenRetroOut'); if(r) r.innerHTML='<span class="ju-feel">Forward</span><span class="ju-role">the phrase as written.</span>'; buzz(); });
+  document.getElementById('chenRev')?.addEventListener('click',()=>{ chenPlayMelody(true);
+    document.getElementById('chenRev').classList.add('on'); document.getElementById('chenFwd').classList.remove('on');
+    const r=document.getElementById('chenRetroOut'); if(r) r.innerHTML='<span class="ju-feel">In reverse — its own answer</span><span class="ju-role">the same notes, mirrored in time.</span>'; buzz(); });
+}
+function chenBlockHTML(b){
+  if(b.k==='lead') return `<p class="chen-lead-big">${b.text}</p>`;
+  if(b.k==='prose') return `<p class="chen-prose">${b.text}</p>`;
+  if(b.k==='teaching') return `<div class="chen-teach"><span class="chen-teach-i">חן</span><p>${b.text}</p></div>`;
+  if(b.k==='quote') return `<blockquote class="chen-quote">${b.text}${b.by?`<cite>${b.by}</cite>`:''}</blockquote>`;
+  if(b.k==='harp') return `<div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div><p>${b.text}</p></div>`;
+  if(b.k==='science') return `<div class="shy-card2 shy-science"><div class="shy-card-k"><span class="shy-card-i">✦</span>${b.h}</div><p>${b.text}</p>${b.src?`<div class="shy-card-src">${b.src}</div>`:''}</div>`;
+  if(b.k==='resonance') return `<p class="chen-resonance">${b.text}</p>`;
+  if(b.k==='toy') return b.toy==='octatonic'?chenOctatonicHTML():b.toy==='retro'?chenRetroHTML():'';
+  return '';
+}
+function chenOpenModule(n){
+  const m=CHEN_MODULES.find(x=>x.n===n); const stage=document.getElementById('chenStage'); if(!m||!stage) return;
+  chenMarkSeen(n); if(typeof sohProgressSave==='function') try{ sohProgressSave('chen',{n:n}); }catch(e){}
+  const N=CHEN_MODULES.length;
+  stage.innerHTML=`<div class="chen-slide jrn-in">
+    <div class="chen-hero">${chenArt(n)}<div class="chen-hero-scrim"></div>
+      <div class="chen-hero-txt"><div class="chen-hero-kick">${m.kicker||''}</div><div class="chen-hero-t">${m.title}</div></div></div>
+    <div class="chen-body">
+      ${m.blocks.map(chenBlockHTML).join('')}
+      <div class="shy-nav">
+        <button class="jrn-btn ghost" id="chenPrev">${n===0?'‹ All teachings':'‹ '+CHEN_MODULES[n-1].title}</button>
+        <button class="jrn-btn" id="chenNext">${n===N-1?'Complete ✦':CHEN_MODULES[n+1].title+' ›'}</button>
+      </div>
+    </div>
+  </div>`;
+  if(m.toy==='octatonic') chenBindOctatonic();
+  if(m.toy==='retro') chenBindRetro();
+  document.getElementById('chenHub').hidden=true; document.getElementById('chenDetail').hidden=false;
+  document.getElementById('chenPrev').addEventListener('click',()=>{ if(n===0) chenBack(); else chenOpenModule(n-1); });
+  document.getElementById('chenNext').addEventListener('click',()=>{ if(n===N-1) chenBack(); else chenOpenModule(n+1); });
+  window.scrollTo(0,0); buzz();
+}
+function chenBack(){ document.getElementById('chenDetail').hidden=true; document.getElementById('chenHub').hidden=false; buildChen(); window.scrollTo(0,0); }
+
+/* ============================================================
    CREDITS & LICENSES — everything free, legal, and attributed
    ============================================================ */
 const CREDITS = [
@@ -2940,6 +3043,7 @@ const CREDITS = [
     {n:'Jacob Collier’s masterclasses & interviews', l:'Link-out', d:'Every concept is taught in our own words with links to the original videos; no transcripts or footage are hosted.'},
     {n:'Public-domain Jewish-music scholarship', l:'Public Domain', d:'A.Z. Idelsohn (1929) and the Jewish Encyclopedia (1906) — freely adaptable, with attribution.'},
     {n:'Modern Jewish-music scholarship', l:'Link-out', d:'Tarsi, the Journal of Synagogue Music, Bernard, Rapport, Kleinman, and others — their ideas taught in our own words, with citation and links; their text and notation are never copied. Haïk-Vantoura’s decipherment is cited as one contested theory.'},
+    {n:'Ariel Cohen Alloro — Chen & symmetrical music', l:'Attributed', d:'The Chen section adapts and abridges his teachings in our own words, clearly attributed. The underlying music theory (the octatonic scale, retrograde) is standard and public; his Kabbalah–physics framework is presented as his teaching, not as established science.'},
   ]},
   { t:'Science', items:[
     {n:'Cited research', l:'Attributed', d:'Established findings (music therapy, cymatics, frisson/dopamine, awe, string theory) are cited to their researchers. Where a parallel between tradition and physics is poetic rather than proven, it is marked as such — never presented as established fact.'},
@@ -2983,6 +3087,7 @@ function showView(name){
     if(name==='eartraining') etEnter();
     if(name==='jacob') jacobEnter();
     if(name==='shamayim') buildShamayim();
+    if(name==='chen') buildChen();
     if(name==='credits') buildCredits();
   }catch(err){ console.warn('view init error ('+name+'):', err); }
   try{ window.scrollTo(0,0); }catch(e){}

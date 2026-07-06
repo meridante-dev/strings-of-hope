@@ -1,10 +1,36 @@
 # ▶ RESUME HERE — Strings of Hope
-*Checkpoint 2026-07-03 (evening). Working tree clean, all pushed, deploy verified live.*
+*Checkpoint 2026-07-06 (evening). Working tree clean, all pushed (`73462e6`), deploy verified live.*
 
 ## Live & repo
-- **App:** https://meridante-dev.github.io/strings-of-hope/ (public, auto-deploys on every push to main; the Pages queue is flaky — the verify loop auto-reruns failed deploys)
-- **Repo:** https://github.com/meridante-dev/strings-of-hope (public) · last commit `9444614`
+- **App:** https://meridante-dev.github.io/strings-of-hope/ (public, auto-deploys on every push to main)
+- **Repo:** https://github.com/meridante-dev/strings-of-hope (public) · last commit `73462e6`
 - Workflow: local build → Playwright screenshots from a scratchpad COPY (macOS blocks headless Chromium on the Ultra Touch volume) → user approves visuals → commit/push. **No Netlify.**
+- ⚠️ **Deploy gotcha:** never `gh run rerun --failed` the Pages job (duplicate-artifact error). Recover with a FRESH run: `gh workflow run pages.yml --ref main`. See memory [[pages-deploy-gotcha]].
+
+## ✅ Shipped 2026-07-06 (today's session)
+- **Jacob's Universe:** Arrivals + Reharm Lab toys + per-module quizzes; wired into Harpie's KB; 2nd web-scan (40+ legal sources) → per-module "Go deeper" + "Deeper Study" library; **modules → taught lesson-paths** (engine + progress) with **Negative Harmony (Mod 3)** & **Microtonality (Mod 8, from CC BY)** fully authored. *Only 2 of 11 modules have taught lessons so far.*
+- **Music Theory:** Semester 6 "Theory in the Real World" (9 OMT chapters, CC BY-SA); **premium gamification** — XP, 8 ranks, progress bars, certificates + course diploma (in `app.js` `sohTheoryStats`, `theoryMasterHTML`, cert modal).
+- **NEW section — Shamayim Harp** (`app/shamayim.js`, view `view-shamayim`): contemplative 5-soul-world journey (Edenrise). See [[shamayim-harp]].
+- **NEW section — Chen · Musical Symmetry** (`app/chen.js`, view `view-chen`): Ariel Cohen Alloro; octatonic-scale + retrograde toys. See [[chen-section]].
+- **Legal pass:** app built 100% legal worldwide — JPS 1917 (PD) scripture, OFL fonts, MIT/BSD/0BSD libs; **Credits & Licenses page** (`view-credits`, `buildCredits`/`CREDITS`). All copyrighted scholarship = cite/link-out, own words. "Kabbalah" → "Jewish Mysticism" app-wide.
+- Research preserved: `docs/jewish-music-and-harp-sources.md`, `docs/jacob-web-resources.md` (Scan 2).
+
+## 🗺️ ROADMAP — build next (recommended order)
+1. **Finish Jacob taught-lessons** across remaining 9 modules + add a **Jacob's Universe certificate**.
+2. **Jewish Prayer-Modes theory section** (nusach, Freygish/Adonai Malach/Magein Avot, cantillation te'amim, Weekly Maqam) — all sources vetted in `docs/jewish-music-and-harp-sources.md`. Build like Jacob (stepped lessons + harp-mapping + honest attribution).
+3. **Mic chord tests + scored Challenge Track** (arpeggio-based first, then polyphonic chromagram beta) → feeds XP/certificates. *The last unbuilt OMT feature.*
+4. **Discoverability:** add Shamayim + Chen to the home rails (currently only in the Everything menu); wire both into Harpie's KB.
+5. **Expand OMT** into a fuller multi-unit track (deep jazz, post-tonal, form, counterpoint).
+6. **Chen/Shamayim polish:** a final-composition toy for Chen; more toys.
+7. **Phase 5 backend** (see WhatsApp roadmap given to user 2026-07-06): cloud accounts + cross-device sync, community/groups/duets, teacher dashboard, record-and-get-feedback, cloud-powered Harpie, shared song library, verified shareable certificates, practice reminders, events/retreat booking, payments.
+8. Legal niceties: Terms/Privacy note + bundle full MIT/BSD license texts (`vendor/LICENSES`).
+
+## Reference — sections & their files
+- Music Theory: `theory.js` (6 semesters) · Jacob: `jacob.js` + `JACOB_DEEPER`/`JACOB_LIBRARY` · Shamayim: `shamayim.js` · Chen: `chen.js` · Credits: `CREDITS` in `app.js`. Stepped-lesson engine: `jacobOpenModule`/`jacobRenderStep` in `app.js`.
+
+---
+## (Older) checkpoint notes below
+
 
 ## State of the world (all shipped & live)
 - **Design:** Dark Luxe · Judean Desert identity + Klaf light toggle (☀/☾ topbar) + procedural SVG art on all cards. Jacob's Universe art = **heavenly clouds** (user direction: clouds, not planets).

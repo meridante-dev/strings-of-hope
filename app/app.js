@@ -2912,6 +2912,48 @@ function shamayimOpenLevel(n){
 }
 function shamayimBack(){ document.getElementById('shamayimDetail').hidden=true; document.getElementById('shamayimHub').hidden=false; buildShamayim(); window.scrollTo(0,0); }
 
+/* ============================================================
+   CREDITS & LICENSES — everything free, legal, and attributed
+   ============================================================ */
+const CREDITS = [
+  { t:'Scripture & Hebrew text', items:[
+    {n:'The Holy Scriptures (JPS 1917)', l:'Public Domain', d:'All Bible text — Psalms, Samuel, and more — in the 1917 Jewish Publication Society translation, which is in the public domain worldwide.'},
+    {n:'Masoretic Hebrew & cantillation', l:'Public Domain', d:'The Hebrew text and te‘amim, ancient and public domain, displayed via Sefaria.'},
+  ]},
+  { t:'Music-theory content we adapt', items:[
+    {n:'Open Music Theory, v.2', l:'CC BY-SA 4.0', d:'Ed. Gotham, Gullings, Hamm, Hughes, Jarvis, Lavengood & Peterson. Adapted for the “Theory in the Real World” unit, with attribution and share-alike.'},
+    {n:'“Microtonality” — Justin Rubin', l:'CC BY 4.0', d:'University of Minnesota Open. Adapted for the Jacob’s Universe microtonality lessons, with attribution.'},
+    {n:'Music Theory for the 21st-Century Classroom — R. Hutchinson', l:'GFDL', d:'Adapted across the core theory course.'},
+    {n:'Understanding Basic Music Theory — C. Schmidt-Jones', l:'CC BY-SA 4.0', d:'Adapted for the Science of Sound unit.'},
+  ]},
+  { t:'Fonts', items:[
+    {n:'ShlomoStam (Hebrew Torah script)', l:'SIL Open Font License', d:'Bundled and used for Hebrew scripture.'},
+    {n:'Playfair Display · Cormorant Garamond · Cinzel', l:'SIL Open Font License', d:'Served from Google Fonts.'},
+  ]},
+  { t:'Open-source libraries', items:[
+    {n:'VexFlow', l:'MIT', d:'Music notation rendering.'},
+    {n:'OpenSheetMusicDisplay', l:'BSD-3-Clause', d:'Score display.'},
+    {n:'pitchy', l:'0BSD', d:'Pitch detection for the ear-training & tuner tools.'},
+    {n:'fft.js', l:'MIT', d:'Fast Fourier transform utility.'},
+  ]},
+  { t:'Teaching sources — cited, never reproduced', items:[
+    {n:'Jacob Collier’s masterclasses & interviews', l:'Link-out', d:'Every concept is taught in our own words with links to the original videos; no transcripts or footage are hosted.'},
+    {n:'Public-domain Jewish-music scholarship', l:'Public Domain', d:'A.Z. Idelsohn (1929) and the Jewish Encyclopedia (1906) — freely adaptable, with attribution.'},
+    {n:'Modern Jewish-music scholarship', l:'Link-out', d:'Tarsi, the Journal of Synagogue Music, Bernard, Rapport, Kleinman, and others — their ideas taught in our own words, with citation and links; their text and notation are never copied. Haïk-Vantoura’s decipherment is cited as one contested theory.'},
+  ]},
+  { t:'Science', items:[
+    {n:'Cited research', l:'Attributed', d:'Established findings (music therapy, cymatics, frisson/dopamine, awe, string theory) are cited to their researchers. Where a parallel between tradition and physics is poetic rather than proven, it is marked as such — never presented as established fact.'},
+  ]},
+];
+function buildCredits(){
+  const host=document.getElementById('creditsBody'); if(!host) return;
+  host.innerHTML=CREDITS.map(sec=>`<div class="creds-sec">
+    <div class="creds-h">${sec.t}</div>
+    ${sec.items.map(it=>`<div class="creds-item"><div class="creds-top"><span class="creds-n">${it.n}</span><span class="creds-lic">${it.l}</span></div><p class="creds-d">${it.d}</p></div>`).join('')}
+  </div>`).join('') + `<p class="creds-foot">Believe you have found something copyrighted used incorrectly? Tell us and we will fix it at once. Strings of Hope is built to be 100% free and legal.</p>`;
+  triggerReveals(document.getElementById('view-credits'));
+}
+
 function showView(name){
   if(!document.getElementById('view-'+name)) name='home';                 // never navigate to a missing view
   document.body.classList.remove('in-session');                            // never leave the nav stuck hidden
@@ -2941,6 +2983,7 @@ function showView(name){
     if(name==='eartraining') etEnter();
     if(name==='jacob') jacobEnter();
     if(name==='shamayim') buildShamayim();
+    if(name==='credits') buildCredits();
   }catch(err){ console.warn('view init error ('+name+'):', err); }
   try{ window.scrollTo(0,0); }catch(e){}
   observeReveals();

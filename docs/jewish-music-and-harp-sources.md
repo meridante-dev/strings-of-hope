@@ -45,6 +45,12 @@
 - **432 Hz** — HONESTY FLAG: claims of unique "healing/natural" superiority over 440 Hz are **not supported** by solid evidence; present as tradition/preference, not established science.
 - **Archaeology** — Lyres of Ur (~2500 BCE), among the oldest known stringed instruments.
 
+## F2. David-as-musician & biblical-music sources (added 2026-07-06 — both COPYRIGHTED, cite/link-out only)
+- 🟡 **Amanda Kleinman, *"The Sweet Singer of Israel": David as Musician in Samuel, Chronicles, and Psalms,*** M.S.M. thesis, HUC-JIR (Debbie Friedman School of Sacred Music), NY, 2015 (advisor S. Koren). Copyrighted student thesis. Teach the *ideas/biblical facts* (David's evolving musical identity across Samuel→Chronicles→Psalms; "sweet singer of Israel", 2 Sam 23:1) in our own words + cite. Woven into Shamayim Harp (Nefesh/Neshama). **Do not reproduce its text.**
+- 🟡🔴 **Suzanne Haïk-Vantoura, *The Music of the Bible Revealed*** (French 1976; English ed. BIBAL Press, 1991). Copyrighted (author d. 2000; translation also under copyright); the supplied PDF is a **library scan** — do NOT redistribute/host. Her decipherment of the te'amim into melodies is her copyrighted work AND an **academically contested** theory → reference only as "one disputed reconstruction," never reproduce her transcriptions. Underlying Tanakh + te'amim marks remain public domain.
+
+**Legal principle (user directive 2026-07-06): the app must be 100% legal worldwide.** Bible text = JPS 1917 (PD). Fonts = SIL OFL. Libraries = MIT/BSD/0BSD. All copyrighted scholarship = cite/link-out, taught in our own words. A **Credits & Licenses** page (`view-credits`) lists everything.
+
 ## F. Scripture anchors (harp / kinnor)
 - Gen 4:21 (Jubal, father of harp & pipe) · 1 Sam 10:5 (prophets with harp) · 1 Sam 16:14-23 (David plays, the evil spirit lifts from Saul) · Psalm 150:3-4 · Psalm 33:2-3 · Psalm 92:3-4 (ten-string) · Psalm 144:9 · Psalm 19:1-4 (heavens declare the glory) · Amos 9:11 (Tabernacle of David restored).
 - Midrash Tehillim on Ps 92: the harp of the Messianic age has **ten strings**.

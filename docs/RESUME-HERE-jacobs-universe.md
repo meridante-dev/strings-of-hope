@@ -16,13 +16,21 @@
 - Research preserved: `docs/jewish-music-and-harp-sources.md`, `docs/jacob-web-resources.md` (Scan 2).
 
 ## 🗺️ ROADMAP — build next (recommended order)
-1. **Finish Jacob taught-lessons** across remaining 9 modules + add a **Jacob's Universe certificate**.
+
+### ⭐ 0. CONTENT VOICE & EXPANSION PASS (high priority — user feedback 2026-07-06)
+All teachings across the app are **too condensed & abrupt**. Rewrite/expand toward a **premium educative university experience**, drawing on the rich source material (the user's PDFs + `docs/jewish-music-and-harp-sources.md` + `docs/jacob-web-resources.md`). Voice spec (see memory [[content-voice]]):
+- Educative & flowing full paragraphs (not clipped one-liners); de-jargon every term the moment it appears; easy hand-holding flow, familiar→new; abridged but generous (explain the *why* + an example).
+- **Quote the sources sometimes** — freely for public-domain/CC (Idelsohn, Jewish Encyclopedia, JPS 1917); **short + attributed** for copyrighted (Tarsi, JSM, Kleinman, Haïk-Vantoura, Alloro) to stay 100% legal.
+- Apply to: Jacob's Universe, Shamayim, Chen, and the Theory course. This is a *quality* pass over existing sections before adding many new ones.
+
+1. **Finish Jacob taught-lessons** across remaining 9 modules + add a **Jacob's Universe certificate** — write them in the new expanded voice from the start.
 2. **Jewish Prayer-Modes theory section** (nusach, Freygish/Adonai Malach/Magein Avot, cantillation te'amim, Weekly Maqam) — all sources vetted in `docs/jewish-music-and-harp-sources.md`. Build like Jacob (stepped lessons + harp-mapping + honest attribution).
 3. **Mic chord tests + scored Challenge Track** (arpeggio-based first, then polyphonic chromagram beta) → feeds XP/certificates. *The last unbuilt OMT feature.*
 4. **Discoverability:** add Shamayim + Chen to the home rails (currently only in the Everything menu); wire both into Harpie's KB.
 5. **Expand OMT** into a fuller multi-unit track (deep jazz, post-tonal, form, counterpoint).
 6. **Chen/Shamayim polish:** a final-composition toy for Chen; more toys.
 7. **Phase 5 backend** (see WhatsApp roadmap given to user 2026-07-06): cloud accounts + cross-device sync, community/groups/duets, teacher dashboard, record-and-get-feedback, cloud-powered Harpie, shared song library, verified shareable certificates, practice reminders, events/retreat booking, payments.
+   - **↳ Connect to the Strings of Hope Circle.so community** (their existing community platform). Confirmed capabilities: **SSO/Auth API** (identity bridge), **Headless Member API** (feed/events/posts in-app; push certificates/XP out) — both need **Business plan+**; **webhooks + Zapier/Make** (automation); **Circle AI Agents** + **Circle MCP** (`https://app.circle.so/api/mcp`, connect Claude). The app is a static PWA with no server → the bridge REQUIRES a tiny serverless connector (Cloudflare Worker/Vercel fn) to hold the Circle API key + mint SSO JWTs; the client can't hold the key. Minimum viable connection = **SSO + embed** (members land in-app already logged in), then a serverless connector for real data sync. Circle *is* the fastest way to do Phase 5 without a full custom backend. Docs: api.circle.so/apis/headless, circle.so/ai-agents. NOT building now — mapped only.
 8. Legal niceties: Terms/Privacy note + bundle full MIT/BSD license texts (`vendor/LICENSES`).
 
 ## Reference — sections & their files

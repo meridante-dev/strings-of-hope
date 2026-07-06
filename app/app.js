@@ -3043,7 +3043,7 @@ const CREDITS = [
     {n:'Jacob Collier’s masterclasses & interviews', l:'Link-out', d:'Every concept is taught in our own words with links to the original videos; no transcripts or footage are hosted.'},
     {n:'Public-domain Jewish-music scholarship', l:'Public Domain', d:'A.Z. Idelsohn (1929) and the Jewish Encyclopedia (1906) — freely adaptable, with attribution.'},
     {n:'Modern Jewish-music scholarship', l:'Link-out', d:'Tarsi, the Journal of Synagogue Music, Bernard, Rapport, Kleinman, and others — their ideas taught in our own words, with citation and links; their text and notation are never copied. Haïk-Vantoura’s decipherment is cited as one contested theory.'},
-    {n:'Ariel Cohen Alloro — Chen & symmetrical music', l:'Attributed', d:'The Chen section adapts and abridges his teachings in our own words, clearly attributed. The underlying music theory (the octatonic scale, retrograde) is standard and public; his Kabbalah–physics framework is presented as his teaching, not as established science.'},
+    {n:'Ariel Cohen Alloro — Chen & symmetrical music', l:'Attributed', d:'The Chen section adapts and abridges his teachings in our own words, clearly attributed. The underlying music theory (the octatonic scale, retrograde) is standard and public; his Jewish-mysticism–physics framework is presented as his teaching, not as established science.'},
   ]},
   { t:'Science', items:[
     {n:'Cited research', l:'Attributed', d:'Established findings (music therapy, cymatics, frisson/dopamine, awe, string theory) are cited to their researchers. Where a parallel between tradition and physics is poetic rather than proven, it is marked as such — never presented as established fact.'},

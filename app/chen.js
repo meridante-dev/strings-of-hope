@@ -7,7 +7,7 @@
    teaching — presented AS his teaching, not as established science.
    ============================================================ */
 
-const CHEN_SOURCE = 'Adapted and abridged from the teachings of Ariel Cohen Alloro, in our own words. The symmetrical (octatonic) scale and retrograde are standard, public music theory; the Kabbalistic framework and its physics parallels are Alloro’s spiritual teaching — presented as such, never as established science.';
+const CHEN_SOURCE = 'Adapted and abridged from the teachings of Ariel Cohen Alloro, in our own words. The symmetrical (octatonic) scale and retrograde are standard, public music theory; the Jewish-mystical framework and its physics parallels are Alloro’s spiritual teaching — presented as such, never as established science.';
 
 const CHEN_INTRO = {
   heb:'חֵן',
@@ -42,12 +42,12 @@ const CHEN_MODULES = [
     ],
   },
   {
-    n:1, title:'The Architecture of Reality', kicker:'Physics & Kabbalah',
+    n:1, title:'The Architecture of Reality', kicker:'Physics & Jewish Mysticism',
     blocks:[
       {k:'lead', text:'Alloro builds his music on a picture of reality where the physical and spiritual worlds run perfectly parallel — a fractal, holographic structure repeating the same pattern at every scale.'},
       {k:'prose', text:'He describes three fundamental dimensions: <b>Time</b>, <b>Space</b>, and <b>Soul</b> (the moral dimension — nearness to the Divine). Wisdom (light, time) and Understanding (space) are its poles; at the speed of light, he teaches, time stops and enters a kind of eternity.'},
       {k:'prose', text:'He maps the <b>wave–particle</b> duality onto ancient archetypes: the <b>particle</b> — matter, the body, the countable — to Abraham; the <b>wave</b> — <i>gal</i>, emptiness, boundless frequency — to Isaac. Music, for Alloro, is where wave and particle meet: physical vibration you can count, carrying infinite frequency you can’t.'},
-      {k:'science', h:'Reading this honestly', text:'These are <b>Alloro’s symbolic correspondences</b> between Kabbalah and physics — a framework for meaning, not claims of established science. (For example, the number 248 he uses is the traditional count of the positive commandments and the body’s limbs — and, strikingly, the dimension of the E₈ symmetry group in mathematics — not a count of “elementary particles.”) We hold the poetry and the honesty together, exactly as in Shamayim Harp.', src:'Presented as Ariel Cohen Alloro’s teaching, distinct from established physics.'},
+      {k:'science', h:'Reading this honestly', text:'These are <b>Alloro’s symbolic correspondences</b> between Jewish mysticism and physics — a framework for meaning, not claims of established science. (For example, the number 248 he uses is the traditional count of the positive commandments and the body’s limbs — and, strikingly, the dimension of the E₈ symmetry group in mathematics — not a count of “elementary particles.”) We hold the poetry and the honesty together, exactly as in Shamayim Harp.', src:'Presented as Ariel Cohen Alloro’s teaching, distinct from established physics.'},
     ],
   },
   {

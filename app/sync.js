@@ -92,7 +92,7 @@
 
     auth.onAuthStateChanged(function(user){
       SOH_SYNC.user = user || null;
-      if(user){ SOH_SYNC.status='syncing'; scheduleUI(); pullMergePush(); }
+      if(user){ window.SOH_AUTH_ERR=''; SOH_SYNC.status='syncing'; scheduleUI(); pullMergePush(); }
       else { SOH_SYNC.status='signedout'; scheduleUI(); }
     });
     auth.getRedirectResult().catch(()=>{});
@@ -110,6 +110,34 @@
     });
   };
   window.sohSignOut = function(){ if(auth) auth.signOut().catch(()=>{}); };
+
+  function authErr(err){ const c=(err&&err.code)||''; return ({
+    'auth/invalid-email':'That doesn’t look like a valid email.',
+    'auth/missing-password':'Enter a password.',
+    'auth/weak-password':'Password needs at least 6 characters.',
+    'auth/email-already-in-use':'That email already has an account — try signing in instead.',
+    'auth/wrong-password':'Email or password isn’t right.',
+    'auth/user-not-found':'No account with that email yet — create one?',
+    'auth/invalid-credential':'Email or password isn’t right.',
+    'auth/too-many-requests':'Too many tries — wait a moment, then retry.',
+    'auth/network-request-failed':'Network issue — check your connection.',
+    'auth/popup-closed-by-user':'',
+    'auth/credential-already-in-use':'That Google account is already in use — sign out and sign in with it.'
+  })[c] || 'Something went wrong. Please try again.'; }
+
+  window.sohSignInEmail = function(email, pw, mode){
+    if(!auth) return; window.SOH_AUTH_ERR=''; window.SOH_AUTH_EMAIL=email||'';
+    if(!email || !pw){ window.SOH_AUTH_ERR='Enter your email and a password.'; scheduleUI(); return; }
+    SOH_SYNC.status='signingin'; scheduleUI();
+    const p = mode==='signup' ? auth.createUserWithEmailAndPassword(email,pw) : auth.signInWithEmailAndPassword(email,pw);
+    p.catch(err=>{ window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='signedout'; scheduleUI(); });
+  };
+  window.sohSignInAnon = function(){ if(!auth) return; window.SOH_AUTH_ERR=''; SOH_SYNC.status='signingin'; scheduleUI();
+    auth.signInAnonymously().catch(err=>{ window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='signedout'; scheduleUI(); }); };
+  window.sohLinkGoogle = function(){ if(!auth||!auth.currentUser) return; window.SOH_AUTH_ERR=''; SOH_SYNC.status='signingin'; scheduleUI();
+    auth.currentUser.linkWithPopup(provider).then(()=>{ SOH_SYNC.status='synced'; scheduleUI(); })
+      .catch(err=>{ if(err&&err.code==='auth/popup-closed-by-user'){ SOH_SYNC.status='synced'; scheduleUI(); return; }
+        window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='synced'; scheduleUI(); }); };
 
   function loadScripts(list, done){
     (function next(i){ if(i>=list.length){ done(); return; }
@@ -137,18 +165,42 @@ function sohRenderAuth(){
       <p class="auth-p">Your progress is saved on this device. Once Google sign-in is connected, you'll be able to sync across all your devices.</p>`;
     return;
   }
+  const esc=s=>String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   if(S.user){
-    const u=S.user, ph=u.photoURL?`<img class="auth-ph" src="${u.photoURL}" alt="" referrerpolicy="no-referrer">`:'<div class="auth-ph auth-ph-x">✦</div>';
-    const stt={syncing:'Syncing…',saving:'Saving…',synced:'Synced ✓',signedout:''}[S.status]||'Synced ✓';
-    el.innerHTML=`<div class="auth-me">${ph}<div class="auth-meta"><div class="auth-name">${u.displayName||'Signed in'}</div><div class="auth-email">${u.email||''}</div></div></div>
-      <div class="auth-sync"><span class="auth-dot"></span>${stt} · across your devices</div>
+    const u=S.user, anon=!!u.isAnonymous;
+    const nm = anon ? 'Guest' : (u.displayName || (u.email? u.email.split('@')[0] : 'Signed in'));
+    const ph = u.photoURL ? `<img class="auth-ph" src="${u.photoURL}" alt="" referrerpolicy="no-referrer">`
+                          : `<div class="auth-ph auth-ph-x">${anon?'☾':(nm[0]||'✦').toUpperCase()}</div>`;
+    const stt={syncing:'Syncing…',saving:'Saving…',synced:'Synced ✓',signingin:'…'}[S.status]||'Synced ✓';
+    el.innerHTML=`<div class="auth-me">${ph}<div class="auth-meta"><div class="auth-name">${esc(nm)}</div><div class="auth-email">${anon?'Guest account':esc(u.email||'')}</div></div></div>
+      ${anon
+        ? `<p class="auth-p" style="margin-top:12px">You’re playing as a guest — progress saves here. Save it to keep it safe across all your devices.</p>
+           ${(window.SOH_AUTH_ERR)?`<div class="auth-err">${window.SOH_AUTH_ERR}</div>`:''}
+           <button class="auth-google" id="authLink">${G}<span>Save with Google</span></button>`
+        : `<div class="auth-sync"><span class="auth-dot"></span>${stt} · across your devices</div>`}
       <button class="auth-out" id="authOut">Sign out</button>`;
     el.querySelector('#authOut')?.addEventListener('click',()=>{ if(typeof sohSignOut==='function') sohSignOut(); });
-  } else {
-    const busy=S.status==='signingin';
-    el.innerHTML=`<div class="auth-k">Your account</div><div class="auth-t">Save your progress everywhere</div>
-      <p class="auth-p">Sign in to sync your lessons, XP and certificates across every device — phone, tablet and desktop.</p>
-      <button class="auth-google" id="authIn" ${busy?'disabled':''}>${G}<span>${busy?'Opening…':'Sign in with Google'}</span></button>`;
-    el.querySelector('#authIn')?.addEventListener('click',()=>{ if(typeof sohSignIn==='function') sohSignIn(); });
+    el.querySelector('#authLink')?.addEventListener('click',()=>{ if(typeof sohLinkGoogle==='function') sohLinkGoogle(); });
+    return;
   }
+  const mode = window.SOH_AUTH_MODE==='signup' ? 'signup' : 'signin';
+  const err = window.SOH_AUTH_ERR||'', email = window.SOH_AUTH_EMAIL||'', busy = S.status==='signingin';
+  el.innerHTML=`<div class="auth-k">Your account</div><div class="auth-t">Save your progress everywhere</div>
+    <p class="auth-p">Sign in to sync your lessons, XP and certificates across every device.</p>
+    <button class="auth-google" id="authIn" ${busy?'disabled':''}>${G}<span>${busy?'One moment…':'Continue with Google'}</span></button>
+    <div class="auth-or"><span>or with email</span></div>
+    <input class="auth-inp" id="authEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" value="${esc(email)}">
+    <input class="auth-inp" id="authPw" type="password" autocomplete="${mode==='signup'?'new-password':'current-password'}" placeholder="Password">
+    ${err?`<div class="auth-err">${err}</div>`:''}
+    <button class="auth-email-btn" id="authEmailBtn" ${busy?'disabled':''}>${mode==='signup'?'Create account':'Sign in'}</button>
+    <div class="auth-alt">
+      <button class="auth-link" id="authToggle">${mode==='signup'?'Have an account? Sign in':'New here? Create one'}</button>
+      <button class="auth-link" id="authGuest">Continue as guest</button>
+    </div>`;
+  const emailEl=el.querySelector('#authEmail'), pwEl=el.querySelector('#authPw');
+  el.querySelector('#authIn')?.addEventListener('click',()=>{ if(typeof sohSignIn==='function') sohSignIn(); });
+  el.querySelector('#authEmailBtn')?.addEventListener('click',()=>{ if(typeof sohSignInEmail==='function') sohSignInEmail(emailEl.value.trim(), pwEl.value, mode); });
+  el.querySelector('#authGuest')?.addEventListener('click',()=>{ if(typeof sohSignInAnon==='function') sohSignInAnon(); });
+  el.querySelector('#authToggle')?.addEventListener('click',()=>{ window.SOH_AUTH_EMAIL=emailEl.value.trim(); window.SOH_AUTH_ERR=''; window.SOH_AUTH_MODE=(mode==='signup'?'signin':'signup'); sohRenderAuth(); });
+  pwEl?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ if(typeof sohSignInEmail==='function') sohSignInEmail(emailEl.value.trim(), pwEl.value, mode); } });
 }

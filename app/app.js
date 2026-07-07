@@ -1861,6 +1861,7 @@ function renderHome(){
   }
   renderHomeHebrew(d);
   try{ renderWelcome(); }catch(e){}
+  try{ youMaybeRemind(); }catch(e){}
   renderNxHero();
   try{ if(typeof buildTodayPath==='function') buildTodayPath(); }catch(e){}
   renderVerse();
@@ -3092,14 +3093,100 @@ function buildLearnHub(){
 }
 function buildSpirit(){ try{ if(typeof renderSongCard==='function') renderSongCard(new Date()); }catch(e){} }
 const SOH_VERSION = '2026.07.07 · beta';
+function youEncourage(st, streak, certs){
+  if(streak>=7) return `${streak} days in a row — your harp knows your hands now. Keep the flame alight. 🔥`;
+  if(streak>=2) return `A ${streak}-day streak going. A few minutes today keeps it alive.`;
+  if(st && st.next && (st.next.min-st.xp)<=120) return `Just <b>${st.next.min-st.xp} XP</b> to <b>${st.next.name}</b> — you’re nearly there.`;
+  if(certs && certs.length) return `You’ve earned <b>${certs.length}</b> certificate${certs.length>1?'s':''}. Beautiful work — keep climbing.`;
+  if(st && st.chDone>0) return `<b>${st.chDone}</b> chapter${st.chDone>1?'s':''} done. Every one is a new colour under your hands.`;
+  return `Every note counts. Play a little today and watch it grow.`;
+}
 function buildYou(){
   const el=document.getElementById('youCard'); if(!el) return;
-  let lv=null,xp=null; try{ lv=sohLevel(); }catch(e){} try{ xp=sohTheoryStats(); }catch(e){}
-  const s=(typeof journalStats==='function')?journalStats():{streak:0};
-  el.innerHTML=`<div class="you-lv">${lv?('Level '+lv.n+' · '+lv.name):'Begin your journey'}</div>
-    <div class="you-stats"><span><b>${s.streak||0}</b>day streak</span><span><b>${xp?xp.xp.toLocaleString():0}</b>XP</span><span><b>${xp?xp.chDone:0}</b>chapters</span></div>`;
+  let st=null,lv=null; try{ st=sohTheoryStats(); }catch(e){} try{ lv=sohLevel(); }catch(e){}
+  const js=(typeof journalStats==='function')?journalStats():{streak:0};
+  const certs=(typeof sohCertsEarned==='function')?sohCertsEarned():[];
+  const badges=(typeof sohEarned==='function')?sohEarned().length:0, badgesT=(typeof SOH_BADGES!=='undefined')?SOH_BADGES.length:10;
+  const u=(window.SOH_SYNC&&SOH_SYNC.user)||null;
+  const name=(u&&!u.isAnonymous&&(u.displayName||(u.email&&u.email.split('@')[0])))||((typeof sohName==='function'&&sohName()))||'Harper';
+  const harp=((typeof sohProfile==='function')&&sohProfile().harp)||'Lever harpist';
+  const av=(u&&u.photoURL)?`<img class="prof-av" src="${u.photoURL}" alt="" referrerpolicy="no-referrer">`:`<div class="prof-av prof-av-x">${(name[0]||'✦').toUpperCase()}</div>`;
+  // rank ring
+  const xp=st?st.xp:0, rankMin=st?st.rankMin:0, next=st?st.next:null;
+  const band=next?Math.max(0,Math.min(1,(xp-rankMin)/((next.min-rankMin)||1))):1;
+  const R=30, C=(2*Math.PI*R).toFixed(1), off=(C*(1-band)).toFixed(1);
+  const worlds=[['Theory',st?st.pct:0],['Jacob',_seenPct('soh-jacob-seen',(typeof JACOB_MODULES!=='undefined')?JACOB_MODULES.length:11)],
+    ['Shamayim',_seenPct('soh-shamayim-seen',(typeof SHAMAYIM_LEVELS!=='undefined')?SHAMAYIM_LEVELS.length:5)],
+    ['Chen',_seenPct('soh-chen-seen',(typeof CHEN_MODULES!=='undefined')?CHEN_MODULES.length:6)]];
+  const earnedB=(typeof sohEarned==='function')?new Set(sohEarned().map(b=>b.id)):new Set();
+  const r=(typeof nxResume==='function')?nxResume():null;
+  const remOn = (()=>{ try{ return localStorage.getItem('soh-reminders')==='1'; }catch(e){ return false; } })();
+
+  el.innerHTML=`
+    <div class="prof-hero">
+      <div class="prof-id">${av}<div class="prof-idt"><div class="prof-name">${name}</div><div class="prof-harp">${harp}</div></div></div>
+      <div class="prof-rankrow">
+        <svg class="prof-ring" viewBox="0 0 72 72" aria-hidden="true"><circle class="pr-track" cx="36" cy="36" r="${R}"/><circle class="pr-fill" cx="36" cy="36" r="${R}" style="stroke-dasharray:${C};stroke-dashoffset:${off}"/><text x="36" y="41" text-anchor="middle" class="pr-num">${st?st.rankN:1}</text></svg>
+        <div class="prof-rankt"><div class="prof-rank-n">${st?st.rank:'Apprentice of Strings'}</div>
+          <div class="prof-rank-xp">${xp.toLocaleString()} XP</div>
+          <div class="prof-rank-next">${next?`${(next.min-xp).toLocaleString()} XP to ${next.name}`:'Highest rank reached ✦'}</div></div>
+      </div>
+    </div>
+    <div class="prof-stats">
+      <div><b>${js.streak||0}</b><span>day streak</span></div>
+      <div><b>${st?st.chDone:0}</b><span>chapters</span></div>
+      <div><b>${certs.length}</b><span>certificates</span></div>
+      <div><b>${badges}/${badgesT}</b><span>badges</span></div>
+    </div>
+    <div class="prof-encourage">${youEncourage(st, js.streak||0, certs)}</div>
+    <button class="prof-continue" id="profContinue">${r?`Keep going · ${harperTrim?harperTrim(r.title,26):r.title}`:'Explore the worlds'} <span>→</span></button>
+
+    <div class="prof-sec-t">Certificates</div>
+    ${certs.length
+      ? `<div class="prof-certs">${certs.map(c=>`<button class="prof-seal" data-cert="${c.id}"><span class="ps-i">${c.id==='diploma'?'👑':'✦'}</span><span class="ps-t">${c.id==='diploma'?'Diploma':(c.unit?c.unit.kicker||c.unit.title:'Unit')}</span></button>`).join('')}</div>`
+      : `<div class="prof-cert-empty"><div class="pce-bar"><i style="width:${st?st.pct:0}%"></i></div><span>${st?st.pct:0}% to your first certificate — finish a unit to earn it.</span></div>`}
+
+    <div class="prof-sec-t">Your worlds</div>
+    <div class="prof-worlds">${worlds.map(([n,p])=>`<div class="prof-world"><span class="pw-n">${n}</span><span class="pw-bar"><i style="width:${p}%"></i></span><span class="pw-p">${p}%</span></div>`).join('')}</div>
+
+    <div class="prof-sec-t">Pilgrimage</div>
+    <div class="prof-badges">${(typeof SOH_BADGES!=='undefined'?SOH_BADGES:[]).map(b=>`<div class="prof-badge${earnedB.has(b.id)?' on':''}" title="${b.d}"><span class="pb-i">${earnedB.has(b.id)?'✦':'·'}</span><span class="pb-t">${b.t}</span></div>`).join('')}</div>
+
+    <div class="prof-remind" id="reminderRow">
+      <div><div class="pr-t">Daily practice reminder</div><div class="pr-d">A gentle nudge to keep your streak alive</div></div>
+      <button class="pr-switch${remOn?' on':''}" id="reminderToggle" role="switch" aria-checked="${remOn}"><span class="pr-knob"></span></button>
+    </div>`;
+
+  el.querySelector('#profContinue')?.addEventListener('click',()=>{ if(r&&r.go) r.go(); else showView('learn-hub'); buzz(); });
+  el.querySelectorAll('.prof-seal').forEach(b=>b.addEventListener('click',()=>{ if(typeof sohOpenCertById==='function') sohOpenCertById(b.dataset.cert); }));
+  el.querySelector('#reminderToggle')?.addEventListener('click',youToggleReminder);
+
   const v=document.getElementById('youVersion'); if(v) v.textContent='Strings of Hope · v'+SOH_VERSION+' · works offline';
   try{ if(typeof sohRenderAuth==='function') sohRenderAuth(); }catch(e){}
+}
+function youToggleReminder(){
+  let on=false; try{ on=localStorage.getItem('soh-reminders')==='1'; }catch(e){}
+  if(on){ try{ localStorage.setItem('soh-reminders','0'); }catch(e){} buildYou(); buzz(); return; }
+  if(!('Notification' in window)){ try{ localStorage.setItem('soh-reminders','1'); }catch(e){} buildYou(); return; }
+  try{ Notification.requestPermission().then(p=>{
+    try{ localStorage.setItem('soh-reminders', p==='granted'?'1':'0'); }catch(e){}
+    if(p==='granted'){ try{ new Notification('Reminders on 🎵',{body:'We’ll cheer you on to keep your streak alive.',icon:'img/icon-192.png'}); }catch(e){} }
+    buildYou();
+  }); }catch(e){ buildYou(); }
+}
+function youMaybeRemind(){
+  try{
+    const today=new Date().toISOString().slice(0,10);
+    const lastVisit=localStorage.getItem('soh-last-visit'); localStorage.setItem('soh-last-visit',today);
+    if(localStorage.getItem('soh-reminders')!=='1') return;
+    if(!('Notification' in window) || Notification.permission!=='granted') return;
+    if(localStorage.getItem('soh-remind-last')===today) return;
+    if(lastVisit && lastVisit!==today){
+      const js=journalStats(); const msg=js.streak>0?`Your ${js.streak}-day streak is waiting 🔥`:'A few minutes at the harp today?';
+      new Notification('Strings of Hope 🎵',{body:msg, icon:'img/icon-192.png'});
+      localStorage.setItem('soh-remind-last',today);
+    }
+  }catch(e){}
 }
 function renderWelcome(){
   const el=document.getElementById('welcomeCard'); if(!el) return;

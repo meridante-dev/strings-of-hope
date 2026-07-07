@@ -1643,6 +1643,7 @@ function harpieOpenLesson(){
   const ch=(typeof THEORY_COURSE!=='undefined')&&THEORY_COURSE[theorySem]&&THEORY_COURSE[theorySem].chapters[theoryCh];
   if(!L||!ch) return;
   _hpCtx={ title:L.h||ch.title, body:harperStrip(L.body||''), harp:harperStrip(L.harp||''), chN:ch.n, chTitle:ch.title };
+  const _q=document.getElementById('hpQuick'); if(_q) _q.style.display='';
   harpieBind();
   document.getElementById('hpCtx').textContent='about “'+_hpCtx.title+'”';
   document.getElementById('hpBody').innerHTML='';
@@ -1861,8 +1862,6 @@ function renderHome(){
   renderHomeHebrew(d);
   renderNxHero();
   try{ if(typeof buildTodayPath==='function') buildTodayPath(); }catch(e){}
-  renderNxRails();
-  renderSongCard(d);
   renderVerse();
   try{
     if(typeof sohProfile==='function' && !sohProfile().harp && !window._sohObSeen){
@@ -3058,11 +3057,65 @@ function buildCredits(){
   triggerReveals(document.getElementById('view-credits'));
 }
 
+/* ============================================================
+   HUB TABS — Learn · Practice · Spirit · You (2026-07-07 redesign)
+   ============================================================ */
+function _seenPct(key,total){ try{ const n=JSON.parse(localStorage.getItem(key)||'[]').length; return total?Math.round(Math.min(n,total)/total*100):0; }catch(e){ return 0; } }
+function buildLearnHub(){
+  const host=document.getElementById('learnWorlds'); if(!host) return;
+  let theoryPct=0; try{ theoryPct=sohTheoryStats().pct; }catch(e){}
+  const jT=(typeof JACOB_MODULES!=='undefined')?JACOB_MODULES.length:11;
+  const sT=(typeof SHAMAYIM_LEVELS!=='undefined')?SHAMAYIM_LEVELS.length:5;
+  const cT=(typeof CHEN_MODULES!=='undefined')?CHEN_MODULES.length:6;
+  const worlds=[
+    {v:'modes', n:'Modes', d:'The modal wheel · 7 modes', pct:null,
+      ic:'<circle cx="12" cy="6" r="2.4"/><circle cx="18" cy="15" r="2.4"/><circle cx="6" cy="15" r="2.4"/><path d="M12 8v4M10 14l-2.4 1M14 14l2.4 1"/>'},
+    {v:'theory', n:'Music Theory', d:'Six units · certificates', pct:theoryPct,
+      ic:'<path d="M4 18V7M9 18V4M14 18v-8M19 18V9"/>'},
+    {v:'jacob', n:'Jacob’s Universe', d:'Harmony as feeling · '+jT+' modules', pct:_seenPct('soh-jacob-seen',jT),
+      ic:'<circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="9" ry="3.8"/><ellipse cx="12" cy="12" rx="9" ry="3.8" transform="rotate(60 12 12)"/>'},
+    {v:'shamayim', n:'Shamayim Harp', d:'The five worlds of the soul', pct:_seenPct('soh-shamayim-seen',sT),
+      ic:'<path d="M5 21V6a5 5 0 015-5M19 21C17 10 11 8 9 7M9 21h10"/>'},
+    {v:'chen', n:'Chen · Symmetry', d:'Ariel Cohen Alloro', pct:_seenPct('soh-chen-seen',cT),
+      ic:'<path d="M12 3v18M7 7l-4 5 4 5M17 7l4 5-4 5"/>'},
+  ];
+  host.innerHTML=worlds.map(w=>`<button class="world-row" data-view="${w.v}">
+    <span class="wr-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">${w.ic}</svg></span>
+    <span class="wr-t"><span class="wr-n">${w.n}</span><span class="wr-d">${w.d}</span>${w.pct!=null?`<span class="wr-bar"><i style="width:${w.pct}%"></i></span>`:''}</span>
+    <span class="wr-go">›</span></button>`).join('');
+  host.querySelectorAll('.world-row').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+}
+function buildSpirit(){ try{ if(typeof renderSongCard==='function') renderSongCard(new Date()); }catch(e){} }
+function buildYou(){
+  const el=document.getElementById('youCard'); if(!el) return;
+  let lv=null,xp=null; try{ lv=sohLevel(); }catch(e){} try{ xp=sohTheoryStats(); }catch(e){}
+  const s=(typeof journalStats==='function')?journalStats():{streak:0};
+  el.innerHTML=`<div class="you-lv">${lv?('Level '+lv.n+' · '+lv.name):'Begin your journey'}</div>
+    <div class="you-stats"><span><b>${s.streak||0}</b>day streak</span><span><b>${xp?xp.xp.toLocaleString():0}</b>XP</span><span><b>${xp?xp.chDone:0}</b>chapters</span></div>`;
+}
+function harpieOpenGlobal(){
+  if(typeof harpieBind==='function') harpieBind();
+  window._hpCtx=null; try{ _hpCtx=null; }catch(e){}
+  const q=document.getElementById('hpQuick'); if(q) q.style.display='none';
+  const c=document.getElementById('hpCtx'); if(c) c.textContent='ask anything';
+  const body=document.getElementById('hpBody'); if(body) body.innerHTML='';
+  harpieAddMsg('a','Hi — I’m <b>Harpie</b>, your harp coach. Ask me anything: a concept, a chord, what to practise next — or search for any lesson or tool by name.');
+  const ov=document.getElementById('harpiePanel'); if(ov){ ov.hidden=false; document.body.classList.add('hp-open'); }
+  setTimeout(()=>document.getElementById('hpInput')?.focus(),60); buzz();
+}
+const _HUB_TABS=['home','learn-hub','tools','spirit','you'];
+const _TAB_PARENT={ modes:'learn-hub',learn:'learn-hub',theory:'learn-hub',jacob:'learn-hub',shamayim:'learn-hub',chen:'learn-hub',
+  practice:'tools',tuner:'tools',eartraining:'tools',rhythm:'tools',circle:'tools',sightread:'tools',drone:'tools',levers:'tools',scales:'tools',repertoire:'tools',
+  tehillim:'spirit',meditation:'spirit',hebrew:'spirit',compass:'spirit',
+  profile:'you',journal:'you',credits:'you' };
+
 function showView(name){
   if(!document.getElementById('view-'+name)) name='home';                 // never navigate to a missing view
   document.body.classList.remove('in-session');                            // never leave the nav stuck hidden
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+name));
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on', b.dataset.view===name));
+  const _activeTab = _HUB_TABS.includes(name) ? name : (_TAB_PARENT[name]||null);
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on', b.dataset.view===_activeTab));
+  const _fab=document.getElementById('harpieFab'); if(_fab) _fab.hidden = !_HUB_TABS.includes(name);
   document.body.classList.toggle('in-journey', name==='journey');
   try{
     if(name==='journey'){ jrnStep=0; jrnRender(); }
@@ -3076,6 +3129,10 @@ function showView(name){
     if(name==='journal'){ buildJournal(); if(typeof renderBadges==='function') renderBadges(); }
     if(typeof sohVisit==='function') sohVisit(name);
     if(name==='home') renderHome();
+    if(name==='learn-hub') buildLearnHub();
+    if(name==='tools'){}
+    if(name==='spirit') buildSpirit();
+    if(name==='you') buildYou();
     if(name==='compass') compassRender();
     if(name==='sightread') srEnter(); else if(typeof srLeave==='function') srLeave();
     if(name==='tehillim'){ tehDow=null; renderTehillim(); }
@@ -3793,6 +3850,8 @@ addSwipe(document.querySelector('#view-modes .wheel-wrap'), {
   onRight:()=>setMode((activeMode+6)%7, true),
 });
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+document.getElementById('harpieFab')?.addEventListener('click',()=>{ if(typeof harpieOpenGlobal==='function') harpieOpenGlobal(); });
+document.getElementById('learnSearch')?.addEventListener('click',()=>{ if(typeof harpieOpenGlobal==='function') harpieOpenGlobal(); });
 showView('home');
 observeReveals();
 

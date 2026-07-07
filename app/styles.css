@@ -1615,6 +1615,65 @@ body.cert-open{ overflow:hidden }
 .chen-scale{ display:grid;grid-template-columns:repeat(3,1fr);gap:8px }
 .chen-retro{ display:grid;grid-template-columns:1fr 1fr;gap:8px }
 
+/* ===== Hub tabs — Learn · Practice · Spirit · You ===== */
+.hub-head{ margin:6px 0 18px }
+.hub-head h1{ font-family:"Playfair Display",serif;font-size:34px;font-weight:700;color:var(--ink);margin:2px 0 0;letter-spacing:-.01em }
+.hub-head .sub{ font-size:14px;color:var(--ink-faint);margin-top:4px;max-width:34rem }
+.hub-search{ display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer;color:var(--ink-faint);
+  font:inherit;font-size:14px;background:rgba(0,0,0,.16);border:1px solid var(--line);border-radius:999px;padding:12px 16px;margin-bottom:18px }
+.hub-search svg{ width:16px;height:16px;flex:0 0 auto;color:var(--gold-deep) }
+.hub-search:active{ transform:scale(.995) }
+
+.hub-worlds{ display:flex;flex-direction:column;gap:10px }
+.world-row{ display:flex;align-items:center;gap:13px;width:100%;text-align:left;cursor:pointer;
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 15px }
+.world-row:active{ transform:scale(.99) }
+.wr-ic{ flex:0 0 auto;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:var(--gold);
+  background:color-mix(in srgb,var(--gold) 13%,transparent);border:1px solid var(--line) }
+.wr-ic svg{ width:23px;height:23px }
+.wr-t{ flex:1;min-width:0;display:flex;flex-direction:column;gap:2px }
+.wr-n{ font-family:"Playfair Display",serif;font-size:18px;font-weight:600;color:var(--ink);line-height:1.1 }
+.wr-d{ font-size:12px;color:var(--ink-faint) }
+.wr-bar{ height:4px;border-radius:3px;background:color-mix(in srgb,var(--ink) 10%,transparent);overflow:hidden;margin-top:6px }
+.wr-bar i{ display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold-grad-a),var(--gold-grad-b));transition:width .6s cubic-bezier(.2,.8,.2,1) }
+.wr-go{ flex:0 0 auto;color:var(--ink-faint);font-size:19px;font-weight:700 }
+
+.hub-grid{ display:grid;grid-template-columns:1fr 1fr;gap:10px }
+.hub-tile{ display:flex;flex-direction:column;gap:7px;text-align:left;cursor:pointer;min-height:96px;
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px 15px }
+.hub-tile:active{ transform:scale(.98) }
+.hub-tile .ht-i{ width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:var(--gold);
+  background:color-mix(in srgb,var(--gold) 12%,transparent);border:1px solid var(--line) }
+.hub-tile .ht-i svg{ width:19px;height:19px }
+.hub-tile .ht-n{ font-size:14.5px;font-weight:700;color:var(--ink);margin-top:2px }
+.hub-tile .ht-d{ font-size:11px;color:var(--ink-faint) }
+.hub-tile.feat{ background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 14%,transparent),var(--surface)) }
+
+.you-card{ padding:18px;border-radius:18px;margin-bottom:16px;
+  background:linear-gradient(158deg,rgba(60,44,20,.4),rgba(30,22,12,.28));border:1px solid var(--line-2);
+  box-shadow:inset 0 1px 0 rgba(255,236,190,.1) }
+.you-lv{ font-family:"Playfair Display",serif;font-size:22px;font-weight:600;color:var(--ink) }
+.you-stats{ display:flex;gap:18px;margin-top:10px }
+.you-stats span{ display:flex;flex-direction:column;font-size:11px;color:var(--ink-faint);letter-spacing:.02em }
+.you-stats b{ font-family:"Playfair Display",serif;font-size:22px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1 }
+
+/* floating Harpie */
+.harpie-fab{ position:fixed;right:16px;bottom:78px;z-index:60;width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;
+  display:grid;place-items:center;color:#2c2206;background:linear-gradient(160deg,#f0d089,#c9973f);
+  box-shadow:0 10px 24px -8px rgba(226,182,92,.6), inset 0 1px 0 rgba(255,255,255,.4) }
+.harpie-fab svg{ width:25px;height:25px }
+.harpie-fab:active{ transform:scale(.94) }
+.harpie-fab[hidden]{ display:none }
+body.hp-open .harpie-fab{ display:none }
+
+[data-theme="light"] .world-row,
+[data-theme="light"] .hub-tile,
+[data-theme="light"] .hub-search{
+  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,253,246,.5));
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 24px 48px -24px rgba(110,80,35,.34);
+}
+
 .ju-toy{ margin:18px 0 4px;padding:18px 16px;border-radius:18px;border:1px solid color-mix(in srgb,var(--gold) 30%,var(--line));
   background:color-mix(in srgb,var(--gold) 7%,var(--surface)) }
 .ju-held{ text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:14px }

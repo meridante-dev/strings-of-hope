@@ -1761,7 +1761,9 @@ function renderNxHero(){
   if(!r){ const f=DAILY_FOCUS[dayOfYear()%DAILY_FOCUS.length], rv=resolveMode(f.k,f.w,f.m);
     r={ eyebrow:'Today’s practice', title:rv.mode.root+' '+rv.mode.name, sub:rv.mode.mood,
         go:()=>{ mwKey=rv.parentName; mwWorld=rv.world; rebuildModes(false); setMode(rv.modeIndex,false); prTotal=20; showView('practice'); } }; }
-  el.innerHTML=`<span class="nx-strings" aria-hidden="true"></span><span class="nx-glow" aria-hidden="true"></span><span class="nxh-heb" aria-hidden="true">תקוה</span>
+  const h=new Date().getHours();
+  el.dataset.tod = h<6?'night' : h<9?'dawn' : h<13?'morning' : h<18?'afternoon' : h<21?'dusk' : 'night';
+  el.innerHTML=`<span class="nx-strings" aria-hidden="true"></span><span class="nx-shimmer" aria-hidden="true"></span><span class="nx-glow" aria-hidden="true"></span><span class="nxh-heb" aria-hidden="true">תקוה</span>
     <span class="nxh-eyebrow">${r.eyebrow}</span>
     <span class="nxh-title">${r.title}</span>
     <span class="nxh-sub">${r.sub||''}</span>

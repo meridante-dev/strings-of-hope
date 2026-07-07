@@ -6,7 +6,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAF8F2" />
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141109" />
-<title>Modes · Strings of Hope</title>
+<title>Strings of Hope — Learn the Lever Harp</title>
+<meta name="description" content="Learn the lever harp — modes, music theory, Jacob's Universe, Shamayim Harp, Chen, and daily practice. Made for the Strings of Hope community." />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Strings of Hope" />
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png" />
+<link rel="icon" href="img/lyre.png" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Strings of Hope — Learn the Lever Harp" />
+<meta property="og:description" content="Modes, music theory, Jacob's Universe, Shamayim Harp, Chen & daily practice — a premium lever-harp learning app for the Strings of Hope community." />
+<meta property="og:image" content="img/icon-512.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Strings of Hope — Learn the Lever Harp" />
+<meta name="twitter:description" content="A premium lever-harp learning app — modes, theory, and daily practice." />
+<meta name="twitter:image" content="img/icon-512.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
@@ -27,6 +44,8 @@
           <button class="home-hebdate" id="homeHebDate" data-view="hebrew" hidden></button></div>
         <div class="home-streak" id="homeStreak"></div>
       </header>
+
+      <div class="welcome-card" id="welcomeCard" hidden></div>
 
       <button class="nx-hero reveal" id="nxHero" aria-label="Continue learning"></button>
 
@@ -116,7 +135,9 @@
         <button class="hub-tile" data-view="journal"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5z"/><path d="M9 3v18"/></svg></span><span class="ht-n">Journal</span><span class="ht-d">Streak &amp; pilgrimage</span></button>
         <button class="hub-tile" data-view="theory"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg></span><span class="ht-n">Certificates</span><span class="ht-d">In the theory course</span></button>
         <button class="hub-tile" data-view="credits"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg></span><span class="ht-n">Credits</span><span class="ht-d">Licenses &amp; sources</span></button>
+        <a class="hub-tile feat" id="feedbackTile" href="mailto:info@edenrise.com?subject=Strings%20of%20Hope%20feedback"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span><span class="ht-n">Send feedback</span><span class="ht-d">You’re an early tester 💛</span></a>
       </div>
+      <div class="you-ver reveal" id="youVersion"></div>
       <footer class="reveal"><div class="cc">Strings of Hope</div></footer>
     </section>
 
@@ -974,5 +995,6 @@
   <script src="shamayim.js"></script>
   <script src="chen.js"></script>
   <script src="app.js"></script>
+  <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
 </body>
 </html>

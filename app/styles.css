@@ -1666,6 +1666,19 @@ body.cert-open{ overflow:hidden }
 .harpie-fab[hidden]{ display:none }
 body.hp-open .harpie-fab{ display:none }
 
+/* first-run welcome (beta) */
+.welcome-card{ position:relative;margin:0 0 18px;padding:16px 18px;border-radius:18px;
+  background:linear-gradient(158deg,rgba(60,44,20,.5),rgba(30,22,12,.34));border:1px solid var(--line-2);
+  box-shadow:inset 0 1px 0 rgba(255,236,190,.12) }
+.welcome-card[hidden]{ display:none }
+.wc-x{ position:absolute;top:10px;right:11px;width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(0,0,0,.25);color:var(--ink-faint);font-size:13px;line-height:1 }
+.wc-k{ font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep) }
+.wc-t{ font-family:"Playfair Display",serif;font-size:19px;font-weight:600;color:var(--ink);margin-top:3px }
+.wc-p{ font-size:13px;line-height:1.55;color:var(--ink-soft);margin:6px 0 0;max-width:32rem }
+.wc-p b{ color:var(--ink) }
+.you-ver{ text-align:center;font-size:11px;color:var(--ink-faint);letter-spacing:.03em;margin:18px 0 4px }
+
 [data-theme="light"] .world-row,
 [data-theme="light"] .hub-tile,
 [data-theme="light"] .hub-search{

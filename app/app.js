@@ -1860,6 +1860,7 @@ function renderHome(){
     tc.onclick=()=>{ mwKey=r.parentName; mwWorld=r.world; rebuildModes(false); setMode(r.modeIndex,false); prTotal=20; showView('practice'); buzz(); };
   }
   renderHomeHebrew(d);
+  try{ renderWelcome(); }catch(e){}
   renderNxHero();
   try{ if(typeof buildTodayPath==='function') buildTodayPath(); }catch(e){}
   renderVerse();
@@ -3047,13 +3048,17 @@ const CREDITS = [
   { t:'Science', items:[
     {n:'Cited research', l:'Attributed', d:'Established findings (music therapy, cymatics, frisson/dopamine, awe, string theory) are cited to their researchers. Where a parallel between tradition and physics is poetic rather than proven, it is marked as such — never presented as established fact.'},
   ]},
+  { t:'Your privacy', items:[
+    {n:'Everything stays on your device', l:'Private', d:'Your progress, streak, certificates and profile are saved only in this browser (local storage) — nothing is uploaded to a server or shared.'},
+    {n:'The microphone', l:'Local only', d:'The mic is used only for the tuner and ear-training, entirely on your device. It is never recorded, saved, or sent anywhere.'},
+  ]},
 ];
 function buildCredits(){
   const host=document.getElementById('creditsBody'); if(!host) return;
   host.innerHTML=CREDITS.map(sec=>`<div class="creds-sec">
     <div class="creds-h">${sec.t}</div>
     ${sec.items.map(it=>`<div class="creds-item"><div class="creds-top"><span class="creds-n">${it.n}</span><span class="creds-lic">${it.l}</span></div><p class="creds-d">${it.d}</p></div>`).join('')}
-  </div>`).join('') + `<p class="creds-foot">Believe you have found something copyrighted used incorrectly? Tell us and we will fix it at once. Strings of Hope is built to be 100% free and legal.</p>`;
+  </div>`).join('') + `<p class="creds-foot">Believe you have found something copyrighted used incorrectly? Tell us and we will fix it at once. Strings of Hope is built to be 100% free and legal.<br><br>Strings of Hope · v${(typeof SOH_VERSION!=='undefined')?SOH_VERSION:'beta'} · <a href="mailto:info@edenrise.com?subject=Strings%20of%20Hope%20feedback" style="color:var(--gold-deep)">send feedback</a></p>`;
   triggerReveals(document.getElementById('view-credits'));
 }
 
@@ -3086,12 +3091,25 @@ function buildLearnHub(){
   host.querySelectorAll('.world-row').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
 }
 function buildSpirit(){ try{ if(typeof renderSongCard==='function') renderSongCard(new Date()); }catch(e){} }
+const SOH_VERSION = '2026.07.07 · beta';
 function buildYou(){
   const el=document.getElementById('youCard'); if(!el) return;
   let lv=null,xp=null; try{ lv=sohLevel(); }catch(e){} try{ xp=sohTheoryStats(); }catch(e){}
   const s=(typeof journalStats==='function')?journalStats():{streak:0};
   el.innerHTML=`<div class="you-lv">${lv?('Level '+lv.n+' · '+lv.name):'Begin your journey'}</div>
     <div class="you-stats"><span><b>${s.streak||0}</b>day streak</span><span><b>${xp?xp.xp.toLocaleString():0}</b>XP</span><span><b>${xp?xp.chDone:0}</b>chapters</span></div>`;
+  const v=document.getElementById('youVersion'); if(v) v.textContent='Strings of Hope · v'+SOH_VERSION+' · works offline';
+}
+function renderWelcome(){
+  const el=document.getElementById('welcomeCard'); if(!el) return;
+  let seen=false; try{ seen=localStorage.getItem('soh-welcomed')==='1'; }catch(e){}
+  if(seen){ el.hidden=true; return; }
+  el.hidden=false;
+  el.innerHTML=`<button class="wc-x" id="wcClose" aria-label="Dismiss">✕</button>
+    <div class="wc-k">Welcome to the beta</div>
+    <div class="wc-t">You’re one of the first to play here 🎵</div>
+    <p class="wc-p">Explore the five worlds under <b>Learn</b>, tap the harp bubble to ask <b>Harpie</b> anything, and share what you find from <b>You → Send feedback</b>. Thank you for testing.</p>`;
+  el.querySelector('#wcClose')?.addEventListener('click',()=>{ try{ localStorage.setItem('soh-welcomed','1'); }catch(e){} el.hidden=true; buzz(); });
 }
 function harpieOpenGlobal(){
   if(typeof harpieBind==='function') harpieBind();

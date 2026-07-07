@@ -3071,6 +3071,61 @@ function buildCredits(){
 }
 
 /* ============================================================
+   PLAY · THE HARP — a real, pluckable instrument (canvas)
+   ============================================================ */
+const HarpPlay = (function(){
+  let cv, ctx, W=0, H=0, dpr=1, strings=[], raf=0, running=false, key='C', hinted=false;
+  const KEYROOT={C:48,D:50,'E♭':51,F:53,G:55};
+  function scaleFor(k){ const root=KEYROOT[k]||48, iv=[0,2,4,5,7,9,11], out=[];
+    for(let i=0;i<15;i++) out.push(root+Math.floor(i/7)*12+iv[i%7]); return out; }
+  function layout(){ if(W<10) return; const notes=scaleFor(key), N=notes.length, padX=20, sp=(W-padX*2)/(N-1);
+    strings=notes.map((m,i)=>{ const x=padX+i*sp, t=i/(N-1), pc=m%12;
+      return { x, yTop:14+Math.pow(t,1.5)*(H*0.42), yBot:H-18, midi:m, pc, amp:0, ph:0,
+        color: pc===0?'#e08a6a' : (pc===5?'#6f93c4' : '#e2b65c') }; });
+  }
+  function setSize(){ if(!cv) return; const r=cv.getBoundingClientRect();
+    if(r.width<10){ setTimeout(setSize,80); return; }
+    dpr=window.devicePixelRatio||1; W=r.width; H=r.height; cv.width=W*dpr; cv.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0); layout(); }
+  function draw(){ ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(226,182,92,.22)'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(12,H-17); ctx.lineTo(W-12,H-17); ctx.stroke();
+    strings.forEach(s=>{ const bow=s.amp*Math.sin(s.ph)*20, my=(s.yTop+s.yBot)/2;
+      ctx.beginPath(); ctx.moveTo(s.x,s.yTop); ctx.quadraticCurveTo(s.x+bow,my,s.x,s.yBot);
+      const key=(s.pc===0||s.pc===5); ctx.strokeStyle=s.color; ctx.globalAlpha=key?0.95:0.72;
+      ctx.lineWidth=key?2.1:1.4; ctx.shadowColor=s.color; ctx.shadowBlur=Math.min(12,2+s.amp*34);
+      ctx.stroke(); ctx.shadowBlur=0; ctx.globalAlpha=1;
+      s.amp*=0.945; s.ph+=0.55; if(s.amp<0.008) s.amp=0; });
+  }
+  function loop(){ draw(); raf=requestAnimationFrame(loop); }
+  function pluck(i,vel){ const s=strings[i]; if(!s) return; s.amp=Math.min(1,vel||1); s.ph=0;
+    try{ harpPluck(etMidiFreq(s.midi), audioCtx().currentTime+0.004, 1.9); }catch(e){}
+    if(!hinted){ hinted=true; const h=document.getElementById('playHint'); if(h) h.classList.add('gone'); } }
+  function idxAt(x){ let best=-1,bd=1e9; strings.forEach((s,i)=>{ const d=Math.abs(s.x-x); if(d<bd){bd=d;best=i;} }); return bd<22?best:-1; }
+  let down=false, last=-1;
+  const px=e=>{ const r=cv.getBoundingClientRect(); return (e.clientX!=null?e.clientX:(e.touches&&e.touches[0].clientX))-r.left; };
+  function onDown(e){ down=true; last=-1; const i=idxAt(px(e)); if(i>=0){ pluck(i,1); last=i; haptic('tap'); } e.preventDefault(); }
+  function onMove(e){ if(!down) return; const i=idxAt(px(e)); if(i>=0 && i!==last){ pluck(i,0.82); last=i; haptic('select'); } }
+  function onUp(){ down=false; last=-1; }
+  function init(){ cv=document.getElementById('harpCanvas'); if(!cv) return; ctx=cv.getContext('2d');
+    if(!cv._bound){ cv._bound=1;
+      cv.addEventListener('pointerdown',onDown); window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp);
+      window.addEventListener('resize',()=>{ if(running) setSize(); }); }
+    setSize(); }
+  return { start(){ init(); running=true; if(!raf) loop(); },
+           stop(){ running=false; if(raf){ cancelAnimationFrame(raf); raf=0; } },
+           setKey(k){ key=k; layout(); } };
+})();
+function buildPlay(){
+  const kc=document.getElementById('playKeys');
+  if(kc && !kc._built){ kc._built=1; const keys=['C','D','E♭','F','G'];
+    kc.innerHTML=keys.map((k,i)=>`<button class="play-key${i===0?' on':''}" data-k="${k}">${k}</button>`).join('');
+    kc.querySelectorAll('.play-key').forEach(b=>b.addEventListener('click',()=>{ kc.querySelectorAll('.play-key').forEach(x=>x.classList.toggle('on',x===b)); HarpPlay.setKey(b.dataset.k); buzz(); }));
+  }
+  HarpPlay.start();
+}
+function playLeave(){ try{ HarpPlay.stop(); }catch(e){} }
+
+/* ============================================================
    HUB TABS — Learn · Practice · Spirit · You (2026-07-07 redesign)
    ============================================================ */
 function _seenPct(key,total){ try{ const n=JSON.parse(localStorage.getItem(key)||'[]').length; return total?Math.round(Math.min(n,total)/total*100):0; }catch(e){ return 0; } }
@@ -3269,6 +3324,7 @@ function showView(name){
     if(name==='jacob') jacobEnter();
     if(name==='shamayim') buildShamayim();
     if(name==='chen') buildChen();
+    if(name==='play') buildPlay(); else if(typeof playLeave==='function') playLeave();
     if(name==='credits') buildCredits();
   }catch(err){ console.warn('view init error ('+name+'):', err); }
   try{ window.scrollTo(0,0); }catch(e){}

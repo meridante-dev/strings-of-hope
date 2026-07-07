@@ -99,6 +99,7 @@
     <section id="view-tools" class="view">
       <header class="hub-head reveal"><div class="kicker">Every day</div><h1>Practice</h1><p class="sub">Warm up, tune, and train — in a few minutes.</p></header>
       <div class="hub-grid reveal">
+        <button class="hub-tile feat" data-view="play"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V5a4 4 0 014-4M19 21c-2-9-8-11-10-12M9 21h10"/></svg></span><span class="ht-n">Play the Harp</span><span class="ht-d">Pluck the strings</span></button>
         <button class="hub-tile feat" data-view="practice"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="ht-n">Practice Room</span><span class="ht-d">Guided 5–90 min</span></button>
         <button class="hub-tile" data-view="tuner"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3a3 3 0 00-3 3v5a3 3 0 006 0V6a3 3 0 00-3-3z"/><path d="M6 11a6 6 0 0012 0M12 17v4"/></svg></span><span class="ht-n">Tuner</span><span class="ht-d">By mic or ear</span></button>
         <button class="hub-tile" data-view="eartraining"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 13a8 8 0 0116 0v4a2 2 0 01-2 2h-1a1 1 0 01-1-1v-3a1 1 0 011-1h2M4 13v3a2 2 0 002 2h1a1 1 0 001-1v-3a1 1 0 00-1-1H4"/></svg></span><span class="ht-n">Ear Training</span><span class="ht-d">Intervals · chords</span></button>
@@ -139,6 +140,14 @@
         <a class="hub-tile feat" id="feedbackTile" href="mailto:info@edenrise.com?subject=Strings%20of%20Hope%20feedback"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span><span class="ht-n">Send feedback</span><span class="ht-d">You’re an early tester 💛</span></a>
       </div>
       <div class="you-ver reveal" id="youVersion"></div>
+      <footer class="reveal"><div class="cc">Strings of Hope</div></footer>
+    </section>
+
+    <!-- ================= PLAY · THE HARP ================= -->
+    <section id="view-play" class="view">
+      <header class="hub-head reveal"><div class="kicker">Play</div><h1>The Harp</h1><p class="sub">Pluck a string — drag across the strings for a glissando.</p></header>
+      <div class="play-keys reveal" id="playKeys"></div>
+      <div class="play-wrap reveal"><canvas id="harpCanvas"></canvas><div class="play-hint" id="playHint">↑ pluck · drag across for a gliss</div></div>
       <footer class="reveal"><div class="cc">Strings of Hope</div></footer>
     </section>
 

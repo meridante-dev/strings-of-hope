@@ -1,13 +1,24 @@
 # ▶ RESUME HERE — Strings of Hope
-*Checkpoint 2026-07-06 (evening). Working tree clean, all pushed (`73462e6`), deploy verified live.*
+*Checkpoint 2026-07-07. Working tree clean, all pushed (`4fc8917`), deploy verified live. **In early-release / beta — shareable with the community now.***
 
 ## Live & repo
-- **App:** https://meridante-dev.github.io/strings-of-hope/ (public, auto-deploys on every push to main)
-- **Repo:** https://github.com/meridante-dev/strings-of-hope (public) · last commit `73462e6`
+- **App:** https://meridante-dev.github.io/strings-of-hope/ (public PWA, installable "Add to Home Screen", works offline, auto-deploys on every push to main)
+- **Repo:** https://github.com/meridante-dev/strings-of-hope (public) · last commit `4fc8917`
 - Workflow: local build → Playwright screenshots from a scratchpad COPY (macOS blocks headless Chromium on the Ultra Touch volume) → user approves visuals → commit/push. **No Netlify.**
 - ⚠️ **Deploy gotcha:** never `gh run rerun --failed` the Pages job (duplicate-artifact error). Recover with a FRESH run: `gh workflow run pages.yml --ref main`. See memory [[pages-deploy-gotcha]].
 
-## ✅ Shipped 2026-07-06 (today's session)
+## ✅ Shipped 2026-07-07 (launch-prep + premium sprint)
+- **Home & nav redesign** (Direction A): calm **Today** (one Continue hero + path + verse) + **5-pillar bottom bar** Today · Learn · Practice · **Uplift** (=Spirit) · You. New hub views `view-learn-hub`/`view-tools`/`view-spirit`/`view-you` (built in `app.js`), global **Harpie FAB** + Learn search (→ `harpieOpenGlobal`), parent-tab highlighting. Old 21-icon grid retired.
+- **Backend LIVE — Firebase** (project `soh-app-defde`): Google + email/password + guest sign-in; Firestore per-user cloud sync, **offline-first merge** (never loses progress). `app/firebase-config.js` (real config committed, public), `app/sync.js`, rules in `docs/firebase-setup.md`. See [[backend-firebase]].
+- **Premium profile** (You tab, `buildYou`): rank RING + XP, streak/chapters/certs/badges, adaptive encouragement, "Keep going" resume, certificate seals, per-world bars, pilgrimage badges, **daily-reminder** opt-in (`youMaybeRemind`).
+- **Early-release prep:** PWA manifest + generated icons (192/512/maskable/apple), iOS meta, **service worker** `sw.js` (offline), OG/share tags, **Credits & Licenses** page (`CREDITS`), privacy note, beta **welcome card**, version stamp `SOH_VERSION`, "Send feedback" (mailto info@edenrise.com).
+- **Apple-tier premium sprint:** ① **flow & motion** — directional view transitions (push/pop/tab in `showView`), springy press, haptics vocab (`haptic()`), staggered reveals; ② **interactive on-screen harp** (`view-play`, `HarpPlay` canvas — pluck + glissando, red-C/blue-F strings); ③ **celebration moments** (`sohCelebrate`/`sohCheckMilestones` — rank-up & streak, confetti + harp flourish + win haptic); ④ **living home** (time-of-day hero palette `data-tod` + shimmer + breathing glow).
+- **Microtonality (Jacob Mod 8)** taught-lesson from CC BY source; Kabbalah→Jewish Mysticism; David-as-musician in Shamayim.
+
+## 🚀 Launch-readiness state (2026-07-07)
+Smoke-tested: **17/17 main views load with zero console errors.** PWA installable, offline works, all 3 auth methods live, cloud sync merges. **Ready to share with the community for beta testing.** Remaining polish (not blockers): tablet/desktop wide layout (currently centered phone column), background push (FCM), Learn search → true jump-to-results.
+
+## ✅ Shipped 2026-07-06 (prior session — content & legal)
 - **Jacob's Universe:** Arrivals + Reharm Lab toys + per-module quizzes; wired into Harpie's KB; 2nd web-scan (40+ legal sources) → per-module "Go deeper" + "Deeper Study" library; **modules → taught lesson-paths** (engine + progress) with **Negative Harmony (Mod 3)** & **Microtonality (Mod 8, from CC BY)** fully authored. *Only 2 of 11 modules have taught lessons so far.*
 - **Music Theory:** Semester 6 "Theory in the Real World" (9 OMT chapters, CC BY-SA); **premium gamification** — XP, 8 ranks, progress bars, certificates + course diploma (in `app.js` `sohTheoryStats`, `theoryMasterHTML`, cert modal).
 - **NEW section — Shamayim Harp** (`app/shamayim.js`, view `view-shamayim`): contemplative 5-soul-world journey (Edenrise). See [[shamayim-harp]].

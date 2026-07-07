@@ -41,6 +41,8 @@
 
   --grain:.05;
   --ease:cubic-bezier(.22,.61,.27,1);
+  --ease-out:cubic-bezier(.2,.8,.2,1);
+  --spring:cubic-bezier(.34,1.4,.5,1);
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -816,6 +818,14 @@ footer .cc{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.32em;text-tr
 @keyframes viewfade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .view.active{animation:viewfade .36s var(--ease) both}
 
+/* directional view transitions — push deeper, pop back, cross-fade tabs */
+@keyframes vtPush{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+@keyframes vtPop{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+@keyframes vtTab{from{opacity:0;transform:translateY(5px) scale(.988)}to{opacity:1;transform:none}}
+.view.active.vt-push{animation:vtPush .38s var(--ease-out) both}
+.view.active.vt-pop{animation:vtPop .36s var(--ease-out) both}
+.view.active.vt-tab{animation:vtTab .32s var(--ease-out) both}
+
 /* journey directional swipe slides */
 @keyframes slideR{from{opacity:0;transform:translateX(46px)}to{opacity:1;transform:none}}
 @keyframes slideL{from{opacity:0;transform:translateX(-46px)}to{opacity:1;transform:none}}
@@ -827,13 +837,22 @@ footer .cc{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.32em;text-tr
 .wheel-wrap{touch-action:pan-y}
 .jrn-stage,.wheel-wrap,.mode-switch,.keybar{-webkit-user-select:none;user-select:none}
 
-/* tactile press feedback */
-.nav button:active,.jrn-exit:active,.keypill:active{transform:scale(.95)}
+/* springy tactile press — release overshoots slightly, like iOS */
+.hub-tile,.world-row,.prof-continue,.prof-seal,.auth-google,.auth-email-btn,.ju-card,.chen-card,.shy-card,.nx-card,.nx-hero,
+.thy-ch,.ju-chord,.ju-res,.hub-search,.tile,.ico,.tp-row,.harpie-fab,.pr-switch,.jrn-btn,.nav .bar button{
+  transition:transform .22s var(--spring), box-shadow .2s var(--ease-out), border-color .2s, background .2s;
+}
+.hub-tile:active,.world-row:active,.prof-seal:active,.auth-google:active,.auth-email-btn:active,.ju-card:active,.chen-card:active,
+.shy-card:active,.nx-card:active,.nx-hero:active,.thy-ch:active,.ju-res:active,.hub-search:active,.tile:active,.ico:active,.tp-row:active{
+  transform:scale(.972);
+}
+.nav button:active,.jrn-exit:active,.keypill:active,.harpie-fab:active,.jrn-btn:active,.prof-continue:active{transform:scale(.94)}
 
 @media (prefers-reduced-motion:reduce){
   .reveal{opacity:1;transform:none}
-  .reveal.in,.jrn-in,.view.active{animation:none}
+  .reveal.in,.jrn-in,.view.active,.view.active.vt-push,.view.active.vt-pop,.view.active.vt-tab{animation:none}
   .petal.flavor{animation:none}
+  .hub-tile,.world-row,.prof-continue,.prof-seal,.ju-card,.chen-card,.shy-card,.nx-card,.thy-ch{transition:none}
 }
 
 /* ============================================================

@@ -5,7 +5,11 @@
 const css = (v)=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
 /* light haptic on Android (no-op on iOS Safari) */
-function buzz(){ try{ navigator.vibrate && navigator.vibrate(7); }catch(e){} }
+function haptic(kind){ try{ if(!navigator.vibrate) return;
+  const p={tap:6, select:3, soft:9, success:[11,32,16], win:[14,26,14,26,22], warn:[22,40,22], heavy:16}[kind];
+  if(p!=null) navigator.vibrate(p);
+}catch(e){} }
+function buzz(){ haptic('tap'); }
 
 /* horizontal swipe via pointer events (iOS + Android). Taps pass through;
    a real drag fires the callback and swallows the trailing click. */
@@ -40,9 +44,12 @@ function observeReveals(root=document){
 }
 /* reveal everything currently visible in `root` right now (no wait for the observer) */
 function triggerReveals(root=document){
+  let i=0;
   root.querySelectorAll('.reveal:not(.in)').forEach(el=>{
     const r = el.getBoundingClientRect();
-    if(el.offsetParent !== null && r.top < window.innerHeight + 60){ el.classList.add('in'); io.unobserve(el); }
+    if(el.offsetParent !== null && r.top < window.innerHeight + 60){
+      el.style.animationDelay=(Math.min(i,8)*0.05)+'s'; el.classList.add('in'); io.unobserve(el); i++;
+    }
   });
 }
 
@@ -2240,7 +2247,7 @@ function sohCertCelebrate(){
   try{ const earned=sohCertsEarned(), seen=new Set(JSON.parse(localStorage.getItem('soh-certs-seen')||'[]'));
     const fresh=earned.filter(c=>!seen.has(c.id));
     earned.forEach(c=>seen.add(c.id)); localStorage.setItem('soh-certs-seen',JSON.stringify([...seen]));
-    if(fresh.length){ const c=fresh.find(x=>x.id==='diploma')||fresh[0]; sohOpenCert(c);
+    if(fresh.length){ const c=fresh.find(x=>x.id==='diploma')||fresh[0]; sohOpenCert(c); haptic('win');
       const s=document.querySelector('#certModal .cert-scroll'); if(s){ s.classList.add('cert-new'); setTimeout(()=>s.classList.remove('cert-new'),2600); } return true; }
   }catch(e){}
   return false;
@@ -2831,7 +2838,7 @@ function initCompass(){ document.getElementById('compassBtn')?.addEventListener(
 /* ============================================================
    ROUTING
    ============================================================ */
-function revealNow(root){ if(!root) return; root.querySelectorAll('.reveal:not(.in)').forEach(el=>{ el.classList.add('in'); try{ io.unobserve(el); }catch(e){} }); }
+function revealNow(root){ if(!root) return; let i=0; root.querySelectorAll('.reveal:not(.in)').forEach(el=>{ el.style.animationDelay=(Math.min(i,8)*0.05)+'s'; el.classList.add('in'); try{ io.unobserve(el); }catch(e){} i++; }); }
 /* ============================================================
    SHAMAYIM HARP — the five-worlds contemplative journey
    ============================================================ */
@@ -3210,6 +3217,7 @@ function harpieOpenGlobal(){
   setTimeout(()=>document.getElementById('hpInput')?.focus(),60); buzz();
 }
 const _HUB_TABS=['home','learn-hub','tools','spirit','you'];
+let _prevView='home';
 const _TAB_PARENT={ modes:'learn-hub',learn:'learn-hub',theory:'learn-hub',jacob:'learn-hub',shamayim:'learn-hub',chen:'learn-hub',
   practice:'tools',tuner:'tools',eartraining:'tools',rhythm:'tools',circle:'tools',sightread:'tools',drone:'tools',levers:'tools',scales:'tools',repertoire:'tools',
   tehillim:'spirit',meditation:'spirit',hebrew:'spirit',compass:'spirit',
@@ -3219,6 +3227,16 @@ function showView(name){
   if(!document.getElementById('view-'+name)) name='home';                 // never navigate to a missing view
   document.body.classList.remove('in-session');                            // never leave the nav stuck hidden
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+name));
+  // flow: directional view transition (push deeper · pop back · cross-fade tabs)
+  try{ const _av=document.getElementById('view-'+name);
+    if(_av && name!==_prevView){
+      const prevHub=_HUB_TABS.includes(_prevView), nextHub=_HUB_TABS.includes(name);
+      const vt = !nextHub ? 'vt-push' : (!prevHub ? 'vt-pop' : 'vt-tab');
+      _av.classList.remove('vt-push','vt-pop','vt-tab'); void _av.offsetWidth; _av.classList.add(vt);
+      haptic(nextHub?'tap':'soft');
+    }
+    _prevView=name;
+  }catch(e){}
   const _activeTab = _HUB_TABS.includes(name) ? name : (_TAB_PARENT[name]||null);
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on', b.dataset.view===_activeTab));
   const _fab=document.getElementById('harpieFab'); if(_fab) _fab.hidden = !_HUB_TABS.includes(name);

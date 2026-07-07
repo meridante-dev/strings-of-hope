@@ -1741,6 +1741,26 @@ body.cert-open{ overflow:hidden }
 .harpie-fab[hidden]{ display:none }
 body.hp-open .harpie-fab{ display:none }
 
+/* ===== Celebration moments ===== */
+.cel-overlay{ position:fixed;inset:0;z-index:210;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(circle at 50% 38%, rgba(44,32,14,.88), rgba(8,6,3,.94));
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px) }
+.cel-overlay[hidden]{ display:none }
+body.cel-open{ overflow:hidden }
+#celCanvas{ position:absolute;inset:0;width:100%;height:100%;pointer-events:none }
+.cel-card{ position:relative;z-index:1;text-align:center;max-width:22rem;animation:celpop .55s var(--spring) both }
+@keyframes celpop{ 0%{opacity:0;transform:scale(.72) translateY(22px)} 100%{opacity:1;transform:none} }
+.cel-emblem{ font-size:64px;line-height:1;filter:drop-shadow(0 0 26px rgba(226,182,92,.65));animation:celspin 1s var(--ease-out) both }
+@keyframes celspin{ 0%{transform:scale(0) rotate(-40deg)} 62%{transform:scale(1.25) rotate(9deg)} 100%{transform:scale(1) rotate(0)} }
+.cel-kicker{ margin-top:14px;font-size:11px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--gold) }
+.cel-title{ font-family:"Playfair Display",serif;font-size:32px;font-weight:700;color:#f3ead6;margin-top:6px;line-height:1.08;text-wrap:balance }
+.cel-sub{ font-size:14px;line-height:1.55;color:#cdbc98;margin-top:10px }
+.cel-btn{ margin-top:24px;font:inherit;font-size:14.5px;font-weight:800;color:#2c2206;cursor:pointer;
+  background:linear-gradient(180deg,#f0d089,#d9a44e);border:none;border-radius:14px;padding:13px 36px;
+  box-shadow:0 8px 22px -6px rgba(226,182,92,.5) }
+.cel-btn:active{ transform:scale(.96) }
+@media (prefers-reduced-motion:reduce){ .cel-card,.cel-emblem{ animation:none } }
+
 /* ===== Play · The Harp (interactive canvas) ===== */
 .play-keys{ display:flex;gap:8px;justify-content:center;margin-bottom:14px }
 .play-key{ font:inherit;font-size:14px;font-weight:800;letter-spacing:.02em;cursor:pointer;min-width:44px;

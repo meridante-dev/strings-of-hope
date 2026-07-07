@@ -3273,6 +3273,59 @@ function harpieOpenGlobal(){
 }
 const _HUB_TABS=['home','learn-hub','tools','spirit','you'];
 let _prevView='home';
+
+/* ============================================================
+   CELEBRATION MOMENTS — level-ups, streak milestones
+   ============================================================ */
+let _celRaf=0, _celBound=false;
+function sohHarpFlourish(){ try{ const ac=audioCtx(); [60,64,67,72,76,79,84,88].forEach((m,k)=>harpPluck(etMidiFreq(m), ac.currentTime+0.05+k*0.06, 2.2)); }catch(e){} }
+function celBurst(){
+  const cv=document.getElementById('celCanvas'); if(!cv) return; const ctx=cv.getContext('2d');
+  const dpr=window.devicePixelRatio||1, W=cv.clientWidth||window.innerWidth, H=cv.clientHeight||window.innerHeight;
+  cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  const cols=['#e2b65c','#f3ead6','#d98a6a','#c39a54','#6f93c4'], parts=[], cx=W/2, cy=H*0.4;
+  for(let i=0;i<110;i++){ const a=Math.random()*Math.PI*2, sp=2+Math.random()*8;
+    parts.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-4,g:0.12+Math.random()*0.09,s:3+Math.random()*4,
+      rot:Math.random()*6,vr:(Math.random()-0.5)*0.4,c:cols[i%cols.length],life:1}); }
+  cancelAnimationFrame(_celRaf);
+  (function loop(){ ctx.clearRect(0,0,W,H); let alive=false;
+    parts.forEach(p=>{ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.life-=0.008;
+      if(p.life>0 && p.y<H+24){ alive=true; ctx.save(); ctx.globalAlpha=Math.max(0,p.life); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+        ctx.fillStyle=p.c; ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*1.7); ctx.restore(); } });
+    if(alive) _celRaf=requestAnimationFrame(loop); else ctx.clearRect(0,0,W,H);
+  })();
+}
+function sohCelebrate(o){
+  const ov=document.getElementById('celebrate'); if(!ov) return; o=o||{};
+  ov.querySelector('#celIcon').textContent=o.icon||'✦';
+  ov.querySelector('#celKicker').textContent=o.kicker||'Milestone';
+  ov.querySelector('#celTitle').textContent=o.title||'';
+  ov.querySelector('#celSub').textContent=o.sub||'';
+  ov.hidden=false; document.body.classList.add('cel-open');
+  if(!_celBound){ _celBound=true;
+    document.getElementById('celBtn')?.addEventListener('click',sohCelebrateClose);
+    ov.addEventListener('click',e=>{ if(e.target===ov) sohCelebrateClose(); }); }
+  haptic('win'); sohHarpFlourish();
+  const rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(!rm) requestAnimationFrame(celBurst);
+}
+function sohCelebrateClose(){ const ov=document.getElementById('celebrate'); if(ov){ ov.hidden=true; document.body.classList.remove('cel-open'); } cancelAnimationFrame(_celRaf); _celRaf=0; }
+function sohCheckMilestones(){
+  try{
+    // Rank up
+    const st=sohTheoryStats(); const rs=localStorage.getItem('soh-rank-seen');
+    if(rs==null){ localStorage.setItem('soh-rank-seen',String(st.rankN)); }
+    else if(st.rankN>parseInt(rs)){ localStorage.setItem('soh-rank-seen',String(st.rankN));
+      sohCelebrate({kicker:'Level up',icon:'✦',title:st.rank,sub:`You’ve reached rank ${st.rankN} — ${st.xp.toLocaleString()} XP. Keep climbing.`}); return; }
+    // Streak milestones
+    const streak=(journalStats().streak)||0, ms=[3,7,14,30,50,100,200,365];
+    const ss=localStorage.getItem('soh-streak-seen');
+    if(ss==null){ localStorage.setItem('soh-streak-seen',String(ms.filter(m=>streak>=m).pop()||0)); return; }
+    const hit=ms.filter(m=>streak>=m && m>parseInt(ss));
+    if(hit.length){ const top=hit[hit.length-1]; localStorage.setItem('soh-streak-seen',String(top));
+      sohCelebrate({kicker:'Streak',icon:'🔥',title:`${top}-day streak!`,sub:'Your harp knows your hands now. Keep the flame alight.'}); }
+  }catch(e){}
+}
 const _TAB_PARENT={ modes:'learn-hub',learn:'learn-hub',theory:'learn-hub',jacob:'learn-hub',shamayim:'learn-hub',chen:'learn-hub',
   practice:'tools',tuner:'tools',eartraining:'tools',rhythm:'tools',circle:'tools',sightread:'tools',drone:'tools',levers:'tools',scales:'tools',repertoire:'tools',
   tehillim:'spirit',meditation:'spirit',hebrew:'spirit',compass:'spirit',
@@ -3308,6 +3361,7 @@ function showView(name){
     if(name==='journal'){ buildJournal(); if(typeof renderBadges==='function') renderBadges(); }
     if(typeof sohVisit==='function') sohVisit(name);
     if(name==='home') renderHome();
+    if(_HUB_TABS.includes(name)) setTimeout(()=>{ try{ sohCheckMilestones(); }catch(e){} }, 420);
     if(name==='learn-hub') buildLearnHub();
     if(name==='tools'){}
     if(name==='spirit') buildSpirit();

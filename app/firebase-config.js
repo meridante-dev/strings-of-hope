@@ -1,20 +1,15 @@
 /* ============================================================
-   FIREBASE CONFIG  —  paste your project's config below.
-   This is PUBLIC by design (safe to commit); security is enforced
-   by the Firestore rules, not by hiding these values.
-
-   How to get it (≈5 min) — see docs/firebase-setup.md:
-   Firebase console → Project settings → "Your apps" → Web app →
-   SDK setup → copy the firebaseConfig object → paste it here.
-
-   Until real values are pasted, the app runs exactly as before
-   (offline, local only) and simply shows "cloud sync not connected."
+   FIREBASE CONFIG  —  Strings of Hope (project: soh-app-defde)
+   These values are PUBLIC by design (safe to commit); security is
+   enforced by the Firestore rules, not by hiding them.
+   Setup steps + rules: docs/firebase-setup.md
    ============================================================ */
 window.SOH_FIREBASE_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyCh3t4Vh4VHvuSRh18x-50PAxKTf0mX9ZM",
+  authDomain: "soh-app-defde.firebaseapp.com",
+  projectId: "soh-app-defde",
+  storageBucket: "soh-app-defde.firebasestorage.app",
+  messagingSenderId: "468551964746",
+  appId: "1:468551964746:web:76dea4603da8647ba8aeb3",
+  measurementId: "G-5TF6LV9ZK2"
 };

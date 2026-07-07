@@ -129,6 +129,7 @@
     <!-- ================= YOU ================= -->
     <section id="view-you" class="view">
       <header class="hub-head reveal"><div class="kicker">Your journey</div><h1>You</h1><p class="sub">Your harp, your path, your milestones.</p></header>
+      <div class="auth-card reveal" id="authCard"></div>
       <div class="you-card reveal" id="youCard"></div>
       <div class="hub-grid reveal">
         <button class="hub-tile feat" data-view="profile"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V5a4 4 0 014-4M19 21c-2-9-8-11-10-12M9 21h10"/><circle cx="17" cy="6" r="2.5"/></svg></span><span class="ht-n">My Harp</span><span class="ht-d">Profile &amp; goals</span></button>
@@ -995,6 +996,8 @@
   <script src="shamayim.js"></script>
   <script src="chen.js"></script>
   <script src="app.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="sync.js"></script>
   <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
 </body>
 </html>

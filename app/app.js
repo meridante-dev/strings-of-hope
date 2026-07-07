@@ -3099,6 +3099,7 @@ function buildYou(){
   el.innerHTML=`<div class="you-lv">${lv?('Level '+lv.n+' · '+lv.name):'Begin your journey'}</div>
     <div class="you-stats"><span><b>${s.streak||0}</b>day streak</span><span><b>${xp?xp.xp.toLocaleString():0}</b>XP</span><span><b>${xp?xp.chDone:0}</b>chapters</span></div>`;
   const v=document.getElementById('youVersion'); if(v) v.textContent='Strings of Hope · v'+SOH_VERSION+' · works offline';
+  try{ if(typeof sohRenderAuth==='function') sohRenderAuth(); }catch(e){}
 }
 function renderWelcome(){
   const el=document.getElementById('welcomeCard'); if(!el) return;

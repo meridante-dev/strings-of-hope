@@ -1666,6 +1666,28 @@ body.cert-open{ overflow:hidden }
 .harpie-fab[hidden]{ display:none }
 body.hp-open .harpie-fab{ display:none }
 
+/* account / cloud sync card (You tab) */
+.auth-card{ padding:18px;border-radius:18px;margin-bottom:14px;
+  background:linear-gradient(158deg,rgba(60,44,20,.34),rgba(30,22,12,.24));border:1px solid var(--line);
+  box-shadow:inset 0 1px 0 rgba(255,236,190,.08) }
+.auth-k{ font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep) }
+.auth-t{ font-family:"Playfair Display",serif;font-size:20px;font-weight:600;color:var(--ink);margin-top:2px }
+.auth-p{ font-size:12.5px;line-height:1.55;color:var(--ink-soft);margin:6px 0 13px;max-width:32rem }
+.auth-google{ display:flex;align-items:center;justify-content:center;gap:10px;width:100%;cursor:pointer;
+  font:inherit;font-size:14.5px;font-weight:700;color:#1f1f1f;background:#fff;border:none;border-radius:12px;padding:12px 16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.25) }
+.auth-google:active{ transform:scale(.99) } .auth-google[disabled]{ opacity:.6 }
+.auth-me{ display:flex;align-items:center;gap:12px }
+.auth-ph{ width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid var(--line-2) }
+.auth-ph-x{ display:grid;place-items:center;background:var(--gold-soft);color:var(--gold) }
+.auth-meta{ min-width:0 }
+.auth-name{ font-family:"Playfair Display",serif;font-size:18px;font-weight:600;color:var(--ink);line-height:1.1 }
+.auth-email{ font-size:12px;color:var(--ink-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+.auth-sync{ display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-soft);margin:12px 0 12px }
+.auth-dot{ width:7px;height:7px;border-radius:50%;background:#4a8f6b;box-shadow:0 0 8px rgba(74,143,107,.7) }
+.auth-out{ font:inherit;font-size:12.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px }
+
 /* first-run welcome (beta) */
 .welcome-card{ position:relative;margin:0 0 18px;padding:16px 18px;border-radius:18px;
   background:linear-gradient(158deg,rgba(60,44,20,.5),rgba(30,22,12,.34));border:1px solid var(--line-2);

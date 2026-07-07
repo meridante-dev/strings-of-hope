@@ -1741,6 +1741,24 @@ body.cert-open{ overflow:hidden }
 .harpie-fab[hidden]{ display:none }
 body.hp-open .harpie-fab{ display:none }
 
+/* ===== First-run sign-in gate ===== */
+.gate-overlay{ position:fixed;inset:0;z-index:220;display:flex;align-items:center;justify-content:center;padding:26px;
+  background:radial-gradient(circle at 50% 30%, rgba(42,30,14,.94), rgba(8,6,3,.97));
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px) }
+.gate-overlay[hidden]{ display:none }
+body.gate-open{ overflow:hidden }
+.gate-card{ width:100%;max-width:23rem;text-align:center;animation:celpop .5s var(--spring) both }
+.gate-lyre{ width:46px;height:46px;object-fit:contain;opacity:.92;margin:0 auto 12px;display:block;filter:drop-shadow(0 2px 10px rgba(226,182,92,.4)) }
+.gate-kicker{ font-size:10.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--gold) }
+.gate-title{ font-family:"Playfair Display",serif;font-size:32px;font-weight:700;color:#f3ead6;margin-top:5px }
+.gate-lead{ font-size:14px;line-height:1.55;color:#cdbc98;margin:12px auto 22px;max-width:20rem }
+.gate-google{ display:flex;align-items:center;justify-content:center;gap:10px;width:100%;cursor:pointer;
+  font:inherit;font-size:15px;font-weight:700;color:#1f1f1f;background:#fff;border:none;border-radius:13px;padding:14px 16px;box-shadow:0 4px 14px rgba(0,0,0,.3) }
+.gate-google:active{ transform:scale(.99) } .gate-google[disabled]{ opacity:.6 }
+.gate-alt{ display:flex;flex-direction:column;gap:12px;margin-top:18px }
+.gate-alt .auth-link{ font-size:13.5px;color:var(--gold);font-weight:600 }
+.gate-fine{ font-size:11px;color:#8a7a5c;margin-top:22px;line-height:1.5 }
+
 /* ===== Celebration moments ===== */
 .cel-overlay{ position:fixed;inset:0;z-index:210;display:flex;align-items:center;justify-content:center;padding:24px;
   background:radial-gradient(circle at 50% 38%, rgba(44,32,14,.88), rgba(8,6,3,.94));

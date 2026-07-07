@@ -40,7 +40,9 @@
 
   let db=null, auth=null, provider=null, _pushT=null, _writingLocal=false;
 
-  function scheduleUI(){ try{ if(typeof sohRenderAuth==='function') sohRenderAuth(); }catch(e){} }
+  function scheduleUI(){ try{ if(typeof sohRenderAuth==='function') sohRenderAuth(); }catch(e){}
+    try{ const g=document.getElementById('authGate'); if(g && !g.hidden && typeof sohRenderGate==='function') sohRenderGate(); }catch(e){} }
+  function maybeShowGate(){ try{ if(configured && localStorage.getItem('soh-auth-choice')!=='1' && typeof sohShowGate==='function') sohShowGate(); }catch(e){} }
 
   function cloudDoc(){ return db.collection('users').doc(SOH_SYNC.user.uid); }
 
@@ -92,26 +94,39 @@
 
     auth.onAuthStateChanged(function(user){
       SOH_SYNC.user = user || null;
-      if(user){ window.SOH_AUTH_ERR=''; SOH_SYNC.status='syncing'; scheduleUI(); pullMergePush(); }
-      else { SOH_SYNC.status='signedout'; scheduleUI(); }
+      if(user){ window.SOH_AUTH_ERR=''; try{ localStorage.setItem('soh-auth-choice','1'); }catch(e){}
+        if(typeof sohHideGate==='function') sohHideGate();
+        SOH_SYNC.status='syncing'; scheduleUI(); pullMergePush(); }
+      else { SOH_SYNC.status='signedout'; scheduleUI(); maybeShowGate(); }
     });
-    auth.getRedirectResult().catch(()=>{});
+    auth.getRedirectResult().then(function(){}).catch(function(err){ if(err&&err.code){ window.SOH_AUTH_ERR=authErr(err); scheduleUI(); } });
     try{ window.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden' && SOH_SYNC.user) pushOnly(); }); }catch(e){}
   }
 
   // Public actions (called from the You tab UI)
   window.sohSignIn = function(){
-    if(!auth){ return; }
-    SOH_SYNC.status='signingin'; scheduleUI();
+    if(!auth) return;
+    window.SOH_AUTH_ERR=''; SOH_SYNC.status='signingin'; scheduleUI();
+    try{ auth.useDeviceLanguage(); }catch(e){}
+    const standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone===true;
+    const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent||'');
+    // installed PWAs & mobile browsers can't use the popup flow → go straight to redirect
+    if(standalone || mobile){
+      try{ auth.signInWithRedirect(provider); }catch(e){ window.SOH_AUTH_ERR=authErr(e); SOH_SYNC.status='signedout'; scheduleUI(); }
+      return;
+    }
     auth.signInWithPopup(provider).catch(function(err){
-      if(err && (err.code==='auth/popup-blocked' || err.code==='auth/cancelled-popup-request' || err.code==='auth/operation-not-supported-in-this-environment')){
-        try{ auth.signInWithRedirect(provider); }catch(e){}
-      } else { SOH_SYNC.status='signedout'; scheduleUI(); }
+      if(err && err.code==='auth/unauthorized-domain'){ window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='signedout'; scheduleUI(); return; }
+      if(err && err.code==='auth/popup-closed-by-user'){ SOH_SYNC.status='signedout'; scheduleUI(); return; }
+      try{ auth.signInWithRedirect(provider); }catch(e){ window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='signedout'; scheduleUI(); }
     });
   };
   window.sohSignOut = function(){ if(auth) auth.signOut().catch(()=>{}); };
 
-  function authErr(err){ const c=(err&&err.code)||''; return ({
+  function authErr(err){ const c=(err&&err.code)||'';
+    if(c==='auth/unauthorized-domain') return 'This site isn’t authorized in Firebase yet — add “'+location.hostname+'” under Authentication → Settings → Authorized domains.';
+    return ({
+    'auth/unauthorized-domain':'Add this domain in Firebase Auth settings.',
     'auth/invalid-email':'That doesn’t look like a valid email.',
     'auth/missing-password':'Enter a password.',
     'auth/weak-password':'Password needs at least 6 characters.',
@@ -203,4 +218,20 @@ function sohRenderAuth(){
   el.querySelector('#authGuest')?.addEventListener('click',()=>{ if(typeof sohSignInAnon==='function') sohSignInAnon(); });
   el.querySelector('#authToggle')?.addEventListener('click',()=>{ window.SOH_AUTH_EMAIL=emailEl.value.trim(); window.SOH_AUTH_ERR=''; window.SOH_AUTH_MODE=(mode==='signup'?'signin':'signup'); sohRenderAuth(); });
   pwEl?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ if(typeof sohSignInEmail==='function') sohSignInEmail(emailEl.value.trim(), pwEl.value, mode); } });
+}
+
+/* ---- First-run sign-in gate (appears on launch for undecided users) ---- */
+function sohShowGate(){ const g=document.getElementById('authGate'); if(!g) return; g.hidden=false; document.body.classList.add('gate-open'); sohRenderGate(); }
+function sohHideGate(){ const g=document.getElementById('authGate'); if(g) g.hidden=true; document.body.classList.remove('gate-open'); }
+window.sohGateGuest=function(){ try{ localStorage.setItem('soh-auth-choice','1'); }catch(e){} sohHideGate(); if(typeof buzz==='function') buzz(); };
+function sohRenderGate(){
+  const el=document.getElementById('gateBody'); if(!el) return;
+  const S=window.SOH_SYNC||{status:''}, err=window.SOH_AUTH_ERR||'', busy=S.status==='signingin';
+  const G='<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 01-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.9-3c-1 .7-2.4 1.1-4 1.1-3 0-5.6-2-6.6-4.8H1.4v3.1A12 12 0 0012 24z"/><path fill="#FBBC05" d="M5.4 14.4a7.2 7.2 0 010-4.8V6.5H1.4a12 12 0 000 11z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.5 1.8l3.4-3.4A12 12 0 001.4 6.5l4 3.1C6.4 6.8 9 4.8 12 4.8z"/></svg>';
+  el.innerHTML=`<button class="gate-google" id="gateGoogle" ${busy?'disabled':''}>${G}<span>${busy?'One moment…':'Continue with Google'}</span></button>
+    ${err?`<div class="auth-err">${err}</div>`:''}
+    <div class="gate-alt"><button class="auth-link" id="gateEmail">Use email instead</button><button class="auth-link" id="gateGuest">Continue without an account</button></div>`;
+  el.querySelector('#gateGoogle').onclick=()=>{ if(typeof sohSignIn==='function') sohSignIn(); };
+  el.querySelector('#gateEmail').onclick=()=>{ sohGateGuest(); if(typeof showView==='function') showView('you'); };
+  el.querySelector('#gateGuest').onclick=()=>sohGateGuest();
 }

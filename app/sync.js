@@ -85,6 +85,7 @@
     try{ firebase.initializeApp(cfg); }catch(e){ SOH_SYNC.status='error'; scheduleUI(); return; }
     auth=firebase.auth(); db=firebase.firestore();
     provider=new firebase.auth.GoogleAuthProvider();
+    try{ provider.setCustomParameters({ prompt:'select_account' }); }catch(e){}
     try{ db.enablePersistence({synchronizeTabs:true}).catch(()=>{}); }catch(e){}
 
     // auto-sync: any soh-* write (while signed in) pushes to cloud, debounced.
@@ -106,19 +107,20 @@
   // Public actions (called from the You tab UI)
   window.sohSignIn = function(){
     if(!auth) return;
-    window.SOH_AUTH_ERR=''; SOH_SYNC.status='signingin'; scheduleUI();
     try{ auth.useDeviceLanguage(); }catch(e){}
-    const standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone===true;
-    const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent||'');
-    // installed PWAs & mobile browsers can't use the popup flow → go straight to redirect
-    if(standalone || mobile){
-      try{ auth.signInWithRedirect(provider); }catch(e){ window.SOH_AUTH_ERR=authErr(e); SOH_SYNC.status='signedout'; scheduleUI(); }
-      return;
-    }
-    auth.signInWithPopup(provider).catch(function(err){
-      if(err && err.code==='auth/unauthorized-domain'){ window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='signedout'; scheduleUI(); return; }
-      if(err && err.code==='auth/popup-closed-by-user'){ SOH_SYNC.status='signedout'; scheduleUI(); return; }
-      try{ auth.signInWithRedirect(provider); }catch(e){ window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='signedout'; scheduleUI(); }
+    // Open the popup SYNCHRONOUSLY inside the tap (Safari blocks popups opened after async work).
+    // Popup is now the recommended flow on iOS/Safari — redirect breaks under storage partitioning.
+    let promise;
+    try{ promise = auth.signInWithPopup(provider); }
+    catch(e){ window.SOH_AUTH_ERR=authErr(e); SOH_SYNC.status='signedout'; scheduleUI(); return; }
+    window.SOH_AUTH_ERR=''; SOH_SYNC.status='signingin'; scheduleUI();
+    promise.catch(function(err){
+      const c=err&&err.code;
+      if(c==='auth/popup-closed-by-user' || c==='auth/cancelled-popup-request'){ SOH_SYNC.status='signedout'; scheduleUI(); return; }
+      if(c==='auth/unauthorized-domain'){ window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='signedout'; scheduleUI(); return; }
+      if(c==='auth/popup-blocked' || c==='auth/operation-not-supported-in-this-environment'){
+        try{ auth.signInWithRedirect(provider); return; }catch(e){} }
+      window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='signedout'; scheduleUI();
     });
   };
   window.sohSignOut = function(){ if(auth) auth.signOut().catch(()=>{}); };

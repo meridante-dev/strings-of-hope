@@ -1395,7 +1395,7 @@ const HARPER_TOOLS=[
   {title:'Ear Training',view:'eartraining',desc:'Ear Training plays intervals and chords for you to identify by ear, with instant feedback.',text:'ear training, recognise intervals and chords by ear, aural listening drills, name what you hear'},
   {title:'Modes wheel',view:'modes',desc:'The Modes wheel lets you explore all seven modes in any key, with levers, drone and groove.',text:'modal wheel, explore the seven modes ionian dorian phrygian lydian mixolydian aeolian locrian in any key'},
   {title:'Scales',view:'scales',desc:'The Scales tool builds any scale and its diatonic chords for your harp.',text:'scales and chords, build a scale, diatonic chords tool'},
-  {title:'Music Theory course',view:'theory',desc:'A six-unit Music Theory course — fundamentals, harmony, chromatic harmony, counterpoint, the science of sound, and theory in the real world (pop, groove & blues) — every lesson mapped to the lever harp.',text:'six unit music theory course plus the science of sound, fundamentals harmony chromatic counterpoint jazz acoustics tuning pop schemas galant tonnetz blues groove sight singing solfege orchestration'},
+  {title:'Music Theory course',view:'theory',desc:'A seven-unit Music Theory course — fundamentals, harmony, chromatic harmony, counterpoint, the science of sound, theory in the real world (pop, groove & blues), and jazz — every lesson mapped to the lever harp.',text:'seven unit music theory course plus the science of sound, fundamentals harmony chromatic counterpoint jazz swing chord symbols voicings ii V I turnaround tritone substitution reharmonization chord scale blues bebop acoustics tuning pop schemas galant tonnetz groove sight singing solfege orchestration'},
   {title:'Modes course',view:'learn',desc:'Simcha’s Modes course — a pure-music journey through the seven modes on the harp.',text:'Simcha modes course, pure music teaching, a journey through the modes'},
   {title:'Circle of Fifths',view:'circle',desc:'The interactive Circle of Fifths shows every key, its lever recipe, its diatonic chords and relative minor — and which keys your harp can reach.',text:'interactive circle of fifths, every key, lever recipe, diatonic chords, relative minor, modulation, transposition'},
   {title:'Meditation',view:'meditation',desc:'Meditation pairs a drone with contemplative, Davidic-harp practice.',text:'contemplative drone meditation, davidic harp, sit with a drone'},
@@ -3140,7 +3140,7 @@ function buildLearnHub(){
   const worlds=[
     {v:'modes', n:'Modes', d:'The modal wheel · 7 modes', pct:null,
       ic:'<circle cx="12" cy="6" r="2.4"/><circle cx="18" cy="15" r="2.4"/><circle cx="6" cy="15" r="2.4"/><path d="M12 8v4M10 14l-2.4 1M14 14l2.4 1"/>'},
-    {v:'theory', n:'Music Theory', d:'Six units · certificates', pct:theoryPct,
+    {v:'theory', n:'Music Theory', d:'Seven units · certificates', pct:theoryPct,
       ic:'<path d="M4 18V7M9 18V4M14 18v-8M19 18V9"/>'},
     {v:'jacob', n:'Jacob’s Universe', d:'Harmony as feeling · '+jT+' modules', pct:_seenPct('soh-jacob-seen',jT),
       ic:'<circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="9" ry="3.8"/><ellipse cx="12" cy="12" rx="9" ry="3.8" transform="rotate(60 12 12)"/>'},

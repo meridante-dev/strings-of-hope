@@ -1877,7 +1877,7 @@ function renderHome(){
   try{
     if(typeof sohProfile==='function' && !sohProfile().harp && !window._sohObSeen){
       window._sohObSeen=true;
-      setTimeout(()=>sohOnboardOpen(), 600);
+      setTimeout(sohMaybeOnboard, 700);   // opens only if the auth gate isn't in front
     }
   }catch(e){}
 }
@@ -4135,6 +4135,28 @@ function sohOnboardOpen(){
   document.getElementById('obPanel').hidden=false; document.body.classList.add('hp-open'); obRender();
 }
 function sohOnboardClose(){ document.getElementById('obPanel').hidden=true; document.body.classList.remove('hp-open'); }
+/* Open the first-run harp onboarding ONLY when nothing is in front of it.
+   The auth gate (z-index 220) sits above the onboarding (z-index 130); if both
+   are open at once the gate silently eats every tap meant for the harp options.
+   So we never open onboarding while the gate is visible — the gate-dismissal
+   paths (guest + successful sign-in) re-invoke this once they close. */
+function sohMaybeOnboard(){
+  try{
+    if(typeof sohProfile==='function' && sohProfile().harp) return;   // already chosen
+    const gate=document.getElementById('authGate');
+    if(gate && !gate.hidden) return;                                  // gate currently up — it will call us back
+    // The gate appears ASYNCHRONOUSLY once Firebase resolves, which can land after
+    // our timer. If a gate is still *coming* (Firebase configured + no auth choice
+    // made yet), stay closed and let the gate-dismissal path open us instead.
+    const cfg=window.SOH_FIREBASE_CONFIG;
+    let choice=null; try{ choice=localStorage.getItem('soh-auth-choice'); }catch(e){}
+    if(cfg && cfg.apiKey && choice!=='1' && !(window.SOH_SYNC && SOH_SYNC.user)) return;
+    const ob=document.getElementById('obPanel');
+    if(ob && !ob.hidden) return;                                      // already open
+    sohOnboardOpen();
+  }catch(e){}
+}
+window.sohMaybeOnboard=sohMaybeOnboard;
 function obRender(){
   const b=document.getElementById('obBody'), lbl=document.getElementById('obStepLabel');
   const steps=['1 of 3 · your instrument','2 of 3 · your tuning','3 of 3 · what calls you'];

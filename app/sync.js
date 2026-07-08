@@ -97,6 +97,7 @@
       SOH_SYNC.user = user || null;
       if(user){ window.SOH_AUTH_ERR=''; try{ localStorage.setItem('soh-auth-choice','1'); }catch(e){}
         if(typeof sohHideGate==='function') sohHideGate();
+        if(typeof sohMaybeOnboard==='function') setTimeout(sohMaybeOnboard,450);
         SOH_SYNC.status='syncing'; scheduleUI(); pullMergePush(); }
       else { SOH_SYNC.status='signedout'; scheduleUI(); maybeShowGate(); }
     });
@@ -225,7 +226,7 @@ function sohRenderAuth(){
 /* ---- First-run sign-in gate (appears on launch for undecided users) ---- */
 function sohShowGate(){ const g=document.getElementById('authGate'); if(!g) return; g.hidden=false; document.body.classList.add('gate-open'); sohRenderGate(); }
 function sohHideGate(){ const g=document.getElementById('authGate'); if(g) g.hidden=true; document.body.classList.remove('gate-open'); }
-window.sohGateGuest=function(){ try{ localStorage.setItem('soh-auth-choice','1'); }catch(e){} sohHideGate(); if(typeof buzz==='function') buzz(); };
+window.sohGateGuest=function(){ try{ localStorage.setItem('soh-auth-choice','1'); }catch(e){} sohHideGate(); if(typeof buzz==='function') buzz(); if(typeof sohMaybeOnboard==='function') setTimeout(sohMaybeOnboard,450); };
 function sohRenderGate(){
   const el=document.getElementById('gateBody'); if(!el) return;
   const S=window.SOH_SYNC||{status:''}, err=window.SOH_AUTH_ERR||'', busy=S.status==='signingin';

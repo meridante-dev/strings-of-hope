@@ -14,8 +14,8 @@
   --surface:#1B150C;
   --surface-2:#201A0F;
   --ink:#EEE6D5;
-  --ink-soft:#A99E87;
-  --ink-faint:#7B7059;
+  --ink-soft:#C2B79F;   /* 9.4:1 on bg — beta feedback: subtext was too dim */
+  --ink-faint:#9A8F76;  /* 5.9:1 — was 3.85:1, below WCAG AA */
   --line:rgba(232,214,166,.11);
   --line-2:rgba(232,214,166,.20);
   --gold:#D7B463;
@@ -1637,7 +1637,7 @@ body.cert-open{ overflow:hidden }
 /* ===== Hub tabs — Learn · Practice · Spirit · You ===== */
 .hub-head{ margin:6px 0 18px }
 .hub-head h1{ font-family:"Playfair Display",serif;font-size:34px;font-weight:700;color:var(--ink);margin:2px 0 0;letter-spacing:-.01em }
-.hub-head .sub{ font-size:14px;color:var(--ink-faint);margin-top:4px;max-width:34rem }
+.hub-head .sub{ font-size:15.5px;line-height:1.5;color:var(--ink-soft);margin-top:4px;max-width:34rem }
 .hub-search{ display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer;color:var(--ink-faint);
   font:inherit;font-size:14px;background:rgba(0,0,0,.16);border:1px solid var(--line);border-radius:999px;padding:12px 16px;margin-bottom:18px }
 .hub-search svg{ width:16px;height:16px;flex:0 0 auto;color:var(--gold-deep) }
@@ -1723,6 +1723,24 @@ body.cert-open{ overflow:hidden }
 .prof-badge.on{ opacity:1;border-color:var(--gold-deep) }
 .pb-i{ color:var(--gold);font-size:13px } .prof-badge:not(.on) .pb-i{ color:var(--ink-faint) }
 .pb-t{ font-size:11.5px;font-weight:600;color:var(--ink) }
+/* My harps — multiple-harp chips (community request) */
+.prof-harps{ display:grid;grid-template-columns:repeat(2,1fr);gap:8px }
+.prof-harpchip{ position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:11px 13px;border-radius:13px;
+  background:var(--surface);border:1px solid var(--line);cursor:pointer;text-align:left;transition:border-color .15s,transform .12s }
+.prof-harpchip:active{ transform:scale(.98) }
+.prof-harpchip.on{ border-color:var(--gold-deep);background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 13%,var(--surface)),var(--surface)) }
+.prof-harpchip.on::after{ content:"✓ active";position:absolute;top:9px;right:11px;font-size:9.5px;font-weight:800;letter-spacing:.06em;color:var(--gold-deep);text-transform:uppercase }
+.prof-harpchip .ph-t{ font-size:13px;font-weight:700;color:var(--ink);padding-right:16px }
+.prof-harpchip.on .ph-t{ padding-right:0;padding-top:13px }  /* clear the ✓ active badge */
+.prof-harpchip .ph-tune{ font-size:11px;color:var(--ink-faint) }
+.prof-harpchip .ph-x{ position:absolute;bottom:9px;right:11px;font-size:11px;color:var(--ink-faint);padding:2px 4px;border-radius:6px }
+.prof-harpchip .ph-x:hover{ color:var(--ink) }
+.prof-harpchip.on .ph-x{ display:none }  /* switch away before removing the active harp */
+.prof-harpchip.ph-add{ border-style:dashed;background:transparent }
+.prof-harpchip.ph-add .ph-t{ color:var(--gold-deep) }
+[data-theme="light"] .prof-harpchip{ background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,253,246,.5));border:1px solid rgba(255,255,255,.9) }
+[data-theme="light"] .prof-harpchip.on{ border-color:var(--gold-deep) }
+[data-theme="light"] .prof-harpchip.ph-add{ background:transparent;border:1px dashed rgba(92,70,30,.3) }
 .prof-remind{ display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding:14px 15px;border-radius:15px;background:var(--surface);border:1px solid var(--line) }
 .pr-t{ font-size:13.5px;font-weight:700;color:var(--ink) } .pr-d{ font-size:11px;color:var(--ink-faint);margin-top:1px }
 .pr-switch{ flex:0 0 auto;width:46px;height:27px;border-radius:999px;border:none;cursor:pointer;position:relative;background:color-mix(in srgb,var(--ink) 18%,transparent);transition:background .2s }
@@ -2140,7 +2158,9 @@ body{
   color-scheme:light;
   --bg-0:#F6F0E4; --bg-1:#EFE5D2; --bg-glow:#FFFDF6;
   --surface:rgba(255,255,255,.62); --surface-2:rgba(255,255,255,.48);
-  --ink:#2A2113; --ink-soft:#6E6046; --ink-faint:#9C8E72;
+  /* Contrast raised for low-vision readers (beta feedback): ink near-black,
+     soft 8.4:1, faint 5.2:1 — all WCAG AA+ (faint was 2.84:1). */
+  --ink:#1C1506; --ink-soft:#4A3E24; --ink-faint:#6B5D3F;
   --line:rgba(92,70,30,.10); --line-2:rgba(92,70,30,.17);
   --gold:#B48C42; --gold-deep:#8A6A2C; --gold-soft:#D9C081aa;
   --gold-grad-a:#EBCE8E; --gold-grad-b:#BC9349;

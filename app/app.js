@@ -1045,13 +1045,25 @@ function renderRepertoire(){
    HARP TUNER — mic pitch detection
    ============================================================ */
 let tunerBase='E♭', tunerCal=440;
-
+let tunerNoisy=(()=>{ try{ return localStorage.getItem('soh-tuner-noisy')==='1'; }catch(e){ return false; } })();
+function tunerApplyNoise(){
+  // Standard already gates ambience; Noisy room demands a louder, cleaner signal
+  // (for squeaky appliances, fans, conversation nearby).
+  if(tunerNoisy){ Tuner.rmsMin=0.03; Tuner.clarityMin=0.96; Tuner.stableFrames=4; }
+  else { Tuner.rmsMin=0.012; Tuner.clarityMin=0.93; Tuner.stableFrames=3; }
+}
 function buildTuner(){
+  tunerApplyNoise();
   const cal=document.getElementById('tunerCal');
   if(cal){ cal.innerHTML=''; [440,441,442].forEach(a=>{
     const b=document.createElement('button'); b.className='dchip'+(a===tunerCal?' on':''); b.textContent='A'+a;
     b.addEventListener('click',()=>{ tunerCal=a; Tuner.a4=a; buildTuner(); buzz(); }); cal.appendChild(b);
-  }); }
+  });
+    const nb=document.createElement('button'); nb.className='dchip'+(tunerNoisy?' on':''); nb.textContent='Noisy room';
+    nb.title='Stricter filtering — ignores background noise, needs a clear pluck';
+    nb.addEventListener('click',()=>{ tunerNoisy=!tunerNoisy; try{ localStorage.setItem('soh-tuner-noisy',tunerNoisy?'1':'0'); }catch(e){} buildTuner(); buzz(); });
+    cal.appendChild(nb);
+  }
   const seg=document.getElementById('tunerBaseSeg');
   if(seg){ seg.innerHTML=''; ['E♭','C'].forEach(bk=>{
     const btn=document.createElement('button'); btn.className='seg-btn'+(bk===tunerBase?' on':''); btn.textContent=TBASES[bk].label;
@@ -3173,7 +3185,9 @@ function buildYou(){
   const badges=(typeof sohEarned==='function')?sohEarned().length:0, badgesT=(typeof SOH_BADGES!=='undefined')?SOH_BADGES.length:10;
   const u=(window.SOH_SYNC&&SOH_SYNC.user)||null;
   const name=(u&&!u.isAnonymous&&(u.displayName||(u.email&&u.email.split('@')[0])))||((typeof sohName==='function'&&sohName()))||'Harper';
-  const harp=((typeof sohProfile==='function')&&sohProfile().harp)||'Lever harpist';
+  const _hs=(typeof sohHarps==='function')?sohHarps():[];
+  const _act=(typeof sohActiveIdx==='function')?sohActiveIdx():0;
+  const harp=_hs.length?sohHarpLabel(_hs[_act].type):'Lever harpist';
   const av=(u&&u.photoURL)?`<img class="prof-av" src="${u.photoURL}" alt="" referrerpolicy="no-referrer">`:`<div class="prof-av prof-av-x">${(name[0]||'✦').toUpperCase()}</div>`;
   // rank ring
   const xp=st?st.xp:0, rankMin=st?st.rankMin:0, next=st?st.next:null;
@@ -3205,6 +3219,15 @@ function buildYou(){
     <div class="prof-encourage">${youEncourage(st, js.streak||0, certs)}</div>
     <button class="prof-continue" id="profContinue">${r?`Keep going · ${harperTrim?harperTrim(r.title,26):r.title}`:'Explore the worlds'} <span>→</span></button>
 
+    <div class="prof-sec-t">My harps</div>
+    <div class="prof-harps">
+      ${_hs.map((h,i)=>`<button class="prof-harpchip${i===_act?' on':''}" data-hi="${i}">
+        <span class="ph-t">${sohHarpLabel(h.type)}</span><span class="ph-tune">${h.tuning==='C'?'C major':'E♭'} tuning</span>
+        ${_hs.length>1?`<span class="ph-x" data-hx="${i}" role="button" aria-label="Remove this harp">✕</span>`:''}
+      </button>`).join('')}
+      <button class="prof-harpchip ph-add" id="profAddHarp"><span class="ph-t">+ Add a harp</span><span class="ph-tune">multiple harps welcome</span></button>
+    </div>
+
     <div class="prof-sec-t">Certificates</div>
     ${certs.length
       ? `<div class="prof-certs">${certs.map(c=>`<button class="prof-seal" data-cert="${c.id}"><span class="ps-i">${c.id==='diploma'?'👑':'✦'}</span><span class="ps-t">${c.id==='diploma'?'Diploma':(c.unit?c.unit.kicker||c.unit.title:'Unit')}</span></button>`).join('')}</div>`
@@ -3222,6 +3245,16 @@ function buildYou(){
     </div>`;
 
   el.querySelector('#profContinue')?.addEventListener('click',()=>{ if(r&&r.go) r.go(); else showView('learn-hub'); buzz(); });
+  el.querySelectorAll('.prof-harpchip[data-hi]').forEach(c=>c.addEventListener('click',e=>{
+    if(e.target.classList.contains('ph-x')) return;
+    sohSetActiveHarp(+c.dataset.hi); buildYou(); try{ renderHome(); }catch(err){} buzz();
+  }));
+  el.querySelectorAll('.ph-x').forEach(x=>x.addEventListener('click',e=>{
+    e.stopPropagation();
+    const i=+x.dataset.hx, h=sohHarps()[i];
+    if(h && confirm(`Remove your ${sohHarpLabel(h.type)}?`)){ sohRemoveHarp(i); buildYou(); buzz(); }
+  }));
+  el.querySelector('#profAddHarp')?.addEventListener('click',()=>{ sohOnboardOpen(true); buzz(); });
   el.querySelectorAll('.prof-seal').forEach(b=>b.addEventListener('click',()=>{ if(typeof sohOpenCertById==='function') sohOpenCertById(b.dataset.cert); }));
   el.querySelector('#reminderToggle')?.addEventListener('click',youToggleReminder);
 
@@ -4112,25 +4145,60 @@ function sohThemeSet(t){
    ============================================================ */
 const SOH_HARPS=[
   {id:'22-lap',t:'22-string lap harp',strings:22},{id:'25-lap',t:'25-string lap harp',strings:25},
-  {id:'27-lap',t:'27-string lap harp',strings:27},{id:'29-lap',t:'29-string lap harp',strings:29},
-  {id:'34-lever',t:'34-string lever harp',strings:34},{id:'36-lever',t:'36/38-string lever harp',strings:36},
+  {id:'26-lap',t:'26-string lever harp',strings:26},{id:'27-lap',t:'27-string lap harp',strings:27},
+  {id:'29-lap',t:'29-string lap harp',strings:29},{id:'34-lever',t:'34-string lever harp',strings:34},
+  {id:'36-lever',t:'36/38-string lever harp',strings:36},
   {id:'pedal',t:'Pedal harp',strings:47},{id:'unsure',t:'I’m not sure yet',strings:34},
 ];
+function sohHarpLabel(id){ const h=SOH_HARPS.find(x=>x.id===id); return h?h.t:(id||'Lever harp'); }
 const SOH_STYLES=['Jewish · Hebraic','Contemplative','Celtic','Folk','Classical','Worship','Sephardic · Middle Eastern','Jazz','Improvisation','Therapeutic'];
 function sohProfile(){ try{ return JSON.parse(localStorage.getItem('soh-profile')||'{}'); }catch(e){ return {}; } }
 function sohProfileSave(p){ try{ localStorage.setItem('soh-profile',JSON.stringify(p)); }catch(e){} }
+/* — Multiple harps (community request) —
+   P.harps = [{type:'34-lever', tuning:'E♭'}, …], P.active = index.
+   The legacy P.harp / P.tuning fields always MIRROR the active harp, so every
+   existing reader (Harpie context, Today's Path, profile line…) keeps working. */
+function sohHarps(){
+  const P=sohProfile();
+  if(Array.isArray(P.harps)&&P.harps.length) return P.harps;
+  return P.harp ? [{type:P.harp, tuning:P.tuning||'E♭'}] : [];
+}
+function sohActiveIdx(){ const P=sohProfile(); const n=sohHarps().length; return Math.max(0,Math.min(P.active||0, n-1)); }
+function sohActiveHarp(){ const hs=sohHarps(); return hs.length?hs[sohActiveIdx()]:null; }
+function sohApplyTuning(t){
+  if(typeof tuneBase==='undefined') return;
+  const base = t==='C' ? 'C' : 'E♭';
+  if(tuneBase!==base){ tuneBase=base; try{ tuneScales=generateScales(base); }catch(e){} }
+}
+function sohSetActiveHarp(i){
+  const P=sohProfile(); const hs=sohHarps();
+  if(i<0||i>=hs.length) return;
+  P.harps=hs; P.active=i; P.harp=hs[i].type; P.tuning=hs[i].tuning;
+  sohProfileSave(P); sohApplyTuning(hs[i].tuning);
+}
+function sohRemoveHarp(i){
+  const P=sohProfile(); const hs=sohHarps();
+  if(hs.length<2||i<0||i>=hs.length) return;      // never remove the last harp
+  hs.splice(i,1);
+  P.harps=hs; P.active=Math.min(sohActiveIdx(), hs.length-1);
+  P.harp=hs[P.active].type; P.tuning=hs[P.active].tuning;
+  sohProfileSave(P); sohApplyTuning(P.tuning);
+}
 function sohProfileLine(){
   const P=sohProfile(); if(!P.harp) return `The player's harp base tuning is ${tuneBase}.`;
   const h=SOH_HARPS.find(x=>x.id===P.harp)||SOH_HARPS[4];
   return `The player plays a ${h.t} (${h.strings} strings), tuned in ${P.tuning||'E♭'}${P.styles&&P.styles.length?`, and loves: ${P.styles.join(', ')}`:''}.`;
 }
-let _obStep=0,_obDraft=null,_obBound=false;
-function sohOnboardOpen(){
-  _obStep=0; _obDraft=Object.assign({harp:null,tuning:null,styles:[]},sohProfile());
+let _obStep=0,_obDraft=null,_obBound=false,_obAdd=false;
+function sohOnboardOpen(addMode){
+  _obAdd=!!addMode;
+  _obStep=0;
+  _obDraft=_obAdd ? {harp:null,tuning:null,styles:(sohProfile().styles||[])}
+                  : Object.assign({harp:null,tuning:null,styles:[]},sohProfile());
   if(!_obBound){ _obBound=true;
     document.getElementById('obClose')?.addEventListener('click',sohOnboardClose);
     document.getElementById('obBack')?.addEventListener('click',()=>{ if(_obStep>0){_obStep--;obRender();} });
-    document.getElementById('obNext')?.addEventListener('click',()=>{ if(_obStep<2){_obStep++;obRender();} else obFinish(); });
+    document.getElementById('obNext')?.addEventListener('click',()=>{ const last=_obAdd?1:2; if(_obStep<last){_obStep++;obRender();} else obFinish(); });
   }
   document.getElementById('obPanel').hidden=false; document.body.classList.add('hp-open'); obRender();
 }
@@ -4159,10 +4227,12 @@ function sohMaybeOnboard(){
 window.sohMaybeOnboard=sohMaybeOnboard;
 function obRender(){
   const b=document.getElementById('obBody'), lbl=document.getElementById('obStepLabel');
-  const steps=['1 of 3 · your instrument','2 of 3 · your tuning','3 of 3 · what calls you'];
+  const steps=_obAdd?['1 of 2 · your new harp','2 of 2 · its tuning']
+                    :['1 of 3 · your instrument','2 of 3 · your tuning','3 of 3 · what calls you'];
   if(lbl) lbl.textContent=steps[_obStep];
   document.getElementById('obBack').style.visibility=_obStep?'visible':'hidden';
-  document.getElementById('obNext').textContent=_obStep<2?'Next ›':'Begin ✦';
+  const last=_obAdd?1:2;
+  document.getElementById('obNext').textContent=_obStep<last?'Next ›':(_obAdd?'Add harp ✦':'Begin ✦');
   if(_obStep===0) b.innerHTML=`<div class="ob-q">What harp do you play?</div><div class="ob-opts">${SOH_HARPS.map(h=>`<button class="ob-opt${_obDraft.harp===h.id?' on':''}" data-v="${h.id}">${h.t}</button>`).join('')}</div>`;
   else if(_obStep===1) b.innerHTML=`<div class="ob-q">How is it tuned?</div><div class="ob-opts">${['E♭','C','Other / not sure'].map(t=>`<button class="ob-opt${_obDraft.tuning===t?' on':''}" data-v="${t}">${t==='E♭'?'E♭ major — three flats, the classic lever tuning':t==='C'?'C major — all naturals':'Other / not sure'}</button>`).join('')}</div>`;
   else b.innerHTML=`<div class="ob-q">Which styles are calling you? <span class="ob-multi">choose any</span></div><div class="ob-opts ob-grid">${SOH_STYLES.map(s=>`<button class="ob-opt${_obDraft.styles.includes(s)?' on':''}" data-v="${s}">${s}</button>`).join('')}</div>`;
@@ -4176,9 +4246,14 @@ function obRender(){
 }
 function obFinish(){
   if(!_obDraft.harp) _obDraft.harp='34-lever';
-  sohProfileSave(_obDraft);
-  if(_obDraft.tuning==='C'&&typeof tuneBase!=='undefined'){ tuneBase='C'; tuneScales=generateScales('C'); }
-  sohOnboardClose(); renderHome(); buzz();
+  const tuning=_obDraft.tuning==='C'?'C':'E♭';
+  const P=sohProfile(); const hs=sohHarps();
+  if(_obAdd && hs.length){ hs.push({type:_obDraft.harp, tuning}); P.active=hs.length-1; }
+  else { const i=hs.length?sohActiveIdx():0; hs[i]={type:_obDraft.harp, tuning}; P.active=i; }  // edit = replace active harp
+  P.harps=hs; P.styles=_obDraft.styles||P.styles||[];
+  P.harp=hs[P.active].type; P.tuning=hs[P.active].tuning;   // legacy mirror = active harp
+  sohProfileSave(P); sohApplyTuning(hs[P.active].tuning);
+  sohOnboardClose(); renderHome(); try{ buildYou(); }catch(e){} buzz();
 }
 
 /* ============================================================

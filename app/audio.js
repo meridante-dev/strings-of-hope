@@ -240,7 +240,14 @@ function autoCorrelate(buf, sampleRate){
 
 const Tuner = {
   ctx:null, analyser:null, buf:null, stream:null, running:false, raf:null, a4:440, onUpdate:null, onError:null,
-  _pitchy:null, clarityMin:0.80, lastClarity:0, engine:'autocorrelation',
+  _pitchy:null, clarityMin:0.93, lastClarity:0, engine:'autocorrelation',
+  /* Noise rejection — beta feedback: the tuner chased vacuum-wheel squeaks and room
+     noise. Three defences: an RMS gate (ignore quiet ambience), a stability filter
+     (a note must persist ~3 frames before we trust it — transient squeaks don't),
+     and a hold (once a harp string is locked, keep showing it through the decay
+     instead of bouncing to silence). */
+  rmsMin:0.012, fMin:28, fMax:2400, stableFrames:3, holdMs:1200,
+  _lastMidi:0, _stab:0, _hist:null, _heldF:0, _heldT:0,
   async start(){
     try{
       const ac=audioCtx(); this.ctx=ac;
@@ -260,18 +267,43 @@ const Tuner = {
   _loop(){
     if(!this.running) return;
     this.analyser.getFloatTimeDomainData(this.buf);
+    // RMS gate — don't even attempt pitch detection on room-level ambience.
+    let rms=0; for(let i=0;i<this.buf.length;i++){ const v=this.buf[i]; rms+=v*v; }
+    rms=Math.sqrt(rms/this.buf.length);
     let freq=-1;
-    if(this._pitchy){
-      const [p,clarity]=this._pitchy.findPitch(this.buf, this.ctx.sampleRate);
-      this.lastClarity=clarity;
-      freq = (p>0 && clarity>=this.clarityMin) ? p : -1;       // clarity gate kills overtone octave errors
+    if(rms>=this.rmsMin){
+      if(this._pitchy){
+        const [p,clarity]=this._pitchy.findPitch(this.buf, this.ctx.sampleRate);
+        this.lastClarity=clarity;
+        freq = (p>0 && clarity>=this.clarityMin) ? p : -1;     // clarity gate kills overtone octave errors
+      } else {
+        freq=autoCorrelate(this.buf, this.ctx.sampleRate);
+        this.lastClarity = freq>0 ? 1 : 0;
+      }
+      if(freq>0 && (freq<this.fMin || freq>this.fMax)) freq=-1; // outside instrument band
+    } else this.lastClarity=0;
+    // Stability filter + hold: report a pitch only once the same note has
+    // persisted a few frames; then keep it through brief dropouts (string decay).
+    const now=(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();
+    if(!this._hist) this._hist=[];
+    let out=-1;
+    if(freq>0){
+      const midi=Math.round(69+12*Math.log2(freq/this.a4));
+      this._hist.push({f:freq,m:midi}); if(this._hist.length>7) this._hist.shift();
+      if(midi===this._lastMidi) this._stab++; else { this._stab=1; this._lastMidi=midi; }
+      if(this._stab>=this.stableFrames){
+        const fs=this._hist.filter(h=>h.m===midi).map(h=>h.f).sort((a,b)=>a-b);
+        this._heldF=fs[Math.floor(fs.length/2)];               // median — steadies the needle
+        this._heldT=now; out=this._heldF;
+      } else if(this._heldF && now-this._heldT<this.holdMs) out=this._heldF;
     } else {
-      freq=autoCorrelate(this.buf, this.ctx.sampleRate);
-      this.lastClarity = freq>0 ? 1 : 0;
+      this._stab=0;
+      if(this._heldF && now-this._heldT<this.holdMs) out=this._heldF;
+      else { this._heldF=0; this._hist.length=0; }
     }
-    if(this.onUpdate) this.onUpdate(freq>0?freq:-1, freq>0?freqToNote(freq,this.a4):null);
+    if(this.onUpdate) this.onUpdate(out>0?out:-1, out>0?freqToNote(out,this.a4):null);
     this.raf=requestAnimationFrame(()=>this._loop());
   },
-  stop(){ this.running=false; cancelAnimationFrame(this.raf); if(this.stream){ this.stream.getTracks().forEach(t=>t.stop()); this.stream=null; } },
+  stop(){ this.running=false; cancelAnimationFrame(this.raf); this._stab=0; this._heldF=0; if(this._hist) this._hist.length=0; if(this.stream){ this.stream.getTracks().forEach(t=>t.stop()); this.stream=null; } },
   toggle(){ this.running ? this.stop() : this.start(); },
 };

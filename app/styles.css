@@ -1737,6 +1737,13 @@ body.cert-open{ overflow:hidden }
 .prof-badge.on{ opacity:1;border-color:var(--gold-deep) }
 .pb-i{ color:var(--gold);font-size:13px } .prof-badge:not(.on) .pb-i{ color:var(--ink-faint) }
 .pb-t{ font-size:11.5px;font-weight:600;color:var(--ink) }
+/* Pulse — labs-only usage panel */
+.prof-pulse{ border:1px dashed var(--line-2);border-radius:13px;padding:11px 13px }
+.pp-row{ display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:12px;color:var(--ink-soft) }
+.pp-e{ overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+.pp-n{ font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink) }
+.pp-foot{ margin-top:7px;font-size:10.5px;color:var(--ink-faint) }
+
 /* My harps — multiple-harp chips (community request) */
 .prof-harps{ display:grid;grid-template-columns:repeat(2,1fr);gap:8px }
 .prof-harpchip{ position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:11px 13px;border-radius:13px;

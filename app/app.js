@@ -39,6 +39,33 @@ function sohApplyFlags(){
     document.querySelectorAll(`[data-view="${v}"]`).forEach(el=>{ el.hidden=true; el.style.display='none'; }); });
 }
 
+/* ============================================================
+   SOH PULSE — privacy-light usage telemetry (Cycle 2, 2026-07-15)
+   Counts only — event names and daily tallies, never content or
+   identity beyond the user's own synced profile. Stored as
+   { "YYYY-MM-DD": { event: count } }, capped to 30 days, and synced
+   through the existing soh-* mechanism (objects deep-merge, numbers
+   take max — bounded and safe across devices). This is what lets the
+   product learn: which surfaces live, which are ignored, where the
+   path breaks. Read per-user in Firestore, or on-device via the
+   labs-only Pulse panel in the You tab.
+   ============================================================ */
+function sohPulse(ev){ try{
+  const k='soh-pulse', d=new Date().toISOString().slice(0,10);
+  const a=JSON.parse(localStorage.getItem(k)||'{}');
+  (a[d]=a[d]||{})[ev]=((a[d][ev]||0)+1);
+  Object.keys(a).sort().slice(0,-30).forEach(day=>delete a[day]);   // keep last 30 days
+  localStorage.setItem(k,JSON.stringify(a));
+}catch(e){} }
+function sohPulseSummary(days){
+  try{
+    const a=JSON.parse(localStorage.getItem('soh-pulse')||'{}');
+    const keys=Object.keys(a).sort().slice(-(days||14));
+    const tot={}; keys.forEach(d=>Object.entries(a[d]).forEach(([e,n])=>tot[e]=(tot[e]||0)+n));
+    return { daysActive:keys.length, top:Object.entries(tot).sort((x,y)=>y[1]-x[1]) };
+  }catch(e){ return {daysActive:0, top:[]}; }
+}
+
 /* horizontal swipe via pointer events (iOS + Android). Taps pass through;
    a real drag fires the callback and swallows the trailing click. */
 function addSwipe(el, {onLeft, onRight, threshold=46}={}){
@@ -1143,7 +1170,7 @@ function initTuner(){
   document.getElementById('tunerMic')?.addEventListener('click',async()=>{
     const btn=document.getElementById('tunerMic');
     if(Tuner.running){ Tuner.stop(); btn.classList.remove('playing'); tunerUpdate(-1,null); }
-    else { btn.classList.add('playing'); await Tuner.start(); if(!Tuner.running) btn.classList.remove('playing'); }
+    else { btn.classList.add('playing'); await Tuner.start(); if(!Tuner.running) btn.classList.remove('playing'); else sohPulse('tuner-start'); }
     buzz();
   });
 }
@@ -2387,6 +2414,7 @@ const THEORY_DEMOS={
 };
 function sohPlayDemo(d){
   try{
+    sohPulse('hear-demo');
     const ac=audioCtx(), t0=ac.currentTime+0.05, root=60;   // middle C
     if(d.mode==='chords'){ let t=t0; d.p.forEach(chd=>{ chd.forEach((s,i)=>harpPluck(etMidiFreq(root+s), t+i*0.07, 1.8)); t+=1.0; }); }
     else if(d.mode==='pulse'){ d.p.forEach((s,i)=>harpPluck(etMidiFreq(root-12+s), t0+i*0.5, 0.45)); }
@@ -2424,6 +2452,7 @@ function renderTheoryLesson(dir){
   try{ const k='t'+ch.n, d=JSON.parse(localStorage.getItem('soh-lessons')||'{}');
     d[k]={seen:Math.max((d[k]&&d[k].seen)||0, theoryLi+1), total:theoryLessons.length};
     localStorage.setItem('soh-lessons',JSON.stringify(d)); }catch(e){}
+  try{ sohPulse(L.quiz?'theory-quiz':'theory-lesson'); }catch(e){}
   document.querySelectorAll('#theoryProgress .jdot').forEach((d,i)=>d.classList.toggle('on',i===theoryLi));
   document.getElementById('theoryBack').textContent = theoryLi===0 ? '‹ Chapters' : '‹ Back';
   const more = theoryCh<THEORY_COURSE[theorySem].chapters.length-1 || theorySem<THEORY_COURSE.length-1;
@@ -3315,6 +3344,11 @@ function buildYou(){
     <div class="prof-sec-t">Pilgrimage</div>
     <div class="prof-badges">${(typeof sohBadgeList==='function'?sohBadgeList():[]).map(b=>`<div class="prof-badge${earnedB.has(b.id)?' on':''}" title="${b.d}"><span class="pb-i">${earnedB.has(b.id)?'✦':'·'}</span><span class="pb-t">${b.t}</span></div>`).join('')}</div>
 
+    ${sohLabs()?(()=>{ const p=sohPulseSummary(14);
+      return `<div class="prof-sec-t">Pulse · last 14 days (labs)</div>
+      <div class="prof-pulse">${p.top.length?p.top.slice(0,14).map(([e,n])=>`<div class="pp-row"><span class="pp-e">${e}</span><span class="pp-n">${n}</span></div>`).join(''):'<div class="pp-row"><span class="pp-e">no events yet</span></div>'}
+      <div class="pp-foot">${p.daysActive} active day${p.daysActive===1?'':'s'} · counts only, synced with your account</div></div>`; })():''}
+
     <div class="prof-remind" id="reminderRow">
       <div><div class="pr-t">Daily practice reminder</div><div class="pr-d">A gentle nudge to keep your streak alive</div></div>
       <button class="pr-switch${remOn?' on':''}" id="reminderToggle" role="switch" aria-checked="${remOn}"><span class="pr-knob"></span></button>
@@ -3445,6 +3479,7 @@ const _TAB_PARENT={ modes:'learn-hub',learn:'learn-hub',theory:'learn-hub',jacob
 function showView(name){
   if(!document.getElementById('view-'+name)) name='home';                 // never navigate to a missing view
   if(typeof sohOn==='function' && !sohOn(name)) name=_TAB_PARENT[name]||'home'; // flagged-off feature → its hub
+  try{ if(name!==_prevView) sohPulse('view:'+name); }catch(e){}
   document.body.classList.remove('in-session');                            // never leave the nav stuck hidden
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+name));
   // flow: directional view transition (push deeper · pop back · cross-fade tabs)
@@ -4376,7 +4411,8 @@ function buildTodayPath(){
   host.querySelectorAll('.tp-check').forEach(c=>c.addEventListener('click',()=>{
     const s=steps[+c.dataset.i]; const d=(()=>{try{return JSON.parse(localStorage.getItem(todayPathKey())||'{}')}catch(e){return{}}})();
     d[s.id]=!d[s.id]; try{ localStorage.setItem(todayPathKey(),JSON.stringify(d)); }catch(e){}
-    if(steps.every(x=>d[x.id])){ try{ localStorage.setItem('soh-paths-walked', String(1+parseInt(localStorage.getItem('soh-paths-walked')||'0'))); }catch(e){} }
+    try{ if(d[s.id]) sohPulse('path-step:'+s.id); }catch(e){}
+    if(steps.every(x=>d[x.id])){ try{ localStorage.setItem('soh-paths-walked', String(1+parseInt(localStorage.getItem('soh-paths-walked')||'0'))); sohPulse('path-complete'); }catch(e){} }
     buildTodayPath(); buzz();
   }));
 }

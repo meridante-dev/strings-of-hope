@@ -1656,6 +1656,12 @@ body.cert-open{ overflow:hidden }
 .wr-bar{ height:4px;border-radius:3px;background:color-mix(in srgb,var(--ink) 10%,transparent);overflow:hidden;margin-top:6px }
 .wr-bar i{ display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold-grad-a),var(--gold-grad-b));transition:width .6s cubic-bezier(.2,.8,.2,1) }
 .wr-go{ flex:0 0 auto;color:var(--ink-faint);font-size:19px;font-weight:700 }
+/* "In the workshop" teaser — features being refined before release */
+.wr-workshop{ display:flex;flex-direction:column;gap:3px;padding:14px 15px;border-radius:16px;
+  border:1px dashed var(--line-2);background:transparent }
+.wrw-k{ font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep) }
+.wrw-t{ font-family:"Playfair Display",serif;font-size:15px;color:var(--ink-soft);line-height:1.35 }
+.wrw-d{ font-size:11.5px;color:var(--ink-faint) }
 
 .hub-grid{ display:grid;grid-template-columns:1fr 1fr;gap:10px }
 .hub-tile{ display:flex;flex-direction:column;gap:7px;text-align:left;cursor:pointer;min-height:96px;

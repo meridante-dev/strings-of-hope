@@ -11,6 +11,34 @@ function haptic(kind){ try{ if(!navigator.vibrate) return;
 }catch(e){} }
 function buzz(){ haptic('tap'); }
 
+/* ============================================================
+   FEATURE FLAGS — beta focus (2026-07-15)
+   Ship a small, perfected core; keep the rest in the workshop
+   until each piece gets its refinement pass. Flip a flag to true
+   to release a feature. Nothing is deleted — data, views and code
+   all stay; these only hide entry points.
+   Preview everything on your own device: run
+     localStorage.setItem('soh-labs','1')  in the console (then reload).
+   ============================================================ */
+const SOH_FLAGS={
+  jacob:false,        // Jacob's Universe — awaiting taught-lesson treatment on all modules
+  shamayim:false,     // Shamayim Harp — contemplative journey, refine pacing first
+  chen:false,         // Chen · Symmetry — deep material, needs guided intro
+  sightread:false,    // Sight-Reading — detection UX needs a hardening pass like the tuner
+  eartraining:false,  // Ear Training — drills need levels + progression
+  rhythm:false,       // Rhythm engine — groove content needs curation
+  repertoire:false,   // Repertoire — too thin to show yet
+};
+/* what the Learn hub teases as coming */
+const SOH_WORKSHOP_NAMES={ jacob:'Jacob’s Universe', shamayim:'Shamayim Harp', chen:'Chen · Symmetry',
+  sightread:'Sight-Reading', eartraining:'Ear Training', rhythm:'Rhythm', repertoire:'Repertoire' };
+function sohLabs(){ try{ return localStorage.getItem('soh-labs')==='1'; }catch(e){ return false; } }
+function sohOn(view){ return sohLabs() || SOH_FLAGS[view]!==false; }
+function sohApplyFlags(){
+  Object.keys(SOH_FLAGS).forEach(v=>{ if(!sohOn(v))
+    document.querySelectorAll(`[data-view="${v}"]`).forEach(el=>{ el.hidden=true; el.style.display='none'; }); });
+}
+
 /* horizontal swipe via pointer events (iOS + Android). Taps pass through;
    a real drag fires the callback and swallows the trailing click. */
 function addSwipe(el, {onLeft, onRight, threshold=46}={}){
@@ -1427,7 +1455,7 @@ function buildHarperKB(){
   if(typeof MODE_TEACHING_EXTRA!=='undefined') MODE_TEACHING_EXTRA.forEach(m=>add({type:'mode',title:m.name,view:'modes',text:harperStrip((m.from?m.from+' ':'')+m.note),open:()=>showView('modes')}));
   if(typeof SIMCHA_COURSE!=='undefined') SIMCHA_COURSE.forEach(c=>c.lessons.forEach(L=>{ if(!L.h) return;
     add({type:'simcha',title:L.h,view:'learn',text:harperStrip(L.body||'')+' '+harperStrip(L.harp||''),open:()=>showView('learn')}); }));
-  if(typeof JACOB_MODULES!=='undefined'){
+  if(sohOn('jacob') && typeof JACOB_MODULES!=='undefined'){
     JACOB_MODULES.forEach(m=>{
       const idea=harperStrip(m.idea||''), harp=harperStrip(m.harp||'');
       const qa=(typeof JACOB_QUIZ!=='undefined'&&JACOB_QUIZ[m.n])?JACOB_QUIZ[m.n].map(x=>x.q+' '+x.a).join(' '):'';
@@ -1443,7 +1471,7 @@ function buildHarperKB(){
   if(typeof CIRCLE_KEYS!=='undefined') add({type:'tool',title:'Circle of Fifths & playable keys',view:'circle',
     desc:'The Circle of Fifths orders all 12 keys by their sharps and flats. On your lever harp it shows which keys you can reach and the exact levers each one needs — your map for choosing and changing key.',
     text:'circle of fifths key signatures lever recipe reachable keys modulation '+CIRCLE_KEYS.map(k=>k.maj+' '+k.min+' '+k.acc+' '+harperStrip(k.lever)).join(' '),open:()=>showView('circle')});
-  HARPER_TOOLS.forEach(t=>add({type:'tool',title:t.title,view:t.view,desc:t.desc,text:t.text,open:()=>showView(t.view)}));
+  HARPER_TOOLS.filter(t=>sohOn(t.view)).forEach(t=>add({type:'tool',title:t.title,view:t.view,desc:t.desc,text:t.text,open:()=>showView(t.view)}));
   HARPER_KB=docs; return docs;
 }
 function kbSearch(q,n){
@@ -1762,7 +1790,7 @@ function nxResume(){
   if(p.theory && typeof THEORY_COURSE!=='undefined'){ const u=THEORY_COURSE[p.theory.sem], ch=u&&u.chapters[p.theory.ch];
     if(ch) cands.push({ts:p.theory.ts, eyebrow:'Continue · Music Theory', title:ch.title, sub:(u.kicker||'Semester '+u.sem)+' · Chapter '+ch.n,
       go:()=>{ showView('theory'); openTheoryChapter(p.theory.sem,p.theory.ch); } }); }
-  if(p.jacob && typeof JACOB_MODULES!=='undefined'){ const m=JACOB_MODULES.find(x=>x.n===p.jacob.n);
+  if(p.jacob && sohOn('jacob') && typeof JACOB_MODULES!=='undefined'){ const m=JACOB_MODULES.find(x=>x.n===p.jacob.n);
     if(m) cands.push({ts:p.jacob.ts, eyebrow:'Continue · Jacob’s Universe', title:m.title, sub:'Module '+m.n+' · '+(m.kicker||''),
       go:()=>{ showView('jacob'); jacobOpenModule(m.n); } }); }
   cands.sort((a,b)=>b.ts-a.ts); return cands[0]||null;
@@ -1841,7 +1869,7 @@ function renderNxRails(){
     if(view) w.querySelector('.nx-all').addEventListener('click',()=>{ showView(view); buzz(); });
     host.appendChild(w); if(binder) binder(w);
   };
-  if(typeof JACOB_MODULES!=='undefined'){
+  if(sohOn('jacob') && typeof JACOB_MODULES!=='undefined'){
     rail('Jacob’s Universe','jacob', JACOB_MODULES.map(m=>nxCard('nx-c1', m.kicker||('Module '+m.n), m.title, '', m.toy?'▶ play':(jacobSeen(m.n)?'✓':''), sohArt('c1',m.n))).join(''),
       w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView('jacob'); jacobOpenModule(JACOB_MODULES[i].n); buzz(); })));
   }
@@ -1855,10 +1883,11 @@ function renderNxRails(){
     rail('Simcha’s Modes Course','learn', SIMCHA_COURSE.map((c,ci)=>nxCard('nx-c3', c.sub||'', c.title, c.lessons.length+' lessons','', sohArt('c3',ci))).join(''),
       w=>w.querySelectorAll('.nx-card').forEach(b=>b.addEventListener('click',()=>{ showView('learn'); buzz(); })));
   }
-  rail('Practice & Tools',null, NX_TOOLS.map((t,i)=>nxCard('nx-c4','',t.t,t.d,'', sohArt('c4',i))).join(''),
-    w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView(NX_TOOLS[i].v); buzz(); })));
-  rail('Sacred & Daily',null, NX_SACRED.map((t,i)=>nxCard('nx-c5','',t.t,t.d,'', sohArt('c5',i))).join(''),
-    w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView(NX_SACRED[i].v); buzz(); })));
+  const _tools=NX_TOOLS.filter(t=>sohOn(t.v)), _sacred=NX_SACRED.filter(t=>sohOn(t.v));
+  rail('Practice & Tools',null, _tools.map((t,i)=>nxCard('nx-c4','',t.t,t.d,'', sohArt('c4',i))).join(''),
+    w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView(_tools[i].v); buzz(); })));
+  rail('Sacred & Daily',null, _sacred.map((t,i)=>nxCard('nx-c5','',t.t,t.d,'', sohArt('c5',i))).join(''),
+    w=>w.querySelectorAll('.nx-card').forEach((b,i)=>b.addEventListener('click',()=>{ showView(_sacred[i].v); buzz(); })));
 }
 
 function renderHome(){
@@ -3161,10 +3190,15 @@ function buildLearnHub(){
     {v:'chen', n:'Chen · Symmetry', d:'Ariel Cohen Alloro', pct:_seenPct('soh-chen-seen',cT),
       ic:'<path d="M12 3v18M7 7l-4 5 4 5M17 7l4 5-4 5"/>'},
   ];
-  host.innerHTML=worlds.map(w=>`<button class="world-row" data-view="${w.v}">
+  const shown=worlds.filter(w=>sohOn(w.v));
+  const hidden=worlds.filter(w=>!sohOn(w.v)).map(w=>w.n);
+  host.innerHTML=shown.map(w=>`<button class="world-row" data-view="${w.v}">
     <span class="wr-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">${w.ic}</svg></span>
     <span class="wr-t"><span class="wr-n">${w.n}</span><span class="wr-d">${w.d}</span>${w.pct!=null?`<span class="wr-bar"><i style="width:${w.pct}%"></i></span>`:''}</span>
-    <span class="wr-go">›</span></button>`).join('');
+    <span class="wr-go">›</span></button>`).join('')
+  + (hidden.length?`<div class="wr-workshop"><span class="wrw-k">✦ In the workshop</span>
+      <span class="wrw-t">${hidden.join(' · ')}</span>
+      <span class="wrw-d">Being lovingly refined — each will open when it’s ready.</span></div>`:'');
   host.querySelectorAll('.world-row').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
 }
 function buildSpirit(){ try{ if(typeof renderSongCard==='function') renderSongCard(new Date()); }catch(e){} }
@@ -3182,7 +3216,7 @@ function buildYou(){
   let st=null,lv=null; try{ st=sohTheoryStats(); }catch(e){} try{ lv=sohLevel(); }catch(e){}
   const js=(typeof journalStats==='function')?journalStats():{streak:0};
   const certs=(typeof sohCertsEarned==='function')?sohCertsEarned():[];
-  const badges=(typeof sohEarned==='function')?sohEarned().length:0, badgesT=(typeof SOH_BADGES!=='undefined')?SOH_BADGES.length:10;
+  const badges=(typeof sohEarned==='function')?sohEarned().length:0, badgesT=(typeof sohBadgeList==='function')?sohBadgeList().length:10;
   const u=(window.SOH_SYNC&&SOH_SYNC.user)||null;
   const name=(u&&!u.isAnonymous&&(u.displayName||(u.email&&u.email.split('@')[0])))||((typeof sohName==='function'&&sohName()))||'Harper';
   const _hs=(typeof sohHarps==='function')?sohHarps():[];
@@ -3193,9 +3227,9 @@ function buildYou(){
   const xp=st?st.xp:0, rankMin=st?st.rankMin:0, next=st?st.next:null;
   const band=next?Math.max(0,Math.min(1,(xp-rankMin)/((next.min-rankMin)||1))):1;
   const R=30, C=(2*Math.PI*R).toFixed(1), off=(C*(1-band)).toFixed(1);
-  const worlds=[['Theory',st?st.pct:0],['Jacob',_seenPct('soh-jacob-seen',(typeof JACOB_MODULES!=='undefined')?JACOB_MODULES.length:11)],
-    ['Shamayim',_seenPct('soh-shamayim-seen',(typeof SHAMAYIM_LEVELS!=='undefined')?SHAMAYIM_LEVELS.length:5)],
-    ['Chen',_seenPct('soh-chen-seen',(typeof CHEN_MODULES!=='undefined')?CHEN_MODULES.length:6)]];
+  const worlds=[['Theory',st?st.pct:0,'theory'],['Jacob',_seenPct('soh-jacob-seen',(typeof JACOB_MODULES!=='undefined')?JACOB_MODULES.length:11),'jacob'],
+    ['Shamayim',_seenPct('soh-shamayim-seen',(typeof SHAMAYIM_LEVELS!=='undefined')?SHAMAYIM_LEVELS.length:5),'shamayim'],
+    ['Chen',_seenPct('soh-chen-seen',(typeof CHEN_MODULES!=='undefined')?CHEN_MODULES.length:6),'chen']].filter(w=>sohOn(w[2]));
   const earnedB=(typeof sohEarned==='function')?new Set(sohEarned().map(b=>b.id)):new Set();
   const r=(typeof nxResume==='function')?nxResume():null;
   const remOn = (()=>{ try{ return localStorage.getItem('soh-reminders')==='1'; }catch(e){ return false; } })();
@@ -3237,7 +3271,7 @@ function buildYou(){
     <div class="prof-worlds">${worlds.map(([n,p])=>`<div class="prof-world"><span class="pw-n">${n}</span><span class="pw-bar"><i style="width:${p}%"></i></span><span class="pw-p">${p}%</span></div>`).join('')}</div>
 
     <div class="prof-sec-t">Pilgrimage</div>
-    <div class="prof-badges">${(typeof SOH_BADGES!=='undefined'?SOH_BADGES:[]).map(b=>`<div class="prof-badge${earnedB.has(b.id)?' on':''}" title="${b.d}"><span class="pb-i">${earnedB.has(b.id)?'✦':'·'}</span><span class="pb-t">${b.t}</span></div>`).join('')}</div>
+    <div class="prof-badges">${(typeof sohBadgeList==='function'?sohBadgeList():[]).map(b=>`<div class="prof-badge${earnedB.has(b.id)?' on':''}" title="${b.d}"><span class="pb-i">${earnedB.has(b.id)?'✦':'·'}</span><span class="pb-t">${b.t}</span></div>`).join('')}</div>
 
     <div class="prof-remind" id="reminderRow">
       <div><div class="pr-t">Daily practice reminder</div><div class="pr-d">A gentle nudge to keep your streak alive</div></div>
@@ -3368,6 +3402,7 @@ const _TAB_PARENT={ modes:'learn-hub',learn:'learn-hub',theory:'learn-hub',jacob
 
 function showView(name){
   if(!document.getElementById('view-'+name)) name='home';                 // never navigate to a missing view
+  if(typeof sohOn==='function' && !sohOn(name)) name=_TAB_PARENT[name]||'home'; // flagged-off feature → its hub
   document.body.classList.remove('in-session');                            // never leave the nav stuck hidden
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+name));
   // flow: directional view transition (push deeper · pop back · cross-fade tabs)
@@ -4119,6 +4154,7 @@ addSwipe(document.querySelector('#view-modes .wheel-wrap'), {
   onRight:()=>setMode((activeMode+6)%7, true),
 });
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+sohApplyFlags();   // beta focus: hide entry points of workshop features
 document.getElementById('harpieFab')?.addEventListener('click',()=>{ if(typeof harpieOpenGlobal==='function') harpieOpenGlobal(); });
 document.getElementById('learnSearch')?.addEventListener('click',()=>{ if(typeof harpieOpenGlobal==='function') harpieOpenGlobal(); });
 showView('home');
@@ -4263,11 +4299,14 @@ function todayPathSteps(){
   const P=sohProfile(), day=dayOfYear(), steps=[];
   steps.push({id:'tune',t:'Tune & settle',m:2,v:'tuner'});
   steps.push({id:'warm',t:'Warm hands — slow arpeggios',m:4,v:'practice'});
-  steps.push([{id:'sight',t:'Sight-reading',m:5,v:'sightread'},{id:'ear',t:'Ear training',m:5,v:'eartraining'},{id:'rhythm',t:'Rhythm — find the pocket',m:5,v:'rhythm'}][day%3]);
+  const drills=[{id:'sight',t:'Sight-reading',m:5,v:'sightread'},{id:'ear',t:'Ear training',m:5,v:'eartraining'},
+    {id:'rhythm',t:'Rhythm — find the pocket',m:5,v:'rhythm'},{id:'wheel',t:'One mode, slowly — the wheel',m:5,v:'modes'},
+    {id:'circle',t:'Walk the Circle of Fifths',m:5,v:'circle'}].filter(s=>sohOn(s.v));
+  if(drills.length) steps.push(drills[day%drills.length]);
   const r=nxResume();
   if(r) steps.push({id:'lesson',t:'Lesson · '+r.title,m:6,go:r.go});
   else steps.push({id:'lesson',t:'Begin a lesson',m:6,v:'theory'});
-  if(typeof jacobNextStudyModule==='function'){ const jm=jacobNextStudyModule();
+  if(sohOn('jacob') && typeof jacobNextStudyModule==='function'){ const jm=jacobNextStudyModule();
     if(jm) steps.push({id:'jstudy',t:'Study · '+jm.title,m:5,go:()=>{ showView('jacob'); jacobOpenModule(jm.n); }}); }
   const soulful=(P.styles||[]).some(s=>/Jewish|Contemplative|Worship|Therapeutic/.test(s));
   steps.push(soulful? {id:'soul',t:'Contemplative close — drone & breath',m:4,v:'meditation'}
@@ -4308,19 +4347,21 @@ function sohVisited(){ try{ return JSON.parse(localStorage.getItem('soh-visited'
 function sohVisit(name){
   try{ const v=new Set(sohVisited()); if(!v.has(name)){ v.add(name); localStorage.setItem('soh-visited',JSON.stringify([...v])); } }catch(e){}
 }
-const SOH_BADGES=[
+const SOH_BADGES_ALL=[
   {id:'flame1', t:'First Flame',        d:'Your first practice session', test:s=>s.sessions>=1},
   {id:'flame7', t:'Seven-Day Flame',    d:'Practised seven days in a row', test:s=>s.streak>=7},
   {id:'theory', t:'Theory Seed',        d:'Began the theory course', test:()=>!!sohProgressGet().theory},
-  {id:'jacob',  t:'Universe Voyager',   d:'Entered Jacob’s Universe', test:()=>!!sohProgressGet().jacob},
+  {id:'jacob',  t:'Universe Voyager',   d:'Entered Jacob’s Universe', needs:'jacob', test:()=>!!sohProgressGet().jacob},
   {id:'lever',  t:'Lever Explorer',     d:'Explored the lever chart', test:()=>sohVisited().includes('levers')},
-  {id:'read',   t:'Reading Seed',       d:'Tried sight-reading', test:()=>sohVisited().includes('sightread')},
-  {id:'ear',    t:'Listening Ear',      d:'Trained your ear', test:()=>sohVisited().includes('eartraining')},
+  {id:'read',   t:'Reading Seed',       d:'Tried sight-reading', needs:'sightread', test:()=>sohVisited().includes('sightread')},
+  {id:'ear',    t:'Listening Ear',      d:'Trained your ear', needs:'eartraining', test:()=>sohVisited().includes('eartraining')},
   {id:'nigun',  t:'First Nigun',        d:'Sat with the meditation drone', test:()=>sohVisited().includes('meditation')},
   {id:'circle', t:'Circle Walker',      d:'Walked the Circle of Fifths', test:()=>sohVisited().includes('circle')},
   {id:'path',   t:'Path Complete',      d:'Walked a full daily path', test:()=>parseInt(localStorage.getItem('soh-paths-walked')||'0')>=1},
 ];
-function sohEarned(){ const s=journalStats(); return SOH_BADGES.filter(b=>{ try{return b.test(s);}catch(e){return false;} }); }
+/* only badges whose feature is released (a flagged-off badge can't be earned) */
+function sohBadgeList(){ return SOH_BADGES_ALL.filter(b=>!b.needs||sohOn(b.needs)); }
+function sohEarned(){ const s=journalStats(); return sohBadgeList().filter(b=>{ try{return b.test(s);}catch(e){return false;} }); }
 function sohLevel(){
   const s=journalStats(), earned=sohEarned().length;
   const score=(s.sessions||0)*2+(s.streak||0)+earned*3+(parseInt(localStorage.getItem('soh-paths-walked')||'0'))*4;
@@ -4334,6 +4375,6 @@ function renderBadges(){
   host.innerHTML=`<div class="bg-panel">
     <div class="tp-kick">Your pilgrimage</div>
     <div class="bg-level">Level ${lv.n} · <b>${lv.name}</b></div>
-    <div class="bg-grid">${SOH_BADGES.map(b=>`<div class="bg-badge${earned.has(b.id)?' on':''}"><span class="bg-i">${earned.has(b.id)?'✦':'·'}</span><span class="bg-t">${b.t}</span><span class="bg-d">${b.d}</span></div>`).join('')}</div>
+    <div class="bg-grid">${sohBadgeList().map(b=>`<div class="bg-badge${earned.has(b.id)?' on':''}"><span class="bg-i">${earned.has(b.id)?'✦':'·'}</span><span class="bg-t">${b.t}</span><span class="bg-d">${b.d}</span></div>`).join('')}</div>
   </div>`;
 }

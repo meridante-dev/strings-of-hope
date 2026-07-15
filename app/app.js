@@ -2358,6 +2358,41 @@ function theoryQuizHTML(quiz){
     <p class="thy-q-a" hidden>${q.a}</p></div>`).join('');
   return `<div class="thy-quiz">${items}</div>`;
 }
+/* ============================================================
+   HEAR IT — the theory course makes sound (Cycle 1, 2026-07-15)
+   A course about sound must sound. Each chapter can declare small
+   playable demos; patterns are semitone offsets from middle C, so
+   everything is derived, not recorded. Reuses harpPluck (ear training).
+   mode: 'seq' melodic · 'chords' rolled chords · 'pulse' steady beat
+   ============================================================ */
+const THEORY_DEMOS={
+  1:[{l:'The seven letters, climbing',p:[0,2,4,5,7,9,11,12],mode:'seq'},
+     {l:'An octave — same name, higher',p:[0,12],mode:'seq'}],
+  2:[{l:'C major — the whole-and-half ladder',p:[0,2,4,5,7,9,11,12],mode:'seq'},
+     {l:'A whole step',p:[0,2],mode:'seq'},{l:'A half step',p:[4,5],mode:'seq'}],
+  3:[{l:'Natural minor',p:[0,2,3,5,7,8,10,12],mode:'seq'},
+     {l:'Harmonic minor — the raised 7th',p:[0,2,3,5,7,8,11,12],mode:'seq'},
+     {l:'Major, then minor',p:[[0,4,7],[0,3,7]],mode:'chords'}],
+  4:[{l:'A steady quarter-note pulse',p:[0,0,0,0],mode:'pulse'},
+     {l:'Strong–weak–weak — a waltz feel',p:[12,0,0,12,0,0],mode:'pulse'}],
+  5:[{l:'Minor 3rd — wistful',p:[0,3],mode:'seq'},{l:'Major 3rd — bright',p:[0,4],mode:'seq'},
+     {l:'Perfect 5th — open',p:[0,7],mode:'seq'},{l:'Octave — home again',p:[0,12],mode:'seq'}],
+  6:[{l:'Major triad',p:[[0,4,7]],mode:'chords'},{l:'Minor triad',p:[[0,3,7]],mode:'chords'},
+     {l:'Diminished — tense',p:[[0,3,6]],mode:'chords'},{l:'Augmented — floating',p:[[0,4,8]],mode:'chords'}],
+  7:[{l:'I – IV – V – I',p:[[0,4,7],[5,9,12],[7,11,14],[0,4,7]],mode:'chords'},
+     {l:'The pull home: V7 → I',p:[[7,11,14,17],[12,16,19,24]],mode:'chords'},
+     {l:'The gentle Amen: IV → I',p:[[5,9,12],[0,4,7]],mode:'chords'}],
+  8:[{l:'Major 7th — dreamy',p:[[0,4,7,11]],mode:'chords'},{l:'Dominant 7th — pulling',p:[[0,4,7,10]],mode:'chords'},
+     {l:'Minor 7th — velvet',p:[[0,3,7,10]],mode:'chords'},{l:'Half-diminished — dusk',p:[[0,3,6,10]],mode:'chords'}],
+};
+function sohPlayDemo(d){
+  try{
+    const ac=audioCtx(), t0=ac.currentTime+0.05, root=60;   // middle C
+    if(d.mode==='chords'){ let t=t0; d.p.forEach(chd=>{ chd.forEach((s,i)=>harpPluck(etMidiFreq(root+s), t+i*0.07, 1.8)); t+=1.0; }); }
+    else if(d.mode==='pulse'){ d.p.forEach((s,i)=>harpPluck(etMidiFreq(root-12+s), t0+i*0.5, 0.45)); }
+    else { d.p.forEach((s,i)=>harpPluck(etMidiFreq(root+s), t0+i*0.42, 1.5)); }
+  }catch(e){}
+}
 function renderTheoryLesson(dir){
   const L=theoryLessons[theoryLi], stage=document.getElementById('theoryStage'); if(!L||!stage) return;
   const ch=THEORY_COURSE[theorySem].chapters[theoryCh];
@@ -2370,11 +2405,15 @@ function renderTheoryLesson(dir){
     const visual = L.visual==='keyboard' ? theoryKeyboardSVG() : '';
     const staff = L.staff ? `<div class="thy-visual"><div class="thy-staff" id="theoryStaff"></div></div>` : '';
     const action = L.action ? `<button class="jrn-cta" id="theoryAction">${L.action.label}</button>` : '';
+    const demos=(typeof THEORY_DEMOS!=='undefined'&&THEORY_DEMOS[ch.n])||null;
+    const hear=demos?`<div class="thy-hear"><span class="thy-hear-k">🔊 Hear it</span>
+      ${demos.map((d,i)=>`<button class="thy-hear-b" data-demo="${i}">▶ ${d.l}</button>`).join('')}</div>`:'';
     inner = `${L.h?`<h2 class="learn-h">${L.h}</h2>`:''}
       ${visual?`<div class="thy-visual">${visual}</div>`:''}
       ${staff}
       <p class="jrn-lead thy-body">${L.body}</p>
       ${L.harp?theoryHarpHTML(L.harp):''}
+      ${hear}
       ${action}`;
   }
   stage.innerHTML=`<div class="jrn-slide center thy-slide">
@@ -2390,6 +2429,9 @@ function renderTheoryLesson(dir){
   const more = theoryCh<THEORY_COURSE[theorySem].chapters.length-1 || theorySem<THEORY_COURSE.length-1;
   document.getElementById('theoryNext').textContent = theoryLi===theoryLessons.length-1 ? (more?'Next chapter ›':'Finish ✓') : 'Next ›';
   const act=document.getElementById('theoryAction'); if(act&&L.action) act.addEventListener('click',()=>showView(L.action.view));
+  stage.querySelectorAll('.thy-hear-b').forEach(b=>b.addEventListener('click',()=>{
+    const ds=THEORY_DEMOS[ch.n]; if(ds&&ds[+b.dataset.demo]){ sohPlayDemo(ds[+b.dataset.demo]); b.classList.add('played'); haptic('select'); }
+  }));
   stage.querySelectorAll('.thy-q-rev').forEach(btn=>btn.addEventListener('click',()=>{
     const a=btn.parentElement.querySelector('.thy-q-a'); if(!a) return;
     const show=a.hidden; a.hidden=!show; btn.textContent=show?'Hide answer':'Show answer'; btn.classList.toggle('on',show); buzz();

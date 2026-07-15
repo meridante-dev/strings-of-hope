@@ -1315,6 +1315,14 @@ body.cert-open{ overflow:hidden }
   text-transform:uppercase;color:var(--gold-deep);margin-bottom:5px }
 .thy-harp-i{ font-size:14px;line-height:1 }
 .thy-harp p{ margin:0;font-size:14px;line-height:1.62;color:var(--ink-soft) }
+/* Hear it — playable demos inside theory lessons */
+.thy-hear{ display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:32rem;margin:14px auto 0;text-align:left }
+.thy-hear-k{ flex:0 0 100%;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep) }
+.thy-hear-b{ border:1px solid color-mix(in srgb,var(--gold) 34%,var(--line));border-radius:999px;cursor:pointer;
+  padding:8px 14px;font-size:13px;font-weight:600;color:var(--ink);
+  background:color-mix(in srgb,var(--gold) 9%,var(--surface));transition:transform .12s,background .15s }
+.thy-hear-b:active{ transform:scale(.96) }
+.thy-hear-b.played{ background:color-mix(in srgb,var(--gold) 20%,var(--surface)) }
 .thy-harp b{ color:var(--ink);font-weight:700 }
 .thy-harp i{ font-style:italic }
 

@@ -6,9 +6,21 @@
 let _AC=null;
 function audioCtx(){
   if(!_AC) _AC = new (window.AudioContext||window.webkitAudioContext)();
-  if(_AC.state==='suspended') _AC.resume();
+  // iOS suspends with the non-standard state 'interrupted' (phone call, lock,
+  // backgrounding) as well as 'suspended' — and can stay stuck after returning.
+  // Resuming inside a user-gesture call always counts as activation, so resume
+  // on anything that isn't 'running'. (webkit.org / MDN BaseAudioContext.state)
+  if(_AC.state!=='running'){ try{ _AC.resume(); }catch(e){} }
+  // The iPhone ring/silent switch mutes Web Audio (but not <audio>) unless the
+  // audio session is 'playback' (Safari 16.4+). Older users often leave the
+  // switch on silent and report "no sound" — this is the fix. No-op elsewhere.
+  try{ if(navigator.audioSession && navigator.audioSession.type!=='playback') navigator.audioSession.type='playback'; }catch(e){}
   return _AC;
 }
+/* recover from iOS 'interrupted' when the app returns to the foreground */
+try{ document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden && _AC && _AC.state!=='running'){ try{ _AC.resume().catch(()=>{}); }catch(e){} }
+}); }catch(e){}
 
 /* recorded-drone file naming by pitch class (drop files in audio/drones/<set>/) */
 const DRONE_PCFILE = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
@@ -250,7 +262,12 @@ const Tuner = {
   _lastMidi:0, _stab:0, _hist:null, _heldF:0, _heldT:0,
   async start(){
     try{
-      const ac=audioCtx(); this.ctx=ac;
+      // Dedicated context for the mic: sharing one AudioContext between
+      // getUserMedia and the synths degrades/mutes playback on iOS (the OS
+      // flips into a play-and-record session at the mic's sample rate —
+      // WebKit bug 154538). Created here, closed in stop().
+      audioCtx();                                   // unlock + set playback session on the user gesture
+      const ac=new (window.AudioContext||window.webkitAudioContext)(); this.ctx=ac;
       this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,autoGainControl:false,noiseSuppression:false}});
       const src=ac.createMediaStreamSource(this.stream);
       this.analyser=ac.createAnalyser(); this.analyser.fftSize=2048;
@@ -304,6 +321,8 @@ const Tuner = {
     if(this.onUpdate) this.onUpdate(out>0?out:-1, out>0?freqToNote(out,this.a4):null);
     this.raf=requestAnimationFrame(()=>this._loop());
   },
-  stop(){ this.running=false; cancelAnimationFrame(this.raf); this._stab=0; this._heldF=0; if(this._hist) this._hist.length=0; if(this.stream){ this.stream.getTracks().forEach(t=>t.stop()); this.stream=null; } },
+  stop(){ this.running=false; cancelAnimationFrame(this.raf); this._stab=0; this._heldF=0; if(this._hist) this._hist.length=0;
+    if(this.stream){ this.stream.getTracks().forEach(t=>t.stop()); this.stream=null; }
+    if(this.ctx){ try{ this.ctx.close(); }catch(e){} this.ctx=null; this.analyser=null; this._pitchy=null; } },
   toggle(){ this.running ? this.stop() : this.start(); },
 };

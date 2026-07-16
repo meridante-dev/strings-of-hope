@@ -4232,6 +4232,10 @@ addSwipe(document.querySelector('#view-modes .wheel-wrap'), {
 });
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
 sohApplyFlags();   // beta focus: hide entry points of workshop features
+/* Ask iOS/Safari to protect our storage from the 7-day ITP eviction that
+   wipes localStorage for non-installed sites (webkit.org/blog/14403).
+   Granted near-automatically for Home-Screen installs; harmless elsewhere. */
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){}
 document.getElementById('harpieFab')?.addEventListener('click',()=>{ if(typeof harpieOpenGlobal==='function') harpieOpenGlobal(); });
 document.getElementById('learnSearch')?.addEventListener('click',()=>{ if(typeof harpieOpenGlobal==='function') harpieOpenGlobal(); });
 showView('home');
@@ -4282,6 +4286,8 @@ function sohApplyTuning(t){
   if(typeof tuneBase==='undefined') return;
   const base = t==='C' ? 'C' : 'E♭';
   if(tuneBase!==base){ tuneBase=base; try{ tuneScales=generateScales(base); }catch(e){} }
+  try{ tunerBase=base; }catch(e){}   // keep the tuner's base-key selector in step with the active harp
+  try{ if(typeof repBase!=='undefined') repBase=base; }catch(e){}
 }
 function sohSetActiveHarp(i){
   const P=sohProfile(); const hs=sohHarps();

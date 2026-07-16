@@ -10,20 +10,33 @@
   const configured = !!(cfg.apiKey && cfg.apiKey.length > 10 && cfg.projectId);
   window.SOH_SYNC = { configured, user:null, status: configured?'loading':'unconfigured' };
 
+  // Device-level keys: belong to THIS device, never to the account.
+  // soh-uid marks which account owns the rest of this device's soh-* data —
+  // it is the guard against merging one member's local data into another
+  // member's cloud on a shared device, and must itself never sync.
+  const DEVICE_KEYS=['soh-theme','soh-uid','soh-labs','soh-auth-choice','soh-tuner-noisy'];
+  function shouldSync(k){ return !!k && k.indexOf('soh-')===0 && DEVICE_KEYS.indexOf(k)<0; }
   // Keys we sync (everything the app persists about a person's journey).
   function syncKeys(){
     const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i);
-      if(k && k.indexOf('soh-')===0 && k!=='soh-theme') out.push(k); } }catch(e){}
+      if(shouldSync(k)) out.push(k); } }catch(e){}
     return out;
   }
-  // theme is per-device, not synced; everything else soh-* is.
 
   const isNum = v => typeof v==='string' && v.trim()!=='' && !isNaN(+v);
   function parse(v){ try{ return JSON.parse(v); }catch(e){ return undefined; } }
+  // Union arrays by VALUE (Set unions object elements by identity, which
+  // duplicated e.g. the harps list on every cross-device merge).
+  function uniqVals(arr){
+    const seen=new Set(), out=[];
+    arr.forEach(v=>{ let key; try{ key=(v&&typeof v==='object')?JSON.stringify(v):(typeof v)+':'+String(v); }catch(e){ key=String(v); }
+      if(!seen.has(key)){ seen.add(key); out.push(v); } });
+    return out;
+  }
   function mergeObj(a,b){ const o={}, keys=new Set([...Object.keys(a||{}),...Object.keys(b||{})]);
     keys.forEach(k=>{ const x=a?a[k]:undefined, y=b?b[k]:undefined;
       if(typeof x==='number'&&typeof y==='number') o[k]=Math.max(x,y);
-      else if(Array.isArray(x)&&Array.isArray(y)) o[k]=[...new Set([...x,...y])];
+      else if(Array.isArray(x)&&Array.isArray(y)) o[k]=uniqVals([...x,...y]);
       else if(x&&y&&typeof x==='object'&&typeof y==='object'&&!Array.isArray(x)) o[k]=mergeObj(x,y);
       else o[k]=(x!==undefined?x:y); });
     return o;
@@ -32,7 +45,7 @@
   function mergeVal(local, cloud){
     if(local==null) return cloud; if(cloud==null) return local;
     const lp=parse(local), cp=parse(cloud);
-    if(Array.isArray(lp)&&Array.isArray(cp)) return JSON.stringify([...new Set([...lp,...cp])]);
+    if(Array.isArray(lp)&&Array.isArray(cp)) return JSON.stringify(uniqVals([...lp,...cp]));
     if(isNum(local)&&isNum(cloud)) return String(Math.max(+local,+cloud));
     if(lp&&cp&&typeof lp==='object'&&typeof cp==='object'&&!Array.isArray(lp)) return JSON.stringify(mergeObj(lp,cp));
     return (local!=='' ? local : cloud); // scalars/config → prefer this device
@@ -69,6 +82,7 @@
     // reflect merged progress in the current view
     try{ if(typeof buildLearnHub==='function') buildLearnHub(); }catch(e){}
     try{ if(typeof buildYou==='function') buildYou(); }catch(e){}
+    try{ if(typeof renderHome==='function') renderHome(); }catch(e){}
   }
 
   async function pushOnly(){
@@ -90,12 +104,26 @@
 
     // auto-sync: any soh-* write (while signed in) pushes to cloud, debounced.
     try{ const _set=localStorage.setItem.bind(localStorage);
-      localStorage.setItem=function(k,v){ _set(k,v); if(!_writingLocal && k&&k.indexOf('soh-')===0 && k!=='soh-theme') schedulePush(); };
+      localStorage.setItem=function(k,v){ _set(k,v); if(!_writingLocal && shouldSync(k)) schedulePush(); };
     }catch(e){}
 
     auth.onAuthStateChanged(function(user){
       SOH_SYNC.user = user || null;
       if(user){ window.SOH_AUTH_ERR=''; try{ localStorage.setItem('soh-auth-choice','1'); }catch(e){}
+        // Ownership guard: if this device's local data belongs to a DIFFERENT
+        // account, wipe it before merging — otherwise one member's journey
+        // silently merges into another member's cloud on a shared iPad.
+        // (No previous uid = guest data → merging into the account is desired.)
+        try{
+          const prev=localStorage.getItem('soh-uid');
+          if(prev && prev!==user.uid){
+            _writingLocal=true;
+            for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i);
+              if(k && (shouldSync(k) || k==='soh_harp')) localStorage.removeItem(k); }
+            _writingLocal=false;
+          }
+          localStorage.setItem('soh-uid',user.uid);
+        }catch(e){}
         if(typeof sohHideGate==='function') sohHideGate();
         if(typeof sohMaybeOnboard==='function') setTimeout(sohMaybeOnboard,450);
         SOH_SYNC.status='syncing'; scheduleUI(); pullMergePush(); }
@@ -120,7 +148,14 @@
       if(c==='auth/popup-closed-by-user' || c==='auth/cancelled-popup-request'){ SOH_SYNC.status='signedout'; scheduleUI(); return; }
       if(c==='auth/unauthorized-domain'){ window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='signedout'; scheduleUI(); return; }
       if(c==='auth/popup-blocked' || c==='auth/operation-not-supported-in-this-environment'){
-        try{ auth.signInWithRedirect(provider); return; }catch(e){} }
+        // Never fall back to signInWithRedirect on iOS: with an authDomain on a
+        // different origin it fails SILENTLY under Safari's storage partitioning
+        // (Firebase redirect-best-practices; firebase-js-sdk #6716). Better to
+        // tell the user to tap again than to strand them in a dead redirect.
+        const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+        if(!iOS){ try{ auth.signInWithRedirect(provider); return; }catch(e){} }
+        window.SOH_AUTH_ERR='Your browser blocked the sign-in window — tap “Continue with Google” once more.';
+        SOH_SYNC.status='signedout'; scheduleUI(); return; }
       window.SOH_AUTH_ERR=authErr(err); SOH_SYNC.status='signedout'; scheduleUI();
     });
   };

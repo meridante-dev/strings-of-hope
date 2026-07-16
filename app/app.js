@@ -33,6 +33,23 @@ const SOH_FLAGS={
 const SOH_WORKSHOP_NAMES={ jacob:'Jacob’s Universe', shamayim:'Shamayim Harp', chen:'Chen · Symmetry',
   sightread:'Sight-Reading', eartraining:'Ear Training', rhythm:'Rhythm', repertoire:'Repertoire' };
 function sohLabs(){ try{ return localStorage.getItem('soh-labs')==='1'; }catch(e){ return false; } }
+/* What Harpie is told the app contains — derived from the course and the
+   live flags. It was hardcoded as "5 units, 42 chapters" against a real
+   11/84, while the same prompt ordered the model to answer ONLY from app
+   material: a member asking about Jazz got a coach told there was no Jazz
+   unit. It also advertised ear-training and sight-reading, both flagged off. */
+function sohCourseLine(){
+  let units=0, chapters=0;
+  try{ units=THEORY_COURSE.length; chapters=THEORY_COURSE.reduce((a,u)=>a+u.chapters.length,0); }catch(e){}
+  let titles='';
+  try{ titles=THEORY_COURSE.map(u=>u.title).join(', '); }catch(e){}
+  const tools=[['modes','the seven modes and Simcha’s modal teaching'],['circle','the interactive Circle of Fifths'],
+    ['tuner','the tuner'],['drone','the drone'],['levers','the lever chart'],['scales','the scales tool'],
+    ['eartraining','ear training'],['sightread','sight-reading'],['rhythm','the rhythm engine']]
+    .filter(([v])=>{ try{ return sohOn(v); }catch(e){ return true; } }).map(([,t])=>t);
+  return `the app's music-theory course (${units} units, ${chapters} chapters — ${titles}), `
+       + `plus ${tools.join(', ')}. Do not mention features the app does not have.`;
+}
 /* Text size (accessibility): '', 'lg', or 'xl' — applied as a zoom on <html>.
    The zoom is computed in JS and CAPPED so the zoomed layout viewport never
    drops below the browser's 320px minimum — past that floor the page can't
@@ -1282,7 +1299,7 @@ let harpProfile=null, pfBase='E♭', pfLeverMode='full', pfNoLevers=new Set();
 const PF_LEVERMODE=[{key:'full',label:'Full levers'},{key:'partial',label:'Partial levers'}];
 
 function loadProfile(){
-  try{ const r=localStorage.getItem('soh_harp'); if(r) harpProfile=JSON.parse(r); }catch(e){}
+  try{ const r=localStorage.getItem('soh-harp'); if(r) harpProfile=JSON.parse(r); }catch(e){}
   if(harpProfile){ pfBase=harpProfile.base||'E♭'; pfLeverMode=harpProfile.leverMode||'full'; pfNoLevers=new Set(harpProfile.noLevers||[]); applyProfile(harpProfile); }
 }
 function applyProfile(p){
@@ -1311,7 +1328,7 @@ function saveProfile(){
   const p={ brand:(document.getElementById('pfBrand')?.value||'').trim(), strings:(document.getElementById('pfStrings')?.value||'').trim(),
     base:pfBase, leverMode:pfLeverMode, noLevers:[...pfNoLevers] };
   harpProfile=p;
-  try{ localStorage.setItem('soh_harp', JSON.stringify(p)); }catch(e){}
+  try{ localStorage.setItem('soh-harp', JSON.stringify(p)); }catch(e){}
   applyProfile(p);
   if(document.getElementById('baseSeg')){ buildBaseSeg(); buildCatChips(); renderTune(); }
   buildRepertoire(); buildTuner(); buildLevers();
@@ -1326,8 +1343,11 @@ function initProfile(){ buildProfile(); document.getElementById('pfSave')?.addEv
    PRACTICE JOURNAL — sessions, streaks, favourites (localStorage)
    ============================================================ */
 let journal=[];
-function loadJournal(){ try{ const r=localStorage.getItem('soh_journal'); if(r) journal=JSON.parse(r); }catch(e){} }
-function logSession(entry){ journal.unshift(entry); if(journal.length>300) journal.pop(); try{ localStorage.setItem('soh_journal', JSON.stringify(journal)); }catch(e){} }
+/* Load = make memory match storage, including when storage is EMPTY. The old
+   `if(r)` guard meant a reset left the previous streak sitting in the in-memory
+   array, so the You tab kept showing progress the member had just cleared. */
+function loadJournal(){ try{ const r=localStorage.getItem('soh-journal'); journal = r ? (JSON.parse(r)||[]) : []; }catch(e){ journal=[]; } }
+function logSession(entry){ journal.unshift(entry); if(journal.length>300) journal.pop(); try{ localStorage.setItem('soh-journal', JSON.stringify(journal)); }catch(e){} }
 function journalStats(){
   const sessions=journal.length, totalMin=journal.reduce((a,e)=>a+(e.minutes||0),0);
   const days=[...new Set(journal.map(e=>(e.date||'').slice(0,10)))].sort().reverse();
@@ -1646,7 +1666,7 @@ const SohAI = {
   async ask(userText, onToken, context){
     if(this.state!=='ready' || !this.engine) return null;
     const sys = `You are Harpie, the warm, expert AI lever-harp coach inside the Strings of Hope app. `
-      + `You know the app's full music-theory course (5 units, 42 chapters — fundamentals, harmony, chromatic harmony, counterpoint & 20th-century, and the science of sound), the seven modes and Simcha's modal teaching, the interactive Circle of Fifths, tuning systems & the harmonic series, ear training, sight-reading and all the practice tools. `
+      + `You know ${sohCourseLine()} `
       + `${typeof sohProfileLine==='function'?sohProfileLine():`The player's harp base tuning is ${tuneBase}.`} Answer in 2-5 short, precise, harp-specific sentences, grounded ONLY in the app material below. Always give one concrete next step or exercise, and never shame the player.`
       + `\n\nApp material relevant to this question:\n${context||'(general lever-harp guidance)'}`;
     try{
@@ -3257,15 +3277,35 @@ const CREDITS = [
     {n:'Cited research', l:'Attributed', d:'Established findings (music therapy, cymatics, frisson/dopamine, awe, string theory) are cited to their researchers. Where a parallel between tradition and physics is poetic rather than proven, it is marked as such — never presented as established fact.'},
   ]},
   { t:'Your privacy', items:[
-    {n:'Everything stays on your device', l:'Private', d:'Your progress, streak, certificates and profile are saved only in this browser (local storage) — nothing is uploaded to a server or shared.'},
+    /* Generated from keys.js — see sohPrivacyStorage(). This item used to be
+       hand-written and said "nothing is uploaded to a server or shared",
+       which stopped being true the day sync shipped. Copy that describes
+       storage must be derived from the thing that does the storing. */
+    {n:'Signed out: this browser only', l:'Private', d:'', gen:'signedout'},
+    {n:'Signed in: your private account', l:'Synced', d:'', gen:'signedin'},
+    {n:'Never leaves this device', l:'Device only', d:'', gen:'device'},
     {n:'The microphone', l:'Local only', d:'The mic is used only for the tuner and ear-training, entirely on your device. It is never recorded, saved, or sent anywhere.'},
+    {n:'Your data is yours', l:'Reset · Delete', d:'You can wipe your progress, or delete everything we hold, at any time — from the You tab. Deleting removes your account’s data from our database, not just this device.'},
   ]},
 ];
+/* The privacy text, written by the registry rather than by memory. */
+function sohPrivacyStorage(kind){
+  const list=a=>a.join(' · ');
+  if(kind==='signedout') return 'Until you sign in, everything the app knows about you is stored in this browser and goes nowhere else. No account, no upload.';
+  if(kind==='signedin'){
+    const items=(typeof sohPrivacyAccountList==='function')?sohPrivacyAccountList():[];
+    return 'Signing in saves your journey to a private account so it follows you between devices:'
+      + items.map(i=>'<br>· '+i).join('')
+      + '<br><br>Your name and email come from the sign-in you chose. Only you can read any of it — it is never sold, shared, or used for advertising.';
+  }
+  const d=(typeof sohPrivacyDeviceList==='function')?sohPrivacyDeviceList():[];
+  return 'These belong to the device in your hand and are never uploaded, even when you’re signed in: '+list(d)+'.';
+}
 function buildCredits(){
   const host=document.getElementById('creditsBody'); if(!host) return;
   host.innerHTML=CREDITS.map(sec=>`<div class="creds-sec">
     <div class="creds-h">${sec.t}</div>
-    ${sec.items.map(it=>`<div class="creds-item"><div class="creds-top"><span class="creds-n">${it.n}</span><span class="creds-lic">${it.l}</span></div><p class="creds-d">${it.d}</p></div>`).join('')}
+    ${sec.items.map(it=>`<div class="creds-item"><div class="creds-top"><span class="creds-n">${it.n}</span><span class="creds-lic">${it.l}</span></div><p class="creds-d">${it.gen?sohPrivacyStorage(it.gen):it.d}</p></div>`).join('')}
   </div>`).join('') + `<p class="creds-foot">Believe you have found something copyrighted used incorrectly? Tell us and we will fix it at once. Strings of Hope is built to be 100% free and legal.<br><br>Strings of Hope · v${(typeof SOH_VERSION!=='undefined')?SOH_VERSION:'beta'} · <a href="mailto:info@edenrise.com?subject=Strings%20of%20Hope%20feedback" style="color:var(--gold-deep)">send feedback</a></p>`;
   triggerReveals(document.getElementById('view-credits'));
 }
@@ -3359,7 +3399,25 @@ function buildLearnHub(){
   host.querySelectorAll('.world-row').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
 }
 function buildSpirit(){ try{ if(typeof renderSongCard==='function') renderSongCard(new Date()); }catch(e){} }
-const SOH_VERSION = '2026.07.07 · beta';
+/* The build a member is actually running, read from the live service-worker
+   cache — not a constant someone has to remember to bump. It had drifted 9
+   days, so a bug report could not be tied to a build, which breaks step one
+   of the Observe→Diagnose→Learn loop. The constant below is only the
+   fallback (no SW / no Cache API); tools/keys-test.js asserts it matches
+   sw.js so the two can never silently disagree again. */
+let SOH_VERSION = '2026.07.16 · beta';
+(async function sohResolveBuild(){
+  try{
+    if(!('caches' in window)) return;
+    const ks=await caches.keys();
+    const m=ks.find(k=>k.indexOf('soh-v')===0);
+    if(m){ SOH_VERSION=m.replace('soh-v','')+' · beta';
+      const el=document.getElementById('youVersion');
+      if(el) el.textContent='Strings of Hope · v'+SOH_VERSION+' · works offline';
+      try{ if(document.getElementById('view-credits')?.classList.contains('active')) buildCredits(); }catch(e){}
+    }
+  }catch(e){}
+})();
 function youEncourage(st, streak, certs){
   if(streak>=7) return `${streak} days in a row — your harp knows your hands now. Keep the flame alight. 🔥`;
   if(streak>=2) return `A ${streak}-day streak going. A few minutes today keeps it alive.`;
@@ -3439,6 +3497,18 @@ function buildYou(){
       <div><div class="pr-t">Daily practice reminder</div><div class="pr-d">A gentle nudge to keep your streak alive</div></div>
       <button class="pr-switch${remOn?' on':''}" id="reminderToggle" role="switch" aria-checked="${remOn}"><span class="pr-knob"></span></button>
     </div>
+    <div class="prof-sec-t">Your data</div>
+    <div class="prof-data">
+      <p class="pd-lead">${(window.SOH_SYNC&&SOH_SYNC.user&&!SOH_SYNC.user.isAnonymous)
+        ? 'Your journey is saved to your private account, so it follows you between devices.'
+        : 'Right now everything is saved in this browser only. Sign in above to keep it across devices.'}</p>
+      <div class="pd-row">
+        <button class="pd-btn" id="dataReset">Reset my progress</button>
+        <button class="pd-btn danger" id="dataDelete">Delete my data</button>
+      </div>
+      <p class="pd-note">Reset clears your lessons, streak and badges but keeps your harps and name. Delete removes everything, including from our database.</p>
+    </div>
+
     <div class="prof-remind">
       <div><div class="pr-t">Text size</div><div class="pr-d">Make everything easier to read</div></div>
       <div class="pr-ts" role="group" aria-label="Text size">${[['','Aa'],['lg','Aa'],['xl','Aa']].map(([v,l],i)=>{
@@ -3460,6 +3530,24 @@ function buildYou(){
   el.querySelectorAll('.prof-seal').forEach(b=>b.addEventListener('click',()=>{ if(typeof sohOpenCertById==='function') sohOpenCertById(b.dataset.cert); }));
   el.querySelector('#reminderToggle')?.addEventListener('click',youToggleReminder);
   el.querySelectorAll('.pr-ts-b').forEach(b=>b.addEventListener('click',()=>{ sohSetTextSize(b.dataset.ts); buildYou(); buzz(); }));
+  el.querySelector('#dataReset')?.addEventListener('click',async()=>{
+    if(!confirm('Reset your progress?\n\nThis clears your lessons, streak, badges and certificates on every device. Your harps, your name and your settings stay.\n\nThis cannot be undone.')) return;
+    if(typeof sohResetProgress==='function') await sohResetProgress();
+    else { try{ for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(sohIsResettable(k)) localStorage.removeItem(k); } }catch(e){} }
+    try{ loadJournal(); }catch(e){}
+    try{ HARPER_KB=null; }catch(e){}
+    buildYou(); try{ renderHome(); }catch(e){} buzz();
+    alert('Your progress has been reset. Your harps and settings are untouched.');
+  });
+  el.querySelector('#dataDelete')?.addEventListener('click',async()=>{
+    if(!confirm('Delete everything?\n\nThis removes your progress, harps, name and settings from this device AND from our database, then signs you out.\n\nThis cannot be undone.')) return;
+    if(!confirm('Last check — really delete all your Strings of Hope data?')) return;
+    if(typeof sohDeleteAllData==='function') await sohDeleteAllData();
+    else { try{ for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(sohSyncable(k)) localStorage.removeItem(k); } }catch(e){} }
+    try{ loadJournal(); }catch(e){}
+    alert('Your data has been deleted. You can start fresh whenever you like.');
+    location.reload();
+  });
 
   const v=document.getElementById('youVersion'); if(v) v.textContent='Strings of Hope · v'+SOH_VERSION+' · works offline';
   try{ if(typeof sohRenderAuth==='function') sohRenderAuth(); }catch(e){}
@@ -3684,8 +3772,8 @@ function srSpan(){ return SR_LEVELS.find(l=>l.key===sr.level) || SR_LEVELS[1]; }
 
 /* ---------- spaced-repetition weak-note model (localStorage) ---------- */
 let srSkill = {};
-function srLoadSkill(){ try{ srSkill=JSON.parse(localStorage.getItem('soh_sr_skill'))||{}; }catch(e){ srSkill={}; } }
-function srSaveSkill(){ try{ localStorage.setItem('soh_sr_skill', JSON.stringify(srSkill)); }catch(e){} }
+function srLoadSkill(){ try{ srSkill=JSON.parse(localStorage.getItem('soh-sr-skill'))||{}; }catch(e){ srSkill={}; } }
+function srSaveSkill(){ try{ localStorage.setItem('soh-sr-skill', JSON.stringify(srSkill)); }catch(e){} }
 function srNoteKey(n){ return n.letter + (n.name.length>1?n.name.slice(1):'') + n.octave; }
 function srRecord(n, correct){
   const k=srNoteKey(n); const s=srSkill[k]||{seen:0, ok:0, weak:0.5, due:0};

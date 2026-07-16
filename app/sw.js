@@ -2,10 +2,10 @@
    Strategy: navigations network-first (so testers get fresh builds),
    other same-origin GETs stale-while-revalidate, offline app-shell fallback.
    Bump CACHE on meaningful releases to retire old caches. */
-const CACHE = 'soh-v2026.07.16-3';
+const CACHE = 'soh-v2026.07.16-4';
 const SHELL = [
   './', './index.html', './styles.css',
-  './tuning.js', './audio.js', './data.js', './jewish.js',
+  './keys.js', './tuning.js', './audio.js', './data.js', './jewish.js',
   './theory.js', './jacob.js', './shamayim.js', './chen.js', './app.js',
   './vendor/vexflow.js', './vendor/osmd.js', './vendor/pitchy.js', './vendor/fft.js',
   './fonts/ShlomoStam.ttf',

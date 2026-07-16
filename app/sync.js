@@ -10,13 +10,11 @@
   const configured = !!(cfg.apiKey && cfg.apiKey.length > 10 && cfg.projectId);
   window.SOH_SYNC = { configured, user:null, status: configured?'loading':'unconfigured' };
 
-  // Device-level keys: belong to THIS device, never to the account.
-  // soh-uid marks which account owns the rest of this device's soh-* data —
-  // it is the guard against merging one member's local data into another
-  // member's cloud on a shared device, and must itself never sync.
-  const DEVICE_KEYS=['soh-theme','soh-uid','soh-labs','soh-auth-choice','soh-tuner-noisy','soh-textsize'];
-  function shouldSync(k){ return !!k && k.indexOf('soh-')===0 && DEVICE_KEYS.indexOf(k)<0; }
-  // Keys we sync (everything the app persists about a person's journey).
+  // What syncs is DECLARED in keys.js, never guessed from a prefix. A prefix
+  // scan is what leaked soh-labs into accounts and silently skipped
+  // soh_journal (the streak) for every member on a second device.
+  function shouldSync(k){ return typeof sohSyncable==='function' ? sohSyncable(k) : false; }
+  function keySpec(k){ return typeof sohKeySpec==='function' ? sohKeySpec(k) : null; }
   function syncKeys(){
     const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i);
       if(shouldSync(k)) out.push(k); } }catch(e){}
@@ -41,14 +39,23 @@
       else o[k]=(x!==undefined?x:y); });
     return o;
   }
-  // Merge a single key's string value (local vs cloud) — never loses progress.
-  function mergeVal(local, cloud){
+  // Merge one key's value (local vs cloud) using the policy DECLARED for it.
+  // Policy matters: max-merging a setting is a ratchet — turning daily
+  // reminders off on your phone used to be undone by any device where they
+  // were still on, because '1' > '0'. Settings are 'local'; only true
+  // counters are 'max'.
+  function mergeVal(local, cloud, spec){
     if(local==null) return cloud; if(cloud==null) return local;
-    const lp=parse(local), cp=parse(cloud);
+    const pol=spec&&spec.merge, lp=parse(local), cp=parse(cloud);
+    if(pol==='local') return (local!=='' ? local : cloud);
+    if(pol==='max' && isNum(local) && isNum(cloud)) return String(Math.max(+local,+cloud));
+    if(pol==='union' && Array.isArray(lp) && Array.isArray(cp)) return JSON.stringify(uniqVals([...lp,...cp]));
+    if(pol==='obj' && lp&&cp&&typeof lp==='object'&&typeof cp==='object'&&!Array.isArray(lp)) return JSON.stringify(mergeObj(lp,cp));
+    // Unknown/mis-shaped value → the old auto-detect, which never loses data.
     if(Array.isArray(lp)&&Array.isArray(cp)) return JSON.stringify(uniqVals([...lp,...cp]));
     if(isNum(local)&&isNum(cloud)) return String(Math.max(+local,+cloud));
     if(lp&&cp&&typeof lp==='object'&&typeof cp==='object'&&!Array.isArray(lp)) return JSON.stringify(mergeObj(lp,cp));
-    return (local!=='' ? local : cloud); // scalars/config → prefer this device
+    return (local!=='' ? local : cloud);
   }
 
   let db=null, auth=null, provider=null, _pushT=null, _writingLocal=false;
@@ -67,12 +74,13 @@
     // merge cloud into local
     const merged={}; const keys=new Set([...syncKeys(), ...Object.keys(cloud)]);
     _writingLocal=true;
-    keys.forEach(k=>{ if(!shouldSync(k)) return;   // device keys never merge — even from old cloud docs that synced them
-      const loc=localStorage.getItem(k), cl=(cloud[k]!==undefined?cloud[k]:null);
-      const val=mergeVal(loc, cl);
-      if(val!=null){ merged[k]=val; try{ localStorage.setItem(k,val); }catch(e){} }
-    });
-    _writingLocal=false;
+    try{
+      keys.forEach(k=>{ if(!shouldSync(k)) return;   // device keys never merge — even from old cloud docs that synced them
+        const loc=localStorage.getItem(k), cl=(cloud[k]!==undefined?cloud[k]:null);
+        const val=mergeVal(loc, cl, keySpec(k));
+        if(val!=null){ merged[k]=val; try{ localStorage.setItem(k,val); }catch(e){} }
+      });
+    } finally { _writingLocal=false; }   // a throw here used to disable auto-push for the whole session
     // push merged snapshot
     try{
       await cloudDoc().set({ keys:merged, name:SOH_SYNC.user.displayName||'', email:SOH_SYNC.user.email||'',
@@ -118,9 +126,10 @@
           const prev=localStorage.getItem('soh-uid');
           if(prev && prev!==user.uid){
             _writingLocal=true;
-            for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i);
-              if(k && (shouldSync(k) || k==='soh_harp')) localStorage.removeItem(k); }
-            _writingLocal=false;
+            try{
+              for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i);
+                if(shouldSync(k)) localStorage.removeItem(k); }
+            } finally { _writingLocal=false; }
           }
           localStorage.setItem('soh-uid',user.uid);
         }catch(e){}
@@ -160,6 +169,44 @@
     });
   };
   window.sohSignOut = function(){ if(auth) auth.signOut().catch(()=>{}); };
+
+  /* ---- The escape hatch --------------------------------------------------
+     Every merge rule only ever ADDS (max / union / deep-merge), so nothing
+     could be undone: a member could not restart a unit, and a bad value was
+     permanent on every device. Removing a key locally isn't enough either —
+     removeItem isn't what triggers a push, and the next merge would pull the
+     old value straight back out of the cloud. So both wipes rewrite the cloud
+     document wholesale ({merge:false}) rather than merging into it.
+     mode 'progress' → keeps identity + harp setup (spec.reset === false)
+     mode 'all'      → removes the account document entirely (GDPR erasure)  */
+  async function wipe(mode){
+    const all=mode==='all';
+    const doomed=[];
+    try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i);
+      if(!shouldSync(k)) continue;
+      if(all || (typeof sohIsResettable==='function' && sohIsResettable(k))) doomed.push(k); } }catch(e){}
+    _writingLocal=true;
+    try{ doomed.forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); }
+    finally { _writingLocal=false; }
+    if(db && SOH_SYNC.user){
+      try{
+        if(all){ await cloudDoc().delete(); }
+        else{
+          const keep={}; syncKeys().forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) keep[k]=v; });
+          await cloudDoc().set({ keys:keep, name:SOH_SYNC.user.displayName||'', email:SOH_SYNC.user.email||'',
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, {merge:false});   // replace, don't merge
+        }
+        SOH_SYNC.status='synced';
+      }catch(e){ SOH_SYNC.status='error'; }
+      scheduleUI();
+    }
+    return doomed.length;
+  }
+  window.sohResetProgress = function(){ return wipe('progress'); };
+  window.sohDeleteAllData = async function(){ const n=await wipe('all');
+    try{ localStorage.removeItem('soh-uid'); }catch(e){}
+    if(auth && auth.currentUser) try{ await auth.signOut(); }catch(e){}
+    return n; };
 
   function authErr(err){ const c=(err&&err.code)||'';
     if(c==='auth/unauthorized-domain') return 'This site isn’t authorized in Firebase yet — add “'+location.hostname+'” under Authentication → Settings → Authorized domains.';

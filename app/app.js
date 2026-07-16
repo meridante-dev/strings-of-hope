@@ -33,6 +33,27 @@ const SOH_FLAGS={
 const SOH_WORKSHOP_NAMES={ jacob:'Jacob’s Universe', shamayim:'Shamayim Harp', chen:'Chen · Symmetry',
   sightread:'Sight-Reading', eartraining:'Ear Training', rhythm:'Rhythm', repertoire:'Repertoire' };
 function sohLabs(){ try{ return localStorage.getItem('soh-labs')==='1'; }catch(e){ return false; } }
+/* Text size (accessibility): '', 'lg', or 'xl' — applied as a zoom on <html>.
+   The zoom is computed in JS and CAPPED so the zoomed layout viewport never
+   drops below the browser's 320px minimum — past that floor the page can't
+   shrink further and bleeds into a horizontal scroll (found at xl on 390px
+   phones: 390/1.25 = 312px < 320 → 10px sideways drift on every view). */
+function sohApplyTextSize(){
+  try{
+    const t=localStorage.getItem('soh-textsize')||'';
+    const de=document.documentElement;
+    if(t) de.setAttribute('data-ts',t); else de.removeAttribute('data-ts');
+    const want=t==='xl'?1.25:t==='lg'?1.12:1;
+    const cap=Math.max(1,(window.innerWidth||390)/325);
+    const z=Math.min(want,cap);
+    de.style.zoom = z>1.001 ? z.toFixed(3) : '';
+  }catch(e){}
+}
+try{ let _tsT=null; window.addEventListener('resize',()=>{ clearTimeout(_tsT); _tsT=setTimeout(sohApplyTextSize,180); }); }catch(e){}
+function sohSetTextSize(t){
+  try{ if(t) localStorage.setItem('soh-textsize',t); else localStorage.removeItem('soh-textsize'); }catch(e){}
+  sohApplyTextSize();
+}
 function sohOn(view){ return sohLabs() || SOH_FLAGS[view]!==false; }
 function sohApplyFlags(){
   Object.keys(SOH_FLAGS).forEach(v=>{ if(!sohOn(v))
@@ -3352,6 +3373,12 @@ function buildYou(){
     <div class="prof-remind" id="reminderRow">
       <div><div class="pr-t">Daily practice reminder</div><div class="pr-d">A gentle nudge to keep your streak alive</div></div>
       <button class="pr-switch${remOn?' on':''}" id="reminderToggle" role="switch" aria-checked="${remOn}"><span class="pr-knob"></span></button>
+    </div>
+    <div class="prof-remind">
+      <div><div class="pr-t">Text size</div><div class="pr-d">Make everything easier to read</div></div>
+      <div class="pr-ts" role="group" aria-label="Text size">${[['','Aa'],['lg','Aa'],['xl','Aa']].map(([v,l],i)=>{
+        const cur=(()=>{try{return localStorage.getItem('soh-textsize')||'';}catch(e){return '';}})();
+        return `<button class="pr-ts-b s${i}${cur===v?' on':''}" data-ts="${v}" aria-pressed="${cur===v}">${l}</button>`; }).join('')}</div>
     </div>`;
 
   el.querySelector('#profContinue')?.addEventListener('click',()=>{ if(r&&r.go) r.go(); else showView('learn-hub'); buzz(); });
@@ -3367,6 +3394,7 @@ function buildYou(){
   el.querySelector('#profAddHarp')?.addEventListener('click',()=>{ sohOnboardOpen(true); buzz(); });
   el.querySelectorAll('.prof-seal').forEach(b=>b.addEventListener('click',()=>{ if(typeof sohOpenCertById==='function') sohOpenCertById(b.dataset.cert); }));
   el.querySelector('#reminderToggle')?.addEventListener('click',youToggleReminder);
+  el.querySelectorAll('.pr-ts-b').forEach(b=>b.addEventListener('click',()=>{ sohSetTextSize(b.dataset.ts); buildYou(); buzz(); }));
 
   const v=document.getElementById('youVersion'); if(v) v.textContent='Strings of Hope · v'+SOH_VERSION+' · works offline';
   try{ if(typeof sohRenderAuth==='function') sohRenderAuth(); }catch(e){}
@@ -4236,6 +4264,7 @@ sohApplyFlags();   // beta focus: hide entry points of workshop features
    wipes localStorage for non-installed sites (webkit.org/blog/14403).
    Granted near-automatically for Home-Screen installs; harmless elsewhere. */
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){}
+sohApplyTextSize();   // restore the reader's chosen text size
 document.getElementById('harpieFab')?.addEventListener('click',()=>{ if(typeof harpieOpenGlobal==='function') harpieOpenGlobal(); });
 document.getElementById('learnSearch')?.addEventListener('click',()=>{ if(typeof harpieOpenGlobal==='function') harpieOpenGlobal(); });
 showView('home');

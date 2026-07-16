@@ -14,7 +14,7 @@
   // soh-uid marks which account owns the rest of this device's soh-* data —
   // it is the guard against merging one member's local data into another
   // member's cloud on a shared device, and must itself never sync.
-  const DEVICE_KEYS=['soh-theme','soh-uid','soh-labs','soh-auth-choice','soh-tuner-noisy'];
+  const DEVICE_KEYS=['soh-theme','soh-uid','soh-labs','soh-auth-choice','soh-tuner-noisy','soh-textsize'];
   function shouldSync(k){ return !!k && k.indexOf('soh-')===0 && DEVICE_KEYS.indexOf(k)<0; }
   // Keys we sync (everything the app persists about a person's journey).
   function syncKeys(){
@@ -67,7 +67,7 @@
     // merge cloud into local
     const merged={}; const keys=new Set([...syncKeys(), ...Object.keys(cloud)]);
     _writingLocal=true;
-    keys.forEach(k=>{ if(k==='soh-theme') return;
+    keys.forEach(k=>{ if(!shouldSync(k)) return;   // device keys never merge — even from old cloud docs that synced them
       const loc=localStorage.getItem(k), cl=(cloud[k]!==undefined?cloud[k]:null);
       const val=mergeVal(loc, cl);
       if(val!=null){ merged[k]=val; try{ localStorage.setItem(k,val); }catch(e){} }

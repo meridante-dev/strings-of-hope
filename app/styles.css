@@ -298,7 +298,7 @@ body::before{
 .ico:active{transform:scale(.95)}
 .ico-i{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--surface-2);color:var(--gold-deep)}
 .ico-i svg{width:19px;height:19px}
-.ico-l{font-size:10.5px;font-weight:600;color:var(--ink-soft);text-align:center;line-height:1.05}
+.ico-l{font-size:12px;font-weight:600;color:var(--ink-soft);text-align:center;line-height:1.05}
 
 /* ---------- SCALES ---------- */
 .keybar{display:flex;gap:8px;overflow-x:auto;padding:6px 4px 10px;margin:0 -4px;scrollbar-width:none}
@@ -424,7 +424,9 @@ body::before{
 .jrn-lyre{width:60px;height:60px;object-fit:contain;margin-bottom:10px;opacity:.92}
 .jrn-h1{font-family:"Playfair Display",serif;font-weight:600;font-size:34px;line-height:1.08;margin:6px 0 10px;color:var(--ink);letter-spacing:-0.02em}
 .jrn-q{font-family:"Playfair Display",serif;font-weight:600;font-size:30px;margin-bottom:16px;letter-spacing:-0.01em}
-.jrn-lead{font-family:"Cormorant Garamond",serif;font-size:20px;line-height:1.5;color:var(--ink-soft);max-width:330px;margin:10px auto 0}
+.jrn-lead{font-family:"Cormorant Garamond",serif;font-size:20px;line-height:1.5;color:var(--ink-soft);max-width:330px;margin:10px auto 0;
+  font-weight:500}   /* Cormorant's hairline strokes halate on dark for aging eyes — medium weight on the espresso theme */
+[data-theme="light"] .jrn-lead{ font-weight:400 }
 .jrn-lead.big{font-size:23px;color:var(--ink)}
 .jrn-lead em{color:var(--ink);font-style:italic}
 
@@ -510,7 +512,7 @@ footer .cc{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.32em;text-tr
 @keyframes eq{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
 .np-info{flex:1;min-width:0}
 .np-title{font-family:"Playfair Display",serif;font-weight:600;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-0.01em}
-.np-sub{font-size:11.5px;color:var(--ink-faint);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.np-sub{font-size:12.5px;color:var(--ink-faint);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .np-stop{flex:0 0 auto;width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;background:var(--surface-2);color:var(--ink);display:grid;place-items:center;transition:transform .15s var(--ease)}
 .np-stop:active{transform:scale(.92)}
 .np-stop svg{width:15px;height:15px}
@@ -853,7 +855,13 @@ footer .cc{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.32em;text-tr
   .reveal.in,.jrn-in,.view.active,.view.active.vt-push,.view.active.vt-pop,.view.active.vt-tab{animation:none}
   .petal.flavor{animation:none}
   .hub-tile,.world-row,.prof-continue,.prof-seal,.ju-card,.chen-card,.shy-card,.nx-card,.thy-ch{transition:none}
+  .nx-strings,.nx-shimmer,.nx-glow,.cel-card{animation:none}
 }
+
+/* Text size — user-facing accessibility control (You tab). The zoom itself is
+   computed and applied in JS (sohApplyTextSize) so it can be capped against the
+   320px minimum layout viewport (past that floor the page can't shrink and
+   bleeds into horizontal scroll); html[data-ts] carries the state for styling. */
 
 /* ============================================================
    AI SIGHT READING COACH
@@ -1314,7 +1322,7 @@ body.cert-open{ overflow:hidden }
 .thy-harp-l{ display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.1em;
   text-transform:uppercase;color:var(--gold-deep);margin-bottom:5px }
 .thy-harp-i{ font-size:14px;line-height:1 }
-.thy-harp p{ margin:0;font-size:14px;line-height:1.62;color:var(--ink-soft) }
+.thy-harp p{ margin:0;font-size:15px;line-height:1.62;color:var(--ink-soft) }
 /* Hear it — playable demos inside theory lessons */
 .thy-hear{ display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:32rem;margin:14px auto 0;text-align:left }
 .thy-hear-k{ flex:0 0 100%;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep) }
@@ -1327,7 +1335,7 @@ body.cert-open{ overflow:hidden }
 .thy-harp i{ font-style:italic }
 
 /* check-your-understanding quiz */
-.thy-quiz-sub{ text-align:center;font-size:13px;color:var(--ink-faint);margin:0 0 16px }
+.thy-quiz-sub{ text-align:center;font-size:14.5px;color:var(--ink-faint);margin:0 0 16px }
 .thy-quiz{ text-align:left;max-width:32rem;margin:0 auto;display:flex;flex-direction:column;gap:12px }
 .thy-q{ padding:13px 15px;border-radius:14px;background:var(--surface);border:1px solid var(--line) }
 .thy-q-q{ margin:0 0 9px;font-size:14.5px;line-height:1.5;font-weight:600;color:var(--ink);display:flex;gap:9px;align-items:flex-start }
@@ -1645,7 +1653,7 @@ body.cert-open{ overflow:hidden }
 /* ===== Hub tabs — Learn · Practice · Spirit · You ===== */
 .hub-head{ margin:6px 0 18px }
 .hub-head h1{ font-family:"Playfair Display",serif;font-size:34px;font-weight:700;color:var(--ink);margin:2px 0 0;letter-spacing:-.01em }
-.hub-head .sub{ font-size:15.5px;line-height:1.5;color:var(--ink-soft);margin-top:4px;max-width:34rem }
+.hub-head .sub{ font-size:16.5px;line-height:1.5;color:var(--ink-soft);margin-top:4px;max-width:34rem }
 .hub-search{ display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer;color:var(--ink-faint);
   font:inherit;font-size:14px;background:rgba(0,0,0,.16);border:1px solid var(--line);border-radius:999px;padding:12px 16px;margin-bottom:18px }
 .hub-search svg{ width:16px;height:16px;flex:0 0 auto;color:var(--gold-deep) }
@@ -1660,7 +1668,7 @@ body.cert-open{ overflow:hidden }
 .wr-ic svg{ width:23px;height:23px }
 .wr-t{ flex:1;min-width:0;display:flex;flex-direction:column;gap:2px }
 .wr-n{ font-family:"Playfair Display",serif;font-size:18px;font-weight:600;color:var(--ink);line-height:1.1 }
-.wr-d{ font-size:12px;color:var(--ink-faint) }
+.wr-d{ font-size:13.5px;color:var(--ink-faint) }
 .wr-bar{ height:4px;border-radius:3px;background:color-mix(in srgb,var(--ink) 10%,transparent);overflow:hidden;margin-top:6px }
 .wr-bar i{ display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold-grad-a),var(--gold-grad-b));transition:width .6s cubic-bezier(.2,.8,.2,1) }
 .wr-go{ flex:0 0 auto;color:var(--ink-faint);font-size:19px;font-weight:700 }
@@ -1679,7 +1687,7 @@ body.cert-open{ overflow:hidden }
   background:color-mix(in srgb,var(--gold) 12%,transparent);border:1px solid var(--line) }
 .hub-tile .ht-i svg{ width:19px;height:19px }
 .hub-tile .ht-n{ font-size:14.5px;font-weight:700;color:var(--ink);margin-top:2px }
-.hub-tile .ht-d{ font-size:11px;color:var(--ink-faint) }
+.hub-tile .ht-d{ font-size:12.5px;color:var(--ink-faint) }
 .hub-tile.feat{ background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 14%,transparent),var(--surface)) }
 
 .you-card{ padding:18px;border-radius:18px;margin-bottom:16px;
@@ -1763,11 +1771,16 @@ body.cert-open{ overflow:hidden }
 [data-theme="light"] .prof-harpchip.on{ border-color:var(--gold-deep) }
 [data-theme="light"] .prof-harpchip.ph-add{ background:transparent;border:1px dashed rgba(92,70,30,.3) }
 .prof-remind{ display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding:14px 15px;border-radius:15px;background:var(--surface);border:1px solid var(--line) }
-.pr-t{ font-size:13.5px;font-weight:700;color:var(--ink) } .pr-d{ font-size:11px;color:var(--ink-faint);margin-top:1px }
+.pr-t{ font-size:13.5px;font-weight:700;color:var(--ink) } .pr-d{ font-size:12.5px;color:var(--ink-faint);margin-top:1px }
 .pr-switch{ flex:0 0 auto;width:46px;height:27px;border-radius:999px;border:none;cursor:pointer;position:relative;background:color-mix(in srgb,var(--ink) 18%,transparent);transition:background .2s }
 .pr-switch.on{ background:linear-gradient(90deg,var(--gold-grad-a),var(--gold-grad-b)) }
 .pr-knob{ position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3) }
 .pr-switch.on .pr-knob{ transform:translateX(19px) }
+.pr-ts{ display:flex;gap:6px;flex:0 0 auto }
+.pr-ts-b{ min-width:44px;min-height:38px;border-radius:11px;border:1px solid var(--line-2);cursor:pointer;
+  background:var(--surface);color:var(--ink-soft);font-weight:700;line-height:1 }
+.pr-ts-b.s0{ font-size:13px } .pr-ts-b.s1{ font-size:16px } .pr-ts-b.s2{ font-size:19px }
+.pr-ts-b.on{ border-color:var(--gold-deep);color:var(--ink);background:color-mix(in srgb,var(--gold) 14%,var(--surface)) }
 [data-theme="light"] .prof-stats>div,[data-theme="light"] .prof-badge,[data-theme="light"] .prof-remind,[data-theme="light"] .prof-cert-empty{
   background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,253,246,.5));border:1px solid rgba(255,255,255,.9) }
 

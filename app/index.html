@@ -102,7 +102,6 @@
         <button class="hub-tile feat" data-view="play"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V5a4 4 0 014-4M19 21c-2-9-8-11-10-12M9 21h10"/></svg></span><span class="ht-n">Play the Harp</span><span class="ht-d">Pluck the strings</span></button>
         <button class="hub-tile feat" data-view="practice"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="ht-n">Practice Room</span><span class="ht-d">Guided 5–90 min</span></button>
         <button class="hub-tile" data-view="tuner"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3a3 3 0 00-3 3v5a3 3 0 006 0V6a3 3 0 00-3-3z"/><path d="M6 11a6 6 0 0012 0M12 17v4"/></svg></span><span class="ht-n">Tuner</span><span class="ht-d">By mic or ear</span></button>
-        <button class="hub-tile" data-view="eartraining"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 13a8 8 0 0116 0v4a2 2 0 01-2 2h-1a1 1 0 01-1-1v-3a1 1 0 011-1h2M4 13v3a2 2 0 002 2h1a1 1 0 001-1v-3a1 1 0 00-1-1H4"/></svg></span><span class="ht-n">Ear Training</span><span class="ht-d">Intervals · chords</span></button>
         <button class="hub-tile" data-view="rhythm"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 14a7 7 0 0114 0M12 14V8M12 14l3.5 3.5"/></svg></span><span class="ht-n">Rhythm</span><span class="ht-d">Find the pocket</span></button>
         <button class="hub-tile" data-view="circle"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="3.4" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="8" r="1.3" fill="currentColor" stroke="none"/><circle cx="5" cy="8" r="1.3" fill="currentColor" stroke="none"/></svg></span><span class="ht-n">Circle of 5ths</span><span class="ht-d">Keys · levers</span></button>
         <button class="hub-tile" data-view="sightread"><span class="ht-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="9" cy="17" r="2" fill="currentColor" stroke="none"/></svg></span><span class="ht-n">Sight-Read</span><span class="ht-d">Guided reading</span></button>
@@ -366,14 +365,12 @@
     <!-- ================= EAR TRAINING ================= -->
     <section id="view-eartraining" class="view">
       <header class="hero reveal">
-        <div class="kicker">Tool · Listen</div>
-        <h1>Ear Training</h1>
-        <p class="sub">Train your ear to recognise what you hear.</p>
+        <div class="kicker">Learn · Your ear</div>
+        <h1>Which Mode?</h1>
+        <p class="sub">Two modes, one note apart. Listen — which one is it?</p>
       </header>
-      <div class="et-tabs reveal">
-        <button class="et-tab on" data-etmode="interval">Intervals</button>
-        <button class="et-tab" data-etmode="chord">Chords</button>
-      </div>
+      <div class="et-tabs reveal"></div>
+      <p class="et-rung-sub reveal" id="etRungSub"></p>
       <div class="et-play reveal">
         <button class="et-bigplay" id="etPlay"><span class="et-bp-i">▶</span><span id="etPlayLabel">Play</span></button>
         <button class="et-replay" id="etReplay" hidden>↻ Replay</button>
@@ -384,7 +381,7 @@
         <div class="et-score" id="etScore">Score 0 / 0</div>
         <button class="et-next" id="etNext" hidden>Next ›</button>
       </div>
-      <p class="et-harp reveal">A lever harpist who can name intervals by ear can pick out tunes, find chords, and tune by listening for the beats. Train a few minutes a day.</p>
+      <p class="et-harp reveal">Every mode here is one note away from its neighbour. That single note is the whole colour — and once your ear catches it, you stop needing the name. A few minutes a day is enough.</p>
       <footer class="reveal">
         <img class="ly" src="img/lyre.png" alt="" />
         <div class="ftag">Believe in your dreams.</div>

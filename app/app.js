@@ -25,13 +25,13 @@ const SOH_FLAGS={
   shamayim:false,     // Shamayim Harp — contemplative journey, refine pacing first
   chen:false,         // Chen · Symmetry — deep material, needs guided intro
   sightread:false,    // Sight-Reading — detection UX needs a hardening pass like the tuner
-  eartraining:false,  // Ear Training — drills need levels + progression
+  eartraining:true,   // graduated 2026-07-16 as the Which Mode? drill (4-rung ladder + mixed)
   rhythm:false,       // Rhythm engine — groove content needs curation
   repertoire:false,   // Repertoire — too thin to show yet
 };
 /* what the Learn hub teases as coming */
 const SOH_WORKSHOP_NAMES={ jacob:'Jacob’s Universe', shamayim:'Shamayim Harp', chen:'Chen · Symmetry',
-  sightread:'Sight-Reading', eartraining:'Ear Training', rhythm:'Rhythm', repertoire:'Repertoire' };
+  sightread:'Sight-Reading', eartraining:'Which Mode?', rhythm:'Rhythm', repertoire:'Repertoire' };
 function sohLabs(){ try{ return localStorage.getItem('soh-labs')==='1'; }catch(e){ return false; } }
 /* What Harpie is told the app contains — derived from the course and the
    live flags. It was hardcoded as "5 units, 42 chapters" against a real
@@ -1880,7 +1880,7 @@ function renderNxHero(){
 }
 const NX_TOOLS=[
   {v:'coach',t:'Harpie',d:'AI Harp Coach'},{v:'practice',t:'Practice Room',d:'Guided session'},
-  {v:'sightread',t:'Sight Reading',d:'It listens as you play'},{v:'eartraining',t:'Ear Training',d:'Name what you hear'},
+  {v:'sightread',t:'Sight Reading',d:'It listens as you play'},{v:'eartraining',t:'Which Mode?',d:'Hear the one note that changes'},
   {v:'circle',t:'Circle of 5ths',d:'Your map of keys'},{v:'modes',t:'Modes Wheel',d:'Seven colours'},
   {v:'scales',t:'Scales',d:'Build any scale'},{v:'tuner',t:'Tuner',d:'A440, by ear or mic'},
   {v:'levers',t:'Levers',d:'Set any key'},{v:'drone',t:'Drone',d:'A bed to play over'},{v:'rhythm',t:'Rhythm',d:'Find the pocket'},
@@ -2368,6 +2368,15 @@ function sohTheoryStats(){
     (typeof JACOB_MODULES!=='undefined'?JACOB_MODULES:[]).forEach(m=>{ const e=d['j'+m.n];
       if(e){ xp+=Math.min(e.seen,e.total)*8; if(e.seen>=e.total) xp+=40; } });
   }catch(e){}
+  /* Graded retrieval earns XP. Until now every point in the app came from
+     {seen,total} — pages turned — so the shipped confetti rewarded scrolling.
+     Capped per mode so it can't be farmed by replaying one easy pair. */
+  try{ const sk=JSON.parse(localStorage.getItem('soh-sr-skill')||'{}');
+    Object.keys(sk).forEach(k=>{ if(k.indexOf('mode:')!==0) return; const e=sk[k]||{};
+      xp += Math.min(e.ok||0, 20)*12;
+      if((e.ok||0)>=3 && (e.weak==null?1:e.weak)<=0.34) xp += 60;   // held, not just met
+    });
+  }catch(e){}
   let rank=THEORY_RANKS[0]; THEORY_RANKS.forEach(r=>{ if(xp>=r.min) rank=r; });
   const ri=THEORY_RANKS.indexOf(rank), next=THEORY_RANKS[ri+1]||null;
   return { xp, rank:rank.name, rankN:ri+1, rankMin:rank.min, next,
@@ -2698,7 +2707,63 @@ const ET_CHORDS = [
   {semis:[0,3,6], name:'Diminished', tune:'tense, unstable'},
   {semis:[0,4,8], name:'Augmented',  tune:'dreamy, suspended'},
 ];
-let etMode='interval', etList=ET_INTERVALS, etCur=0, etRoot=60, etRight=0, etTotal=0, etAnswered=false, etPlayed=false, _etBound=false;
+/* ============================================================
+   WHICH MODE? — the drill the modes app never had (Stage 1)
+   The wheel renders, sets levers and offers a drone — and never asks you
+   anything. 84 chapters of prose *about* modes is the word-list condition,
+   the one case where the science says blocking beats interleaving. Hearing
+   the difference is the perceptual case, where interleaving is strongest.
+
+   The task is DISCRIMINATION, not naming. Simcha forgets the western names
+   and never forgets the sounds, so a seven-way naming quiz would optimise
+   exactly the layer the teacher treats as disposable. Instead: two modes,
+   one note apart, over a drone — "which one?" That one-note neighbour IS
+   the intervention.
+
+   Everything here derives from MODES in data.js — no second copy of the
+   scales to drift out of step.
+   ============================================================ */
+function modeSemis(name){
+  const m=(typeof MODES!=='undefined')&&MODES.find(x=>x.name===name);
+  if(!m) return [0,2,4,5,7,9,11];
+  const rp=tRootPC(m.root);
+  return m.notes.map(n=>((tRootPC(n)-rp)%12+12)%12);   // pattern from ITS OWN tonic
+}
+function modeDiffDegrees(a,b){ const A=modeSemis(a), B=modeSemis(b), out=[];
+  for(let i=0;i<7;i++) if(A[i]!==B[i]) out.push(i); return out; }
+/* A phrase that walks up to the note in question and back home. If the
+   phrase never sounds the differing degree the question is unanswerable,
+   so the shape is built around it. */
+function modePhraseDegrees(d){
+  if(d<=2) return [0,1,2,1,0];
+  const up=[0,2,4].filter(x=>x<d);
+  return [...up, d, ...up.slice().reverse()];
+}
+const MODE_RUNGS=[
+  {k:'bright-dark', t:'Bright or dark', sub:'Major against minor — the widest contrast there is. Start here.',
+   pairs:[['Ionian','Aeolian']], shape:'scale'},
+  {k:'lifted-6th', t:'The lifted 6th', sub:'Both are minor. Dorian lifts the 6th — minor, yet hopeful.',
+   pairs:[['Dorian','Aeolian']], shape:'phrase'},
+  {k:'soft-7th', t:'The softened 7th', sub:'Both are major. Mixolydian flattens the 7th, so it stops pulling home.',
+   pairs:[['Ionian','Mixolydian']], shape:'phrase'},
+  {k:'colour', t:'The colour tones', sub:'One note apart: Lydian’s raised 4th, Phrygian’s lowered 2nd.',
+   pairs:[['Ionian','Lydian'],['Aeolian','Phrygian']], shape:'phrase'},
+  {k:'mixed', t:'All of them, mixed', sub:'Every neighbour, interleaved — the way they turn up in real music.',
+   pairs:[['Ionian','Aeolian'],['Dorian','Aeolian'],['Ionian','Mixolydian'],['Ionian','Lydian'],
+          ['Aeolian','Phrygian'],['Mixolydian','Dorian'],['Phrygian','Locrian']], shape:'phrase'},
+];
+let etRung=0, etModeShape='scale', etModeDiff=5;
+/* A rung opens when both of its predecessor's modes are actually HELD —
+   derived from srSkill, so progress needs no key of its own. */
+function modeRungUnlocked(i){
+  if(i<=0) return true;
+  if(typeof sohLabs==='function' && sohLabs()) return true;
+  const names=[...new Set(MODE_RUNGS[i-1].pairs.flat())];
+  return names.every(n=>{ const s=srSkill['mode:'+n.toLowerCase()]; return s && s.ok>=3 && s.weak<=0.34; });
+}
+function modeHighestUnlocked(){ let i=0; while(i+1<MODE_RUNGS.length && modeRungUnlocked(i+1)) i++; return i; }
+
+let etMode='mode', etList=ET_INTERVALS, etCur=0, etRoot=60, etRight=0, etTotal=0, etAnswered=false, etPlayed=false, _etBound=false;
 function etMidiFreq(m){ return 440*Math.pow(2,(m-69)/12); }
 function harpPluck(freq, when, dur){
   const ac=audioCtx(), t=when||ac.currentTime; dur=dur||1.6;
@@ -2713,6 +2778,8 @@ function harpPluck(freq, when, dur){
   });
 }
 function etPlay(){
+  if(etMode==='mode'){ etPlayMode(); etPlayed=true;
+    const rp=document.getElementById('etReplay'); if(rp) rp.hidden=false; return; }
   const ac=audioCtx(), now=ac.currentTime+0.06, it=etList[etCur];
   if(etMode==='interval'){
     harpPluck(etMidiFreq(etRoot), now, 1.1);
@@ -2722,7 +2789,40 @@ function etPlay(){
   }
   etPlayed=true; const rp=document.getElementById('etReplay'); if(rp) rp.hidden=false;
 }
+/* Sound the tonic, then the phrase over it — "the base becomes the new root."
+   A low tonic + fifth, left to ring, is the harp's own drone (open strings)
+   and needs no drone lifecycle to leave running by accident. */
+function etPlayMode(){
+  const ac=audioCtx(), t0=ac.currentTime+0.06;
+  const semis=modeSemis(etList[etCur].name);
+  harpPluck(etMidiFreq(etRoot-12), t0, 5.0);
+  harpPluck(etMidiFreq(etRoot-5),  t0+0.09, 4.6);
+  const degs = etModeShape==='scale' ? [0,1,2,3,4,5,6,7] : modePhraseDegrees(etModeDiff);
+  degs.forEach((d,i)=>harpPluck(etMidiFreq(etRoot+(d>=7?12:semis[d])), t0+0.78+i*0.42, 1.5));
+  return t0+0.78+degs.length*0.42;
+}
 function etNewQuestion(){
+  if(etMode==='mode'){
+    const rung=MODE_RUNGS[etRung]||MODE_RUNGS[0];
+    const pair=rung.pairs[Math.floor(Math.random()*rung.pairs.length)];
+    // Ask the mode the member holds least well — the scheduler already knows.
+    const weak=pair.map(n=>srSkill['mode:'+n.toLowerCase()]);
+    const bias=(weak[0]?weak[0].weak:0.5)>=(weak[1]?weak[1].weak:0.5)?0:1;
+    etCur = Math.random()<0.65 ? bias : 1-bias;
+    etList = pair.map(n=>{ const m=(typeof MODES!=='undefined')&&MODES.find(x=>x.name===n);
+      return {name:n, tune:m?String(m.feel||'').replace(/\n/g,' '):''}; });
+    etModeShape = rung.shape;
+    const diffs = modeDiffDegrees(pair[0],pair[1]);
+    etModeDiff = diffs.length?diffs[diffs.length-1]:5;
+    etRoot = 57 + Math.floor(Math.random()*8);    // A3..E4 — transpose so it can't be memorised by pitch
+    etAnswered=false; etPlayed=false;
+    etBuildGrid();
+    const fb=document.getElementById('etFeedback'); if(fb){ fb.textContent=''; fb.className='et-feedback reveal in'; }
+    const nx=document.getElementById('etNext'); if(nx) nx.hidden=true;
+    const rp=document.getElementById('etReplay'); if(rp) rp.hidden=true;
+    const pl=document.getElementById('etPlayLabel'); if(pl) pl.textContent='Play the mode';
+    return;
+  }
   etList = etMode==='interval'?ET_INTERVALS:ET_CHORDS;
   etCur = Math.floor(Math.random()*etList.length);
   etRoot = 55 + Math.floor(Math.random()*10);     // G3..E4, a comfortable range
@@ -2754,19 +2854,60 @@ function etAnswer(idx){
     fb.innerHTML = `${ok?'✓ Correct — ':'✗ It was '}<b>${it.name}</b><span class="et-tune">${it.tune}</span>`; }
   const sc=document.getElementById('etScore'); if(sc) sc.textContent=`Score ${etRight} / ${etTotal}`;
   const nx=document.getElementById('etNext'); if(nx) nx.hidden=false;
+
+  if(etMode==='mode'){
+    // The first event in this app that means a member KNEW something.
+    srRecord('mode:'+it.name.toLowerCase(), ok);
+    try{ sohPulse(ok?'mode-correct':'mode-wrong'); }catch(e){}
+    if(!ok){
+      /* Replay the RIGHT answer in sound. The category leader's most-named
+         flaw is giving no auditory feedback after an error — you are told
+         you were wrong about a sound, and never hear the sound. */
+      if(fb) fb.innerHTML += `<span class="et-tune">Listen again — this is ${it.name}.</span>`;
+      setTimeout(()=>{ if(etAnswered) etPlayMode(); }, 620);
+    }
+    const before=etRung, top=modeHighestUnlocked();
+    if(top>before && MODE_RUNGS[top]){
+      etBuildTabs();
+      try{ sohCelebrate({kicker:'Your ear', icon:'✦', title:MODE_RUNGS[top].t+' is open',
+        sub:'You’re hearing the difference. A new pair is waiting when you’re ready.'}); }catch(e){}
+    }
+  }
   buzz();
 }
 function etSetMode(mode){
   if(mode===etMode) return; etMode=mode;
-  document.querySelectorAll('.et-tab').forEach(t=>t.classList.toggle('on', t.dataset.etmode===mode));
-  etNewQuestion();
+  etBuildTabs(); etNewQuestion();
+}
+function etSetRung(i){
+  if(!modeRungUnlocked(i)) return;
+  etRung=i; etMode='mode'; etRight=0; etTotal=0;
+  const sc=document.getElementById('etScore'); if(sc) sc.textContent='Score 0 / 0';
+  etBuildTabs(); etNewQuestion(); buzz();
+}
+/* Tabs = the ladder. A locked rung is shown, not hidden: seeing what's next
+   is the point, and a lock is a promise rather than a punishment. */
+function etBuildTabs(){
+  const host=document.querySelector('.et-tabs'); if(!host) return;
+  const labs=(typeof sohLabs==='function')&&sohLabs();
+  let html=MODE_RUNGS.map((r,i)=>{ const open=modeRungUnlocked(i);
+    return `<button class="et-tab${etMode==='mode'&&etRung===i?' on':''}${open?'':' locked'}" data-rung="${i}"${open?'':' aria-disabled="true"'}>${open?'':'🔒 '}${r.t}</button>`; }).join('');
+  if(labs) html+=`<button class="et-tab${etMode==='interval'?' on':''}" data-etmode="interval">Intervals</button>`
+                +`<button class="et-tab${etMode==='chord'?' on':''}" data-etmode="chord">Chords</button>`;
+  host.innerHTML=html;
+  host.querySelectorAll('[data-rung]').forEach(t=>t.addEventListener('click',()=>etSetRung(+t.dataset.rung)));
+  host.querySelectorAll('[data-etmode]').forEach(t=>t.addEventListener('click',()=>etSetMode(t.dataset.etmode)));
+  const sub=document.getElementById('etRungSub');
+  if(sub){ const r=MODE_RUNGS[etRung];
+    sub.textContent = etMode==='mode' && r ? r.sub : '';
+    sub.hidden = etMode!=='mode'; }
 }
 function etEnter(){
   if(!_etBound){ _etBound=true;
     document.getElementById('etPlay')?.addEventListener('click',etPlay);
     document.getElementById('etReplay')?.addEventListener('click',etPlay);
     document.getElementById('etNext')?.addEventListener('click',etNewQuestion);
-    document.querySelectorAll('.et-tab').forEach(t=>t.addEventListener('click',()=>etSetMode(t.dataset.etmode)));
+    etRung=modeHighestUnlocked(); etBuildTabs();
   }
   etNewQuestion();
 }
@@ -3376,6 +3517,8 @@ function buildLearnHub(){
   const sT=(typeof SHAMAYIM_LEVELS!=='undefined')?SHAMAYIM_LEVELS.length:5;
   const cT=(typeof CHEN_MODULES!=='undefined')?CHEN_MODULES.length:6;
   const worlds=[
+    {v:'eartraining', n:'Which Mode?', d:'Hear the one note that changes', pct:null,
+      ic:'<path d="M4 13a8 8 0 0116 0v4a2 2 0 01-2 2h-1a1 1 0 01-1-1v-3a1 1 0 011-1h2M4 13v3a2 2 0 002 2h1a1 1 0 001-1v-3a1 1 0 00-1-1H4"/>'},
     {v:'modes', n:'Modes', d:'The modal wheel · 7 modes', pct:null,
       ic:'<circle cx="12" cy="6" r="2.4"/><circle cx="18" cy="15" r="2.4"/><circle cx="6" cy="15" r="2.4"/><path d="M12 8v4M10 14l-2.4 1M14 14l2.4 1"/>'},
     {v:'theory', n:'Music Theory', d:'Eleven units · certificates', pct:theoryPct,
@@ -3653,7 +3796,7 @@ function sohCheckMilestones(){
   }catch(e){}
 }
 const _TAB_PARENT={ modes:'learn-hub',learn:'learn-hub',theory:'learn-hub',jacob:'learn-hub',shamayim:'learn-hub',chen:'learn-hub',
-  practice:'tools',tuner:'tools',eartraining:'tools',rhythm:'tools',circle:'tools',sightread:'tools',drone:'tools',levers:'tools',scales:'tools',repertoire:'tools',
+  practice:'tools',tuner:'tools',eartraining:'learn-hub',rhythm:'tools',circle:'tools',sightread:'tools',drone:'tools',levers:'tools',scales:'tools',repertoire:'tools',
   tehillim:'spirit',meditation:'spirit',hebrew:'spirit',compass:'spirit',
   profile:'you',journal:'you',credits:'you' };
 
@@ -3775,8 +3918,12 @@ let srSkill = {};
 function srLoadSkill(){ try{ srSkill=JSON.parse(localStorage.getItem('soh-sr-skill'))||{}; }catch(e){ srSkill={}; } }
 function srSaveSkill(){ try{ localStorage.setItem('soh-sr-skill', JSON.stringify(srSkill)); }catch(e){} }
 function srNoteKey(n){ return n.letter + (n.name.length>1?n.name.slice(1):'') + n.octave; }
+/* The scheduler was keyed by note, so it could only ever schedule notes.
+   Item keys ('mode:dorian') let the same Leitner maths schedule a concept.
+   Note objects still work — every existing caller passes one. */
+function srKey(x){ return typeof x==='string' ? x : srNoteKey(x); }
 function srRecord(n, correct){
-  const k=srNoteKey(n); const s=srSkill[k]||{seen:0, ok:0, weak:0.5, due:0};
+  const k=srKey(n); const s=srSkill[k]||{seen:0, ok:0, weak:0.5, due:0};
   s.seen++;
   if(correct){ s.ok++; s.weak=Math.max(0, +(s.weak-0.34).toFixed(3)); s.due=Date.now()+(s.weak<0.2?864e5:18e5); }   // 1 day vs 30 min
   else { s.weak=Math.min(1, +(s.weak+0.5).toFixed(3)); s.due=Date.now(); }
@@ -3784,14 +3931,14 @@ function srRecord(n, correct){
 }
 function srPickWeighted(pool){
   const now=Date.now();
-  const w=pool.map(n=>{ const s=srSkill[srNoteKey(n)]; let x=1; if(s){ x+=2*s.weak; if(s.due&&s.due<=now) x+=1.5; } return x; });
+  const w=pool.map(n=>{ const s=srSkill[srKey(n)]; let x=1; if(s){ x+=2*s.weak; if(s.due&&s.due<=now) x+=1.5; } return x; });
   let tot=w.reduce((a,b)=>a+b,0), r=Math.random()*tot;
   for(let i=0;i<pool.length;i++){ r-=w[i]; if(r<=0) return pool[i]; }
   return pool[pool.length-1];
 }
 function srWeakestDue(pool){
   const now=Date.now(); let best=null, bw=0;
-  pool.forEach(n=>{ const s=srSkill[srNoteKey(n)]; if(s && s.weak>0.34){ const sc=s.weak+(s.due&&s.due<=now?0.5:0); if(sc>bw){ bw=sc; best=n; } } });
+  pool.forEach(n=>{ const s=srSkill[srKey(n)]; if(s && s.weak>0.34){ const sc=s.weak+(s.due&&s.due<=now?0.5:0); if(sc>bw){ bw=sc; best=n; } } });
   return best;
 }
 

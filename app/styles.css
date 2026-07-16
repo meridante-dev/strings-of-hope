@@ -424,9 +424,15 @@ body::before{
 .jrn-lyre{width:60px;height:60px;object-fit:contain;margin-bottom:10px;opacity:.92}
 .jrn-h1{font-family:"Playfair Display",serif;font-weight:600;font-size:34px;line-height:1.08;margin:6px 0 10px;color:var(--ink);letter-spacing:-0.02em}
 .jrn-q{font-family:"Playfair Display",serif;font-weight:600;font-size:30px;margin-bottom:16px;letter-spacing:-0.01em}
-.jrn-lead{font-family:"Cormorant Garamond",serif;font-size:20px;line-height:1.5;color:var(--ink-soft);max-width:330px;margin:10px auto 0;
-  font-weight:500}   /* Cormorant's hairline strokes halate on dark for aging eyes — medium weight on the espresso theme */
+.jrn-lead{font-family:"Cormorant Garamond",serif;font-size:20px;line-height:1.62;color:var(--ink-soft);max-width:330px;margin:10px auto 0;
+  font-weight:500;   /* Cormorant's hairline strokes halate on dark for aging eyes — medium weight on the espresso theme */
+  text-wrap:pretty}  /* progressive: kills widows/orphans where supported, ignored elsewhere */
 [data-theme="light"] .jrn-lead{ font-weight:400 }
+/* Prose rhythm — sohProse() sets each lesson as real paragraphs; this is the
+   space between them. Measured in em so it scales with the Text-size control. */
+.jrn-lead p{ margin:0 0 .78em }
+.jrn-lead p:last-child{ margin-bottom:0 }
+.jrn-lead p:first-child{ margin-top:0 }
 .jrn-lead.big{font-size:23px;color:var(--ink)}
 .jrn-lead em{color:var(--ink);font-style:italic}
 
@@ -1185,7 +1191,8 @@ footer .cc{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.32em;text-tr
 .lc-go{ color:var(--ink-faint);font-size:20px;font-weight:700 }
 
 /* lesson slide extras (reuses .jrn-slide / .jrn-lead) */
-.learn-h{ font-family:"Playfair Display",serif;font-size:25px;font-weight:600;color:var(--ink);letter-spacing:-.01em;margin:4px 0 2px }
+.learn-h{ font-family:"Playfair Display",serif;font-size:25px;font-weight:600;color:var(--ink);letter-spacing:-.01em;margin:4px 0 10px;
+  line-height:1.22;text-wrap:balance }   /* balance: even rag on 2-line headings; margin gives the title room to breathe off the body */
 .jrn-slide:not(.center) .learn-h{ text-align:center }
 .learn-meta,.learn-harp{ font-size:13.5px;line-height:1.5;color:var(--ink-soft);margin-top:10px;
   background:var(--surface-2);border:1px solid var(--line);border-radius:13px;padding:11px 14px }
@@ -1322,7 +1329,8 @@ body.cert-open{ overflow:hidden }
 .thy-harp-l{ display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.1em;
   text-transform:uppercase;color:var(--gold-deep);margin-bottom:5px }
 .thy-harp-i{ font-size:14px;line-height:1 }
-.thy-harp p{ margin:0;font-size:15px;line-height:1.62;color:var(--ink-soft) }
+.thy-harp p{ margin:0 0 .6em;font-size:15px;line-height:1.62;color:var(--ink-soft);text-wrap:pretty }
+.thy-harp p:last-child{ margin-bottom:0 }
 /* Hear it — playable demos inside theory lessons */
 .thy-hear{ display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:32rem;margin:14px auto 0;text-align:left }
 .thy-hear-k{ flex:0 0 100%;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep) }
@@ -1338,15 +1346,16 @@ body.cert-open{ overflow:hidden }
 .thy-quiz-sub{ text-align:center;font-size:14.5px;color:var(--ink-faint);margin:0 0 16px }
 .thy-quiz{ text-align:left;max-width:32rem;margin:0 auto;display:flex;flex-direction:column;gap:12px }
 .thy-q{ padding:13px 15px;border-radius:14px;background:var(--surface);border:1px solid var(--line) }
-.thy-q-q{ margin:0 0 9px;font-size:14.5px;line-height:1.5;font-weight:600;color:var(--ink);display:flex;gap:9px;align-items:flex-start }
+.thy-q-q{ margin:0 0 10px;font-size:16px;line-height:1.55;font-weight:600;color:var(--ink);display:flex;gap:9px;align-items:flex-start }
 .thy-q-n{ flex:0 0 auto;width:21px;height:21px;border-radius:7px;display:grid;place-items:center;font-size:11px;font-weight:800;
   color:var(--gold-deep);background:color-mix(in srgb,var(--gold) 14%,transparent);margin-top:1px }
-.thy-q-rev{ font:inherit;font-size:12px;font-weight:700;color:var(--gold-deep);cursor:pointer;
+.thy-q-rev{ font:inherit;font-size:13px;font-weight:700;color:var(--gold-deep);cursor:pointer;
   background:color-mix(in srgb,var(--gold) 10%,transparent);border:1px solid color-mix(in srgb,var(--gold) 26%,var(--line));
   border-radius:999px;padding:5px 13px }
 .thy-q-rev.on{ background:color-mix(in srgb,var(--gold) 18%,transparent) }
-.thy-q-a{ margin:10px 0 0;font-size:13.5px;line-height:1.6;color:var(--ink-soft);
-  padding-top:10px;border-top:1px dashed var(--line) }
+.thy-q-a{ margin:10px 0 0;font-size:15.5px;line-height:1.62;color:var(--ink-soft);
+  padding-top:10px;border-top:1px dashed var(--line);text-wrap:pretty }
+.thy-q-a p{ margin:0 0 .6em } .thy-q-a p:last-child{ margin-bottom:0 }
 
 /* keep lesson CTAs clear of the fixed Back/Next bar */
 #theoryStage, #learnStage{ padding-bottom:calc(104px + env(safe-area-inset-bottom)) }
@@ -1573,7 +1582,8 @@ body.cert-open{ overflow:hidden }
 .shy-body{ padding:20px 18px 8px;max-width:34rem;margin:0 auto }
 .shy-sub2{ font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px }
 .shy-lead-big{ font-family:"Playfair Display",serif;font-size:20px;line-height:1.5;color:var(--ink);margin:0 0 16px }
-.shy-prose{ font-size:15px;line-height:1.72;color:var(--ink-soft);margin:0 0 15px }
+.shy-prose{ font-size:16px;line-height:1.72;color:var(--ink-soft);margin:0 0 15px;text-wrap:pretty }
+.shy-prose p{ margin:0 0 .7em } .shy-prose p:last-child{ margin-bottom:0 }
 .shy-prose b{ color:var(--ink);font-weight:700 }
 .shy-resonance{ font-style:italic;font-size:16px;line-height:1.7;color:var(--ink);text-align:center;margin:20px auto;padding:0 8px;max-width:28rem }
 .shy-resonance::before,.shy-resonance::after{ content:"·  ·  ·";display:block;color:var(--gold-deep);font-style:normal;letter-spacing:.3em;opacity:.6;margin:8px 0 }
@@ -1585,7 +1595,7 @@ body.cert-open{ overflow:hidden }
 .shy-verse-ref{ font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);margin-top:9px }
 
 .shy-card2{ margin:16px 0;padding:15px 16px;border-radius:15px;border:1px solid var(--line) }
-.shy-card2 p{ font-size:14px;line-height:1.65;color:var(--ink-soft);margin:0 } .shy-card2 p b{ color:var(--ink) }
+.shy-card2 p{ font-size:15px;line-height:1.65;color:var(--ink-soft);margin:0 0 .6em;text-wrap:pretty } .shy-card2 p:last-child{ margin-bottom:0 } .shy-card2 p b{ color:var(--ink) }
 .shy-card-k{ display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px }
 .shy-card-i{ font-size:13px }
 .shy-card-src{ font-size:10.5px;font-style:italic;line-height:1.4;color:var(--ink-faint);margin-top:9px;padding-top:8px;border-top:1px solid var(--line) }
@@ -1639,11 +1649,14 @@ body.cert-open{ overflow:hidden }
 .chen-hero-t{ font-family:"Playfair Display",serif;font-size:27px;font-weight:600;margin-top:2px }
 .chen-body{ padding:20px 18px 8px;max-width:34rem;margin:0 auto }
 .chen-lead-big{ font-family:"Playfair Display",serif;font-size:19px;line-height:1.5;color:var(--ink);margin:0 0 16px }
-.chen-prose{ font-size:15px;line-height:1.72;color:var(--ink-soft);margin:0 0 15px } .chen-prose b{ color:var(--ink);font-weight:700 }
+.chen-prose{ font-size:16px;line-height:1.72;color:var(--ink-soft);margin:0 0 15px;text-wrap:pretty } .chen-prose b{ color:var(--ink);font-weight:700 }
+.chen-prose p{ margin:0 0 .7em } .chen-prose p:last-child{ margin-bottom:0 }
 .chen-teach{ display:flex;gap:12px;align-items:flex-start;margin:16px 0;padding:14px 16px;border-radius:15px;
   background:color-mix(in srgb,var(--gold) 9%,transparent);border:1px solid var(--line);border-left:2px solid var(--gold-deep) }
 .chen-teach-i{ flex:0 0 auto;font-family:'ShlomoStam',serif;font-size:22px;color:var(--gold-deep);line-height:1 }
-.chen-teach p{ font-size:14px;line-height:1.6;color:var(--ink);margin:0;font-weight:500 }
+.chen-teach p{ font-size:15px;line-height:1.6;color:var(--ink);margin:0 0 .6em;font-weight:500;text-wrap:pretty }
+.chen-teach p:last-child{ margin-bottom:0 }
+.chen-teach-t{ flex:1;min-width:0 }
 .chen-quote{ margin:18px 0;padding-left:14px;border-left:2px solid var(--gold-deep);font-family:"Playfair Display",serif;font-style:italic;font-size:17px;line-height:1.5;color:var(--ink) }
 .chen-quote cite{ display:block;font-family:var(--sans,sans-serif);font-style:normal;font-size:12px;color:var(--ink-faint);margin-top:8px }
 .chen-resonance{ font-style:italic;font-size:16px;line-height:1.7;color:var(--ink);text-align:center;margin:22px auto;max-width:28rem }

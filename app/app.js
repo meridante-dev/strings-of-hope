@@ -2210,6 +2210,71 @@ function openChapter(ci){
   document.getElementById('learnProgress').innerHTML=learnLessons.map(()=>'<span class="jdot"></span>').join('');
   renderLesson(0); window.scrollTo(0,0); buzz();
 }
+/* ============================================================
+   PROSE — set the teaching text like a book page, not a wall.
+   Every lesson is authored as ONE flowing string (median 450 chars ≈ 11
+   lines on a phone, up to 17). Rather than re-author 298 lessons, we set
+   them at render time: split into paragraphs at sentence boundaries.
+
+   Guarantees (verified over all 596 strings by tools/prose-test):
+   · tag-aware — never cuts inside <b>/<i>, so markup can't be orphaned;
+   · text-preserving — output text is identical to input, whitespace aside;
+   · conservative — anything the author already formatted, or anything
+     short, is passed through untouched.
+   ============================================================ */
+const PROSE_TAGCH='\u0001';   // stand-in for tag chars: keeps mask length == source length
+const PROSE_ABBR=/(?:\b(?:e\.g|i\.e|etc|vs|cf|approx|ca|Mr|Mrs|Ms|Dr|St|No|Op|Fig|Ex|vol|pp|p)\.)$/i;
+function proseSentences(s){
+  // Mask tag characters so every index still maps 1:1 onto the source,
+  // and record nesting depth per character (splits only allowed at depth 0).
+  const n=s.length, mask=new Array(n), depth=new Array(n);
+  let d=0, i=0;
+  while(i<n){
+    if(s[i]==='<'){
+      let e=s.indexOf('>',i); if(e<0) e=n-1;
+      const tag=s.slice(i,e+1);
+      const close=/^<\s*\//.test(tag);
+      const self=/\/\s*>$/.test(tag)||/^<\s*(br|hr|img|wbr)\b/i.test(tag);
+      if(!close && !self) d++;
+      for(let k=i;k<=e;k++){ mask[k]=PROSE_TAGCH; depth[k]=d; }
+      if(close) d=Math.max(0,d-1);
+      i=e+1; continue;
+    }
+    mask[i]=s[i]; depth[i]=d; i++;
+  }
+  const m=mask.join(''), cuts=[], re=/[.!?][”’"')\]]*/g;
+  let mm;
+  while((mm=re.exec(m))){
+    if(depth[mm.index]!==0) continue;                        // inside <b>…</b> — not a boundary
+    const j=mm.index+mm[0].length;
+    const ws=/^\s+/.exec(m.slice(j)); if(!ws) continue;      // must be followed by a space
+    const after=m[j+ws[0].length];
+    if(!after || !/[A-Z“‘(]/.test(after)) continue;          // …and then a new sentence
+    if(PROSE_ABBR.test(m.slice(0,j).split(PROSE_TAGCH).join(''))) continue;   // "e.g." / "No." etc.
+    cuts.push({end:j, next:j+ws[0].length});
+  }
+  const out=[]; let start=0;
+  cuts.forEach(c=>{ out.push(s.slice(start,c.end)); start=c.next; });
+  const tail=s.slice(start); if(tail.trim()) out.push(tail);
+  return out;
+}
+function sohProse(html){
+  const s=String(html==null?'':html).trim();
+  if(!s) return '';
+  if(/<\s*(p|br|ul|ol|li|blockquote|h[1-6])\b/i.test(s)) return s;      // already set by hand
+  const plain=s.replace(/<[^>]+>/g,'');
+  if(plain.length<240) return '<p>'+s+'</p>';                          // short — one paragraph is right
+  const sents=proseSentences(s);
+  if(sents.length<3) return '<p>'+s+'</p>';
+  const paras=[]; let cur=[], len=0;
+  sents.forEach(x=>{ cur.push(x.trim()); len+=x.replace(/<[^>]+>/g,'').length;
+    if(cur.length>=2 && len>=190){ paras.push(cur.join(' ')); cur=[]; len=0; } });
+  if(cur.length){ if(paras.length && len<80) paras[paras.length-1]+=' '+cur.join(' ');   // no orphan tail
+                  else paras.push(cur.join(' ')); }
+  if(paras.length<2) return '<p>'+s+'</p>';
+  return '<p>'+paras.join('</p><p>')+'</p>';
+}
+
 function renderLesson(dir){
   const L=learnLessons[learnLi], stage=document.getElementById('learnStage'); if(!L||!stage) return;
   const hasFlower=(L.flower!=null);
@@ -2221,7 +2286,7 @@ function renderLesson(dir){
   stage.innerHTML=`<div class="jrn-slide ${hasFlower?'':'center'}" ${hasFlower?`style="--c:var(${VAR[L.flower]})"`:''}>
     ${hasFlower?flowerSVG(L.flower):''}
     ${L.h?`<h2 class="learn-h">${L.h}</h2>`:''}
-    <p class="jrn-lead">${L.body}</p>${extra}${action}</div>`;
+    <div class="jrn-lead">${sohProse(L.body)}</div>${extra}${action}</div>`;
   const slide=stage.firstElementChild; if(slide){ slide.classList.add('jrn-in'); if(dir===1)slide.classList.add('from-right'); else if(dir===-1)slide.classList.add('from-left'); }
   document.querySelectorAll('#learnProgress .jdot').forEach((d,i)=>d.classList.toggle('on',i===learnLi));
   document.getElementById('learnBack').textContent = learnLi===0 ? '‹ Chapters' : '‹ Back';
@@ -2397,13 +2462,13 @@ function openTheoryChapter(ui,ci){
   renderTheoryLesson(0); window.scrollTo(0,0); buzz();
 }
 function theoryHarpHTML(text){
-  return `<div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div><p>${text}</p></div>`;
+  return `<div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div>${sohProse(text)}</div>`;
 }
 function theoryQuizHTML(quiz){
   const items=quiz.map((q,i)=>`<div class="thy-q">
     <p class="thy-q-q"><span class="thy-q-n">${i+1}</span>${q.q}</p>
     <button class="thy-q-rev" data-qi="${i}">Show answer</button>
-    <p class="thy-q-a" hidden>${q.a}</p></div>`).join('');
+    <div class="thy-q-a" hidden>${sohProse(q.a)}</div></div>`).join('');
   return `<div class="thy-quiz">${items}</div>`;
 }
 /* ============================================================
@@ -2460,7 +2525,7 @@ function renderTheoryLesson(dir){
     inner = `${L.h?`<h2 class="learn-h">${L.h}</h2>`:''}
       ${visual?`<div class="thy-visual">${visual}</div>`:''}
       ${staff}
-      <p class="jrn-lead thy-body">${L.body}</p>
+      <div class="jrn-lead thy-body">${sohProse(L.body)}</div>
       ${L.harp?theoryHarpHTML(L.harp):''}
       ${hear}
       ${action}`;
@@ -2726,7 +2791,7 @@ function jacobLibraryHTML(){
     <p class="ju-lib-intro">${JACOB_LIBRARY.intro}</p></div>${groups}</div>`;
 }
 /* --- shared render helpers (used by single-page & stepped modules) --- */
-function jacobHarpHTML(t){ return `<div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div><p>${t}</p></div>`; }
+function jacobHarpHTML(t){ return `<div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div>${sohProse(t)}</div>`; }
 function jacobToyHTML(m){ return m.toy==='oneNote'?jacobOneNoteHTML():m.toy==='mirror'?jacobMirrorHTML():m.toy==='arrivals'?jacobArrivalsHTML():m.toy==='reharm'?jacobReharmHTML():''; }
 function jacobBindToy(m){ if(m.toy==='oneNote') jacobBindOneNote(); else if(m.toy==='mirror') jacobBindMirror(); else if(m.toy==='arrivals') jacobBindArrivals(); else if(m.toy==='reharm') jacobBindReharm(); }
 function jacobLinksHTML(m){ const links=(m.links||[]).map(l=>`<a class="ju-link" href="${l.url}" target="_blank" rel="noopener noreferrer">▶ ${l.label}</a>`).join('');
@@ -2756,7 +2821,7 @@ function jacobRenderSingle(m){
   stage.innerHTML=`<div class="ju-slide jrn-in">
     <div class="ju-crumb">${m.kicker||'Module '+m.n}</div>
     <h2 class="learn-h">${m.title}</h2>
-    <p class="jrn-lead ju-idea">${m.idea}</p>
+    <div class="jrn-lead ju-idea">${sohProse(m.idea)}</div>
     ${jacobHarpHTML(m.harp)}
     ${m.note?`<div class="ju-note"><span class="ju-note-k">Roots</span> ${m.note}</div>`:''}
     ${jacobToyHTML(m)}
@@ -2772,10 +2837,10 @@ function jacobRenderStep(i){
   const dots=_juSteps.map((_,k)=>`<span class="jdot${k===_juStep?' on':''}${k<_juStep?' seen':''}"></span>`).join('');
   let body='';
   if(s.kind==='intro'){
-    body=`<h2 class="learn-h">${m.title}</h2><p class="jrn-lead ju-idea">${m.idea}</p>${jacobHarpHTML(m.harp)}${m.note?`<div class="ju-note"><span class="ju-note-k">Roots</span> ${m.note}</div>`:''}`;
+    body=`<h2 class="learn-h">${m.title}</h2><div class="jrn-lead ju-idea">${sohProse(m.idea)}</div>${jacobHarpHTML(m.harp)}${m.note?`<div class="ju-note"><span class="ju-note-k">Roots</span> ${m.note}</div>`:''}`;
   } else if(s.kind==='lesson'){
     const L=s.L;
-    body=`<div class="ju-step-k">${L.kick||'Learn'}</div><h2 class="learn-h">${L.h}</h2><p class="jrn-lead ju-idea">${L.body}</p>${L.harp?jacobHarpHTML(L.harp):''}`;
+    body=`<div class="ju-step-k">${L.kick||'Learn'}</div><h2 class="learn-h">${L.h}</h2><div class="jrn-lead ju-idea">${sohProse(L.body)}</div>${L.harp?jacobHarpHTML(L.harp):''}`;
   } else {
     body=`<div class="ju-step-k">Practice &amp; explore</div><h2 class="learn-h">Put it under your hands</h2>${jacobToyHTML(m)}${jacobLinksHTML(m)}${jacobDeeperHTML(m)}${jacobQuizHTML(m.n)}`;
   }
@@ -3023,11 +3088,11 @@ function buildShamayim(){
 }
 function shyBlockHTML(b){
   if(b.k==='lead') return `<p class="shy-lead-big">${b.text}</p>`;
-  if(b.k==='prose') return `<p class="shy-prose">${b.text}</p>`;
+  if(b.k==='prose') return `<div class="shy-prose">${sohProse(b.text)}</div>`;
   if(b.k==='resonance') return `<p class="shy-resonance">${b.text}</p>`;
   if(b.k==='scripture') return `<div class="shy-verse">${b.heb?`<div class="shy-verse-heb">${b.heb}</div>`:''}<p class="shy-verse-en">${b.text}</p><div class="shy-verse-ref">${b.ref}</div></div>`;
-  if(b.k==='science') return `<div class="shy-card2 shy-science"><div class="shy-card-k"><span class="shy-card-i">✦</span>${b.h}</div><p>${b.text}</p>${b.src?`<div class="shy-card-src">${b.src}</div>`:''}</div>`;
-  if(b.k==='tradition') return `<div class="shy-card2 shy-tradition"><div class="shy-card-k"><span class="shy-card-i">✡</span>${b.h}</div><p>${b.text}</p></div>`;
+  if(b.k==='science') return `<div class="shy-card2 shy-science"><div class="shy-card-k"><span class="shy-card-i">✦</span>${b.h}</div>${sohProse(b.text)}${b.src?`<div class="shy-card-src">${b.src}</div>`:''}</div>`;
+  if(b.k==='tradition') return `<div class="shy-card2 shy-tradition"><div class="shy-card-k"><span class="shy-card-i">✡</span>${b.h}</div>${sohProse(b.text)}</div>`;
   if(b.k==='quote') return `<blockquote class="shy-quote">${b.text}${b.by?`<cite>— ${b.by}</cite>`:''}</blockquote>`;
   return '';
 }
@@ -3125,11 +3190,11 @@ function chenBindRetro(){
 }
 function chenBlockHTML(b){
   if(b.k==='lead') return `<p class="chen-lead-big">${b.text}</p>`;
-  if(b.k==='prose') return `<p class="chen-prose">${b.text}</p>`;
-  if(b.k==='teaching') return `<div class="chen-teach"><span class="chen-teach-i">חן</span><p>${b.text}</p></div>`;
+  if(b.k==='prose') return `<div class="chen-prose">${sohProse(b.text)}</div>`;
+  if(b.k==='teaching') return `<div class="chen-teach"><span class="chen-teach-i">חן</span><div class="chen-teach-t">${sohProse(b.text)}</div></div>`;
   if(b.k==='quote') return `<blockquote class="chen-quote">${b.text}${b.by?`<cite>${b.by}</cite>`:''}</blockquote>`;
-  if(b.k==='harp') return `<div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div><p>${b.text}</p></div>`;
-  if(b.k==='science') return `<div class="shy-card2 shy-science"><div class="shy-card-k"><span class="shy-card-i">✦</span>${b.h}</div><p>${b.text}</p>${b.src?`<div class="shy-card-src">${b.src}</div>`:''}</div>`;
+  if(b.k==='harp') return `<div class="thy-harp"><div class="thy-harp-l"><span class="thy-harp-i">⇪</span> On your lever harp</div>${sohProse(b.text)}</div>`;
+  if(b.k==='science') return `<div class="shy-card2 shy-science"><div class="shy-card-k"><span class="shy-card-i">✦</span>${b.h}</div>${sohProse(b.text)}${b.src?`<div class="shy-card-src">${b.src}</div>`:''}</div>`;
   if(b.k==='resonance') return `<p class="chen-resonance">${b.text}</p>`;
   if(b.k==='toy') return b.toy==='octatonic'?chenOctatonicHTML():b.toy==='retro'?chenRetroHTML():'';
   return '';

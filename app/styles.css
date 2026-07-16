@@ -137,6 +137,20 @@ body::before{
 .hh-title{font-family:"Cinzel",serif;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px}
 .hh-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:5px 0}
 .hh-base{font-family:"Playfair Display",serif;font-weight:600;font-size:15px}
+/* the wedge card: your harp, your tuning, the one lever that changes the colour */
+.hh-harp{ float:none;margin-left:6px;font-family:inherit;letter-spacing:.08em;color:var(--ink-faint);text-transform:none;font-size:9.5px }
+.hh-mode{ font-family:"Playfair Display",serif;font-weight:600;font-size:16px;color:var(--ink) }
+.hh-state{ font-size:13.5px }
+.hh-moves{ margin-top:11px;padding-top:11px;border-top:1px dashed var(--line-2) }
+.hh-sub{ font-size:12px;line-height:1.5;color:var(--ink-faint);margin-bottom:9px;text-wrap:pretty }
+.hh-move{ display:flex;align-items:baseline;gap:9px;padding:6px 0 }
+.hh-arrow{ flex:0 0 auto;width:17px;text-align:center;color:var(--ink-faint);font-weight:700 }
+.hh-move.one .hh-arrow{ color:var(--gold-deep) }
+.hh-mv-t{ flex:0 0 auto;font-size:14px;color:var(--ink) }
+.hh-mv-l{ font-size:11px;color:var(--ink-faint);margin-left:3px }
+.hh-mv-a{ flex:1;text-align:right;font-size:13px;color:var(--ink-soft) }
+.hh-mv-a b{ color:var(--gold-deep) }
+.hh-move.gone{ opacity:.62 } .hh-off{ font-style:italic;color:var(--ink-faint) }
 .hh-state{font-size:13px;color:var(--ink-soft)}
 .hh-state b{color:var(--gold-deep);font-weight:700}
 .hh-row.off .hh-state{color:var(--ink-faint);font-style:italic}

@@ -179,7 +179,7 @@ function buildScaleContext(keyName, world){
     const third=mf[2], fifth=mf[4];
     const q = (third===4&&fifth===7)?'':(third===3&&fifth===7)?'m':(third===3&&fifth===6)?'°':(third===4&&fifth===8)?'+':(third===4&&fifth===6)?'(♭5)':'';
     const chordNotes=[parentNotes[mi],parentNotes[(mi+2)%7],parentNotes[(mi+4)%7]];
-    return { name:m.name, mood:m.mood, root:parentNotes[mi], rootIndex:mi,
+    return { name:m.name, mood:m.mood, root:parentNotes[mi], rootIndex:mi, formula:mf,
              ref:maj3?'major':'minor', character, notes:mf.map((_,j)=>parentNotes[(mi+j)%7]),
              chord:parentNotes[mi]+q, chordNotes };
   });
@@ -194,18 +194,90 @@ function rebuildModes(keepMode){
   setMode(activeMode, false);
 }
 
-/* is the current scale playable on an E♭ / C lever harp, and with which levers? */
+/* ============================================================
+   ON YOUR HARP — the wedge, made physical (Stage 2)
+   A guitarist changes mode by moving their hand. A harpist flips ONE lever:
+   the tonic stays under the same fingers and the colour changes underneath.
+   No piano or guitar app can model that, and levers only ever SHARPEN — a
+   reachability constraint that exists on no other instrument.
+
+   This card used to key off mwKey/mwWorld — the PARENT — so its answer for
+   D Dorian and C Ionian was identical. That answer isn't false (they really
+   are the same seven strings), it is the RELATIVE method restated, which is
+   the direct cause of every-mode-sounds-the-same. It also rendered both E♭
+   and C rows unconditionally, though onboarding asks your tuning, and it was
+   called from rebuildModes() alone — never from setMode() — so the only
+   harp-specific thing on screen sat frozen while you explored.
+
+   Now: bound to the ACTIVE mode, set for YOUR harp, and showing the parallel
+   one-lever neighbours on the SAME tonic — Simcha's method, physically.
+   ============================================================ */
+const MODE_BRIGHTNESS=['Lydian','Ionian','Mixolydian','Dorian','Aeolian','Phrygian','Locrian'];
+function hhBase(){ return (typeof tuneBase!=='undefined' && tuneBase==='C') ? 'C' : 'E♭'; }
+function hhHarpLabel(){
+  try{ const h=sohActiveHarp(); if(h) return sohHarpLabel(h.type)+' · '; }catch(e){}
+  return '';
+}
+/* What physically changes between two modes on the same tonic. Derived by
+   computing both scales and diffing the lever sets — never assumed, so a
+   move that the harp cannot reach reports itself instead of lying. */
+function hhLeverMove(base, root, fromF, toF){
+  const a=computeScale(base, root, {formula:fromF, cat:'major', name:'from'});
+  const b=computeScale(base, root, {formula:toF,   cat:'major', name:'to'});
+  if(!a) return null;
+  // Levers only SHARPEN. A move that needs a string lowered below its base
+  // tuning is physically impossible on this harp — that constraint exists on
+  // no other instrument, so name it rather than quietly dropping the row.
+  if(!b) return { unreachable:true };
+  const A=new Set(a.leversUp), B=new Set(b.leversUp);
+  const up=[...B].filter(x=>!A.has(x)), down=[...A].filter(x=>!B.has(x));
+  return { up, down, one:(up.length+down.length)===1 };
+}
+let _hhBuilt=false;
+function harpHintHTML(){
+  const m=scaleCtx&&scaleCtx.modes&&scaleCtx.modes[activeMode];
+  if(!m) return '';
+  const base=hhBase();
+  const cur=computeScale(base, m.root, {formula:m.formula, cat:mwWorld.key, name:m.name});
+  const head=`<div class="hh-title">On your harp <span class="hh-harp">${hhHarpLabel()}${base} tuning</span></div>`;
+  if(!cur){
+    const other=base==='C'?'E♭':'C';
+    const alt=computeScale(other, m.root, {formula:m.formula, cat:mwWorld.key, name:m.name});
+    return head+`<div class="hh-row off"><span class="hh-mode">${m.root} ${m.name}</span>
+      <span class="hh-state">needs a retune${alt?` — reachable on an ${other} harp`:''}</span></div>`;
+  }
+  const up=cur.leversUp.length?cur.leversUp.join(' · '):'none — all levers down';
+  let html=head+`<div class="hh-row"><span class="hh-mode">${m.root} ${m.name}</span>
+    <span class="hh-state">levers up: <b>${up}</b></span></div>`;
+
+  // The one-lever neighbours, same tonic — only the seven church modes sit on
+  // a brightness ladder, so this is the major world's move.
+  const bi=MODE_BRIGHTNESS.indexOf(m.name);
+  if(mwWorld.key==='major' && bi>=0){
+    const rows=[];
+    [[bi-1,'Brighter','↑'],[bi+1,'Darker','↓']].forEach(([ni,label,arrow])=>{
+      const nb=MODE_BRIGHTNESS[ni]; if(!nb) return;
+      const mv=hhLeverMove(base, m.root, m.formula, modeSemis(nb));
+      if(!mv) return;
+      const act = mv.unreachable ? `<span class="hh-off">out of reach on a ${base} harp — levers only raise</span>`
+                : mv.up.length ? `raise the <b>${mv.up.join(' · ')}</b> lever${mv.up.length>1?'s':''}`
+                : mv.down.length ? `lower the <b>${mv.down.join(' · ')}</b> lever${mv.down.length>1?'s':''}`
+                : 'nothing changes';
+      rows.push(`<div class="hh-move${mv.one?' one':''}${mv.unreachable?' gone':''}"><span class="hh-arrow">${arrow}</span>
+        <span class="hh-mv-t"><b>${m.root} ${nb}</b> <span class="hh-mv-l">${label}</span></span>
+        <span class="hh-mv-a">${act}</span></div>`);
+    });
+    if(rows.length) html+=`<div class="hh-moves"><div class="hh-sub">One lever away — the tonic stays under your fingers, the colour changes underneath</div>${rows.join('')}</div>`;
+  }
+  return html;
+}
 function renderHarpHint(){
   const host=document.getElementById('harpHint'); if(!host) return;
-  const fam={formula:mwWorld.formula, cat:mwWorld.key, name:mwWorld.name};
-  const row=(base)=>{
-    const r=computeScale(base, mwKey, fam);
-    if(!r) return `<div class="hh-row off"><span class="hh-base">${base} harp</span><span class="hh-state">needs retuning</span></div>`;
-    const up=r.leversUp.length?r.leversUp.join(' · '):'none';
-    return `<div class="hh-row"><span class="hh-base">${base} harp</span><span class="hh-state">levers up: <b>${up}</b></span></div>`;
-  };
-  host.innerHTML = `<div class="harp-hint reveal"><div class="hh-title">On your harp</div>${row('E♭')}${row('C')}</div>`;
-  observeReveals(host); triggerReveals(host);
+  const inner=harpHintHTML();
+  const card=document.getElementById('hhCard');
+  if(_hhBuilt && card){ card.innerHTML=inner; return; }   // spin the wheel without re-flashing the card
+  host.innerHTML=`<div class="harp-hint reveal" id="hhCard">${inner}</div>`;
+  observeReveals(host); triggerReveals(host); _hhBuilt=true;
 }
 
 function buildKeyChips(){
@@ -252,6 +324,7 @@ function renderRing(){
 
 function setMode(i, animate){
   activeMode=i;
+  renderHarpHint();          // the lever card follows the mode — it used to sit frozen
   let target=-i*STEP;
   while(target-ringDeg> 180) target-=360;
   while(target-ringDeg<-180) target+=360;
@@ -1633,11 +1706,11 @@ function coachSend(text){
 let coachGreeted=false;
 function initCoach(){
   const host=document.getElementById('coachSuggest');
-  if(host){ host.innerHTML=''; ['What is the circle of fifths?','How do I play D Dorian?','How do harp harmonics work?','What should I practice today?','Explain key signatures on a lever harp','I want a Hebrew desert sound'].forEach(s=>{
+  if(host){ host.innerHTML=''; ['How do I play D Dorian?','Which lever changes the mode?','If I know C major, what else do I know?','How do harp harmonics work?','What should I practice today?','I want a Hebrew desert sound'].forEach(s=>{
     const b=document.createElement('button'); b.className='coach-sug'; b.textContent=s; b.addEventListener('click',()=>{ coachSend(s); buzz(); }); host.appendChild(b); }); }
   document.getElementById('coachSend')?.addEventListener('click',()=>coachSend(document.getElementById('coachInput').value));
   document.getElementById('coachInput')?.addEventListener('keydown',e=>{ if(e.key==='Enter') coachSend(e.target.value); });
-  if(!coachGreeted){ coachGreeted=true; renderCoachPair('', {text:`I’m <b>Harpie</b>, your AI harp coach — trained on this whole app: the full music-theory course, the seven modes, the Circle of Fifths, tuning & acoustics, ear training and every practice tool. Ask me a real question (“<em>what is a cadence?</em>”, “<em>how do I play D Dorian?</em>”), or tell me a <b>mood</b> or <b>session</b> — I’ll answer with precision, give you a learning pathway, an exercise, and open the right place to practise.`, actions:[]}); }
+  if(!coachGreeted){ coachGreeted=true; renderCoachPair('', {text:`I’m <b>Harpie</b>, your AI harp coach — trained on this whole app: the full music-theory course, the seven modes and Simcha’s way into them, tuning & acoustics, and every practice tool. Ask me a real question (“<em>what is a cadence?</em>”, “<em>how do I play D Dorian?</em>”), or tell me a <b>mood</b> or <b>session</b> — I’ll answer with precision, give you a learning pathway, an exercise, and open the right place to practise.`, actions:[]}); }
   coachInitAI();
 }
 
@@ -2629,13 +2702,16 @@ function theoryOpenByChapter(n){
 let circleSel={pos:0,mode:'maj'}, _circleBound=false;
 function buildCircle(){
   const host=document.getElementById('cofSvg'); if(!host || typeof CIRCLE_KEYS==='undefined') return;
-  const intro=document.getElementById('cofIntro'); if(intro) intro.textContent=CIRCLE_INTRO;
+  const intro=document.getElementById('cofIntro');
+  if(intro) intro.textContent = hhBase()==='C'
+    ? 'A map of every key. Your harp is tuned to C, so the keys it reaches are the sharp side — levers only raise. Tap any key for its lever recipe.'
+    : CIRCLE_INTRO;
   const cx=160, cy=160, rMaj=130, rMin=88;
   let nodes='';
   CIRCLE_KEYS.forEach(k=>{
     const ang=(-90 + k.pos*30)*Math.PI/180, c=Math.cos(ang), s=Math.sin(ang);
     const mx=cx+rMaj*c, my=cy+rMaj*s, ix=cx+rMin*c, iy=cy+rMin*s;
-    const base = k.reach ? 'reach' : 'dim';
+    const base = (computeScale(hhBase(), k.maj, {formula:[0,2,4,5,7,9,11], cat:'major', name:'Major'}) ? 'reach' : 'dim');
     nodes+=`<g class="cof-k ${base}${k.home?' home':''}" data-pos="${k.pos}" data-mode="maj"><circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="21"/><text x="${mx.toFixed(1)}" y="${my.toFixed(1)}">${k.maj}</text></g>`;
     nodes+=`<g class="cof-k min ${base}" data-pos="${k.pos}" data-mode="min"><circle cx="${ix.toFixed(1)}" cy="${iy.toFixed(1)}" r="15.5"/><text x="${ix.toFixed(1)}" y="${iy.toFixed(1)}">${k.min}</text></g>`;
   });
@@ -2664,15 +2740,29 @@ function renderCirclePanel(k,mode){
   const enh = k.enh ? ` <span class="cof-enh">= ${k.enh} ${isMin?'minor':'major'}</span>` : '';
   const chips = chords.map((c,i)=>`<div class="cof-ch"><span class="cof-rn">${rns[i]}</span><span class="cof-cn">${c}</span></div>`).join('');
   const links = (typeof CIRCLE_LINKS!=='undefined'?CIRCLE_LINKS:[]).map(l=>`<button class="cof-link" data-ch="${l.n}">${l.label} ›</button>`).join('');
-  const leverCls = k.reach ? 'cof-lever' : 'cof-lever off';
-  const leverLabel = k.reach ? (k.home?'⌂ Home tuning':'⇪ On your E♭-tuned harp') : '⊘ Outside the E♭ range';
+  /* The lever recipe is DERIVED for the member's own base tuning. The stored
+     k.lever/k.reach strings are absolute from E♭ ("Raise the A, E and B
+     levers"), so a member on a C harp was confidently told to raise levers
+     that are already natural. Same engine as the mode card, and it honours
+     partial-lever harps via HARP_NO_LEVERS. */
+  const cofBase = hhBase();
+  const cofSc = computeScale(cofBase, k.maj, {formula:[0,2,4,5,7,9,11], cat:'major', name:'Major'});
+  const cofReach = !!cofSc;
+  const cofUp = cofSc ? cofSc.leversUp : [];
+  const leverCls = cofReach ? 'cof-lever' : 'cof-lever off';
+  const leverLabel = cofReach ? (cofUp.length?`⇪ On your ${cofBase}-tuned harp`:'⌂ Home tuning — all levers down')
+                              : `⊘ Outside your ${cofBase} harp’s range`;
+  const leverTxt = cofReach
+    ? (cofUp.length ? `Raise the <b>${cofUp.join(' · ')}</b> lever${cofUp.length>1?'s':''} — everything else stays down.`
+                    : 'Every lever down. This is your harp’s home key.')
+    : `A ${cofBase}-tuned lever harp can’t reach ${k.maj} — levers only raise, so the flats it needs aren’t available without retuning.`;
   panel.innerHTML=`
     <div class="cof-head">
       <div class="cof-name">${name}${enh}</div>
       <button class="cof-partner" id="cofPartner">↔ ${partnerLabel}</button>
     </div>
     <div class="cof-sig">${k.acc}</div>
-    <div class="${leverCls}"><div class="cof-lever-l">${leverLabel}</div><p>${k.lever}</p></div>
+    <div class="${leverCls}"><div class="cof-lever-l">${leverLabel}</div><p>${leverTxt}</p></div>
     <div class="cof-sec-t">Diatonic chords${isMin?' (natural minor)':''}</div>
     <div class="cof-chords">${chips}</div>
     <div class="cof-actions">

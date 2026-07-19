@@ -2956,7 +2956,7 @@ const ET_INTERVALS = [
   {semi:1,  name:'Minor 2nd',   tune:'like the “Jaws” theme'},
   {semi:2,  name:'Major 2nd',   tune:'“Happy Birth-day…”'},
   {semi:3,  name:'Minor 3rd',   tune:'“Greensleeves”'},
-  {semi:4,  name:'Major 3rd',   tune:'“Do-Re-Mi” — “a female deer”'},
+  {semi:4,  name:'Major 3rd',   tune:'“Michael Row the Boat Ashore” (Mi-chael)'},
   {semi:5,  name:'Perfect 4th', tune:'“Here Comes the Bride”'},
   {semi:6,  name:'Tritone',     tune:'“Maria” / “The Simpsons”'},
   {semi:7,  name:'Perfect 5th', tune:'“Twinkle, Twinkle…”'},
@@ -3661,14 +3661,14 @@ const CREDITS = [
     {n:'Understanding Basic Music Theory — C. Schmidt-Jones', l:'CC BY-SA 4.0', d:'Adapted for the Science of Sound unit.'},
   ]},
   { t:'Fonts', items:[
-    {n:'ShlomoStam (Hebrew Torah script)', l:'SIL Open Font License', d:'Bundled and used for Hebrew scripture.'},
+    {n:'Ezra SIL — Biblical Hebrew type', l:'SIL OFL 1.1', d:'© SIL International, Reserved Font Names “SIL” and “Ezra.” Bundled to display Hebrew scripture with full vowels and cantillation. Full licence: fonts/OFL.txt.'},
     {n:'Playfair Display · Cormorant Garamond · Cinzel', l:'SIL Open Font License', d:'Served from Google Fonts.'},
   ]},
   { t:'Open-source libraries', items:[
     {n:'VexFlow', l:'MIT', d:'Music notation rendering.'},
     {n:'OpenSheetMusicDisplay', l:'BSD-3-Clause', d:'Score display.'},
     {n:'pitchy', l:'0BSD', d:'Pitch detection for the ear-training & tuner tools.'},
-    {n:'fft.js', l:'MIT', d:'Fast Fourier transform utility.'},
+    {n:'fft.js', l:'MIT', d:'Fast Fourier transform utility. Full licence texts for all four libraries: vendor/LICENSES.txt.'},
   ]},
   { t:'Teaching sources — cited, never reproduced', items:[
     {n:'Jacob Collier’s masterclasses & interviews', l:'Link-out', d:'Every concept is taught in our own words with links to the original videos; no transcripts or footage are hosted.'},

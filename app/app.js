@@ -1433,6 +1433,81 @@ function journalStats(){
   const top=(k)=>{ const m={}; journal.forEach(e=>{ if(e[k]) m[e[k]]=(m[e[k]]||0)+1; }); let b=null; for(const x in m){ if(!b||m[x]>b.n) b={k:x,n:m[x]}; } return b; };
   return {sessions, totalMin, streak, topMode:top('mode'), topGroove:top('groove')};
 }
+/* ============================================================
+   CONSISTENCY — the daily glance (the home-screen "widget", in a PWA)
+   Built entirely from soh-journal, which already records every day you
+   practise. Matches journalStats()'s UTC day-key exactly so the streak
+   pill and this heatmap can never disagree at a timezone edge.
+   ============================================================ */
+function sohConsistency(weeks){
+  weeks = weeks || 12;
+  const fmt = d => d.toISOString().slice(0,10);         // same key as journalStats()
+  const hit = {}, mins = {};                            // hit = day has a session; mins = minutes (intensity only)
+  (journal||[]).forEach(e=>{ const k=(e.date||'').slice(0,10); if(!k) return; hit[k]=true; mins[k]=(mins[k]||0)+(e.minutes||0); });
+
+  // current streak — identical rule to journalStats (attendance, not minutes)
+  const dayKeys = Object.keys(hit).sort().reverse();
+  let current = 0;
+  if(dayKeys.length){ let cur=new Date(); if(dayKeys[0]!==fmt(cur)) cur.setDate(cur.getDate()-1);
+    while(hit[fmt(cur)]){ current++; cur.setDate(cur.getDate()-1); } }
+
+  // best streak ever — longest run of consecutive attended days
+  let best=0; const asc=Object.keys(hit).sort();
+  for(let i=0;i<asc.length;i++){ let run=1, d=new Date(asc[i]);
+    while(true){ d.setDate(d.getDate()+1); if(hit[fmt(d)]) run++; else break; }
+    if(run>best) best=run; }
+  best=Math.max(best,current);
+
+  // grid: `weeks` columns × 7 rows (Sun..Sat), most recent week on the right.
+  // All day math is UTC ISO-string arithmetic so it can't drift vs fmt().
+  const addDays=(iso,n)=>{ const d=new Date(iso+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10); };
+  const todayKey=fmt(new Date());
+  const todayDow=new Date(todayKey+'T00:00:00Z').getUTCDay();
+  const wkStart=addDays(todayKey, -todayDow);                 // Sunday of the current week
+  const gridStart=addDays(wkStart, -(weeks-1)*7);            // Sunday of the earliest visible week
+  const grid=[]; let thisWeek=0;
+  for(let w=0; w<weeks; w++){
+    const col=[];
+    for(let d0=0; d0<7; d0++){
+      const k=addDays(gridStart, w*7+d0), on=!!hit[k], m=mins[k]||0, future=k>todayKey;
+      const lvl = future ? -2 : !on ? -1 : m<10?0 : m<20?1 : m<40?2 : 3;   // attended 0-3 by minutes; -1 none; -2 future
+      col.push({k, m, lvl, future, today:k===todayKey});
+      if(on && k>=wkStart && !future) thisWeek++;
+    }
+    grid.push(col);
+  }
+  return { grid, current, best, thisWeek, daysPractised:Object.keys(hit).length,
+    totalMin:(journal||[]).reduce((a,e)=>a+(e.minutes||0),0) };
+}
+
+function buildConsistency(){
+  const host=document.getElementById('homeConsistency'); if(!host) return;
+  const c=sohConsistency(12);
+  if(c.daysPractised===0){
+    host.innerHTML=`<div class="cons-card reveal empty">
+      <div class="cons-empty-i">🌱</div>
+      <div class="cons-empty-t">Your consistency grows here</div>
+      <div class="cons-empty-s">Each day you sit with your harp lights a square. Begin today and watch the pattern grow.</div></div>`;
+    observeReveals(host); triggerReveals(host); return;
+  }
+  const dow=['S','M','T','W','T','F','S'];
+  const lvlCls=v=> v===-2?'fut' : v===-1?'x' : 'l'+v;   // future · none · attended 0-3
+  const cells=c.grid.map(col=>`<div class="cons-col">${col.map(d=>
+    `<span class="cons-cell ${lvlCls(d.lvl)}${d.today?' today':''}" title="${d.future?'':d.k+' · '+(d.m||0)+' min'}"></span>`).join('')}</div>`).join('');
+  host.innerHTML=`<div class="cons-card reveal">
+    <div class="cons-stats">
+      <div class="cons-stat"><span class="cons-n">${c.current}<span class="cons-flame">🔥</span></span><span class="cons-l">day streak</span></div>
+      <div class="cons-stat"><span class="cons-n">${c.best}</span><span class="cons-l">best ever</span></div>
+      <div class="cons-stat"><span class="cons-n">${c.thisWeek}<span class="cons-slash">/7</span></span><span class="cons-l">this week</span></div>
+    </div>
+    <div class="cons-grid-wrap">
+      <div class="cons-rows">${dow.map((d,i)=>`<span class="cons-row-l">${i%2?d:''}</span>`).join('')}</div>
+      <div class="cons-grid">${cells}</div>
+    </div>
+    <div class="cons-foot"><span>${c.daysPractised} ${c.daysPractised===1?'day':'days'} with your harp · ${Math.round(c.totalMin/60*10)/10}h in all</span><span class="cons-legend">less <i class="x"></i><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i> more</span></div>
+  </div>`;
+  observeReveals(host); triggerReveals(host);
+}
 function buildJournal(){
   const host=document.getElementById('journalBody'); if(!host) return;
   if(!journal.length){
@@ -2055,6 +2130,7 @@ function renderHome(){
   try{ youMaybeRemind(); }catch(e){}
   renderNxHero();
   try{ if(typeof buildTodayPath==='function') buildTodayPath(); }catch(e){}
+  try{ buildConsistency(); }catch(e){}
   renderVerse();
   try{
     if(typeof sohProfile==='function' && !sohProfile().harp && !window._sohObSeen){

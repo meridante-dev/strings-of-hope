@@ -324,5 +324,10 @@ const Tuner = {
   stop(){ this.running=false; cancelAnimationFrame(this.raf); this._stab=0; this._heldF=0; if(this._hist) this._hist.length=0;
     if(this.stream){ this.stream.getTracks().forEach(t=>t.stop()); this.stream=null; }
     if(this.ctx){ try{ this.ctx.close(); }catch(e){} this.ctx=null; this.analyser=null; this._pitchy=null; } },
+  /* Forget the currently-held pitch. The decay hold is right for TUNING (the
+     needle should ride the string's fade) but wrong for GRADING: when the
+     note reader arms a new target, the previous string's held pitch must not
+     be allowed to answer for it. */
+  clearHold(){ this._stab=0; this._heldF=0; this._heldT=0; this._lastMidi=0; if(this._hist) this._hist.length=0; },
   toggle(){ this.running ? this.stop() : this.start(); },
 };

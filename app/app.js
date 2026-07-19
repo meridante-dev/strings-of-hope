@@ -24,7 +24,7 @@ const SOH_FLAGS={
   jacob:false,        // Jacob's Universe — awaiting taught-lesson treatment on all modules
   shamayim:false,     // Shamayim Harp — contemplative journey, refine pacing first
   chen:false,         // Chen · Symmetry — deep material, needs guided intro
-  sightread:false,    // Sight-Reading — detection UX needs a hardening pass like the tuner
+  sightread:true,     // graduated 2026-07-19 — inherits the tuner's hardened detection; hold-bleed fixed via Tuner.clearHold()
   eartraining:true,   // graduated 2026-07-16 as the Which Mode? drill (4-rung ladder + mixed)
   rhythm:false,       // Rhythm engine — groove content needs curation
   repertoire:false,   // Repertoire — too thin to show yet
@@ -918,8 +918,9 @@ const DRONE_TYPES = [
   {key:'full',   label:'Tonic + 5th + 8ve'},
 ];
 const DRONE_SOUNDS = [
-  {key:'shruti',   label:'Shruti Box',       kind:'sample', set:'shruti'},
-  {key:'harpwind', label:'Harp in the Wind', kind:'sample', set:'harpwind'},
+  /* Sample sets ('shruti', 'harpwind') are OFF THE SHELF until recordings
+     actually exist in audio/drones/ — they 404'd into the same synth pad,
+     so three "different" atmospheres made one identical sound. */
   {key:'pad',      label:'Warm Pad',         kind:'synth',  voice:'pad'},
   {key:'pure',     label:'Pure',             kind:'synth',  voice:'pure'},
   {key:'reed',     label:'Reed',             kind:'synth',  voice:'reed'},
@@ -932,14 +933,15 @@ function setDroneSound(s){
   if(Drone.playing){ Drone.stop(); Drone.start(); }
 }
 const DRONE_MOODS = [
-  {key:'peaceful',  label:'Peaceful',       atmos:'atmos-peaceful',  sound:'pad',     type:'fifth'},
-  {key:'ancient',   label:'Ancient',        atmos:'atmos-ancient',   sound:'shruti',  type:'octave'},
-  {key:'celtic',    label:'Celtic',         atmos:'atmos-celtic',    sound:'harpwind',type:'fifth'},
-  {key:'hebrew',    label:'Hebrew Desert',  atmos:'atmos-desert',    sound:'shruti',  type:'fifth'},
-  {key:'mideast',   label:'Middle Eastern', atmos:'atmos-desert',    sound:'reed',    type:'fifth'},
-  {key:'cinematic', label:'Cinematic',      atmos:'atmos-cinematic', sound:'pad',     type:'full'},
-  {key:'meditative',label:'Meditation',     atmos:'atmos-medit',     sound:'pad',     type:'tonic'},
-  {key:'bright',    label:'Bright',         atmos:'atmos-bright',    sound:'pure',    type:'full'},
+  /* every mood is a DISTINCT (voice, interval) pair — audibly different */
+  {key:'peaceful',  label:'Peaceful',       atmos:'atmos-peaceful',  sound:'pad',  type:'fifth'},
+  {key:'ancient',   label:'Ancient',        atmos:'atmos-ancient',   sound:'reed', type:'octave'},
+  {key:'celtic',    label:'Celtic',         atmos:'atmos-celtic',    sound:'pure', type:'fifth'},
+  {key:'hebrew',    label:'Hebrew Desert',  atmos:'atmos-desert',    sound:'reed', type:'fifth'},
+  {key:'mideast',   label:'Middle Eastern', atmos:'atmos-desert',    sound:'reed', type:'full'},
+  {key:'cinematic', label:'Cinematic',      atmos:'atmos-cinematic', sound:'pad',  type:'full'},
+  {key:'meditative',label:'Meditation',     atmos:'atmos-medit',     sound:'pad',  type:'tonic'},
+  {key:'bright',    label:'Bright',         atmos:'atmos-bright',    sound:'pure', type:'full'},
 ];
 let droneMood='peaceful';
 const ATMOS_CLASSES = DRONE_MOODS.map(m=>m.atmos);
@@ -2811,7 +2813,20 @@ function renderTheoryLesson(dir){
     const show=a.hidden; a.hidden=!show; btn.textContent=show?'Hide answer':'Show answer'; btn.classList.toggle('on',show); buzz();
   }));
 }
+let _vfLoading=null;
+function sohLoadVexFlow(){
+  if(window.VexFlow && window.VexFlow.Renderer) return Promise.resolve(true);
+  if(_vfLoading) return _vfLoading;
+  _vfLoading=new Promise(res=>{ const sc=document.createElement('script'); sc.src='vendor/vexflow.js';
+    sc.onload=()=>res(true); sc.onerror=()=>{ _vfLoading=null; res(false); };
+    document.head.appendChild(sc); });
+  return _vfLoading;
+}
 function theoryRenderStaff(spec,mountId){
+  if(!(window.VexFlow && window.VexFlow.Renderer)){
+    sohLoadVexFlow().then(ok=>{ if(ok) theoryRenderStaff(spec,mountId); });
+    return;
+  }
   try{
     const VF = window.VexFlow || window.Vex && window.Vex.Flow; const mount=document.getElementById(mountId);
     if(!VF || !mount) { if(mount) mount.style.display='none'; return; }
@@ -3795,7 +3810,7 @@ function buildSpirit(){ try{ if(typeof renderSongCard==='function') renderSongCa
    of the Observe→Diagnose→Learn loop. The constant below is only the
    fallback (no SW / no Cache API); tools/keys-test.js asserts it matches
    sw.js so the two can never silently disagree again. */
-let SOH_VERSION = '2026.07.16 · beta';
+let SOH_VERSION = '2026.07.19 · beta';
 (async function sohResolveBuild(){
   try{
     if(!('caches' in window)) return;
@@ -4122,7 +4137,10 @@ function showView(name){
   try{
     if(name==='journey'){ jrnStep=0; jrnRender(); }
     if(name==='practice') buildPractice();
-    if(name==='tuner') buildTuner();
+    if(name==='tuner'){ buildTuner();
+      try{ Tuner.onUpdate=tunerUpdate;   // reclaim: the note reader borrows this callback
+        Tuner.onError=()=>{ const o=document.getElementById('tunerOct'); if(o) o.textContent='Microphone access needed — allow it, then tap again.';
+          document.getElementById('tunerMic')?.classList.remove('playing'); }; }catch(e){} }
     else if(typeof Tuner!=='undefined' && Tuner.running){ Tuner.stop(); document.getElementById('tunerMic')?.classList.remove('playing'); tunerUpdate(-1,null); }
     if(name==='levers') buildLevers();
     else if(typeof lt!=='undefined' && lt.running) ltStop();
@@ -4505,6 +4523,7 @@ function srArm(i){
   const n=sr.exercise[i];
   srLeverReminder(n);
   srSetFeedback('', `Play <b>${n.name}${n.octave}</b>`, sr.wait?'Listening… take your time.':'Listening…');
+  try{ Tuner.clearHold(); }catch(e){}   // the previous string's decay must not answer for this note
   sr._noteAt = performance.now();
   if(!sr.wait){
     const spb=60/sr.bpm, ms=n.dur*spb*1000 + 1400;     // grace for harp sustain
@@ -4668,6 +4687,7 @@ function srEvaluate(detMidi, cents, note){
 /* ---------- score ---------- */
 function srFinish(){
   clearTimeout(sr._armTimer); sr.playing=false;
+  try{ sohPulse('sr-finish'); }catch(e){}
   sr.session.exercises++;
   const s=sr.stats, total=Math.max(1,s.total);
   const noteAcc=Math.round(s.correct/total*100);
@@ -4798,6 +4818,7 @@ function srSetFeedback(cls, main, sub){
 }
 function srEnter(){
   if(!sr._init) initSightRead();
+  try{ sohLoadVexFlow().then(ok=>{ if(ok && sr.playing) srRenderStaff(); }); }catch(e){}
   sr.scoreMode=false; sr.osmd=null;
   document.getElementById('srRun').hidden=true;
   document.getElementById('srScore').hidden=true;

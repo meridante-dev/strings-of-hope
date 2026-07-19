@@ -2,7 +2,7 @@
    Strategy: navigations network-first (so testers get fresh builds),
    other same-origin GETs stale-while-revalidate, offline app-shell fallback.
    Bump CACHE on meaningful releases to retire old caches. */
-const CACHE = 'soh-v2026.07.16-8';
+const CACHE = 'soh-v2026.07.16-9';
 const SHELL = [
   './', './index.html', './styles.css',
   './keys.js', './tuning.js', './audio.js', './data.js', './jewish.js',
@@ -44,4 +44,22 @@ self.addEventListener('fetch', e => {
       return cached || network;
     })
   );
+});
+
+// Push — display a practice reminder when one arrives. Complete on its own:
+// works today for a test push and for a future server-sent daily reminder.
+self.addEventListener('push', e => {
+  let d = { title: 'Strings of Hope 🎵', body: 'A few minutes at your harp today?' };
+  try { if (e.data) d = Object.assign(d, e.data.json()); } catch (_) { try { d.body = e.data.text(); } catch (__) {} }
+  e.waitUntil(self.registration.showNotification(d.title, {
+    body: d.body, icon: './img/icon-192.png', badge: './img/icon-192.png', tag: 'soh-practice'
+  }));
+});
+// Tapping a reminder opens the app (focus an existing window or open one).
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    for (const c of list) { if ('focus' in c) return c.focus(); }
+    if (clients.openWindow) return clients.openWindow('./');
+  }));
 });

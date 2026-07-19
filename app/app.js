@@ -3883,10 +3883,19 @@ function buildYou(){
       <div class="prof-pulse">${p.top.length?p.top.slice(0,14).map(([e,n])=>`<div class="pp-row"><span class="pp-e">${e}</span><span class="pp-n">${n}</span></div>`).join(''):'<div class="pp-row"><span class="pp-e">no events yet</span></div>'}
       <div class="pp-foot">${p.daysActive} active day${p.daysActive===1?'':'s'} · counts only, synced with your account</div></div>`; })():''}
 
-    <div class="prof-remind" id="reminderRow">
-      <div><div class="pr-t">Daily practice reminder</div><div class="pr-d">A gentle nudge to keep your streak alive</div></div>
-      <button class="pr-switch${remOn?' on':''}" id="reminderToggle" role="switch" aria-checked="${remOn}"><span class="pr-knob"></span></button>
-    </div>
+    ${(()=>{ const st=(typeof sohNotifyState==='function')?sohNotifyState():'default';
+      const desc = st==='needs-install' ? 'Add the app to your Home Screen first — then reminders can reach you'
+                 : st==='denied' ? 'Notifications are blocked — turn them on for this app in your device Settings'
+                 : st==='unsupported' ? 'A gentle in-app nudge to keep your streak alive'
+                 : 'A gentle nudge to keep your practice alive';
+      const showToggle = st!=='needs-install' && st!=='denied';
+      const canTest = remOn && st==='granted';
+      return `<div class="prof-remind" id="reminderRow">
+        <div><div class="pr-t">Daily practice reminder</div><div class="pr-d">${desc}</div>
+          ${canTest?`<button class="pr-test" id="reminderTest">Send a test notification</button>`:''}</div>
+        ${showToggle?`<button class="pr-switch${remOn?' on':''}" id="reminderToggle" role="switch" aria-checked="${remOn}"><span class="pr-knob"></span></button>`
+                   :`<button class="pd-btn" id="reminderInstall" style="flex:0 0 auto;min-height:40px">${st==='needs-install'?'How':'Settings'}</button>`}
+      </div>`; })()}
     ${(typeof sohStandalone==='function' && !sohStandalone()) ? `<div class="prof-sec-t">On your Home Screen</div>
     <div class="prof-data"><p class="pd-lead">Add Strings of Hope to your Home Screen and it opens like a real app — full screen, offline, one tap from anywhere.</p>
       ${installStepsHTML()}</div>` : ''}
@@ -3923,6 +3932,14 @@ function buildYou(){
   el.querySelector('#profAddHarp')?.addEventListener('click',()=>{ sohOnboardOpen(true); buzz(); });
   el.querySelectorAll('.prof-seal').forEach(b=>b.addEventListener('click',()=>{ if(typeof sohOpenCertById==='function') sohOpenCertById(b.dataset.cert); }));
   el.querySelector('#reminderToggle')?.addEventListener('click',youToggleReminder);
+  el.querySelector('#reminderTest')?.addEventListener('click',sohTestNotification);
+  el.querySelector('#reminderInstall')?.addEventListener('click',()=>{
+    const st=sohNotifyState();
+    if(st==='needs-install'){ showView('home'); setTimeout(()=>{ try{ localStorage.removeItem('soh-install-hide'); buildInstall();
+      document.getElementById('installCard')?.scrollIntoView({block:'center'}); const h=document.getElementById('insHow'); if(h) h.click(); }catch(e){} }, 60); }
+    else alert('To turn notifications back on: open your device Settings → find Strings of Hope (or Safari) → allow Notifications.');
+    buzz();
+  });
   el.querySelectorAll('.pr-ts-b').forEach(b=>b.addEventListener('click',()=>{ sohSetTextSize(b.dataset.ts); buildYou(); buzz(); }));
   el.querySelector('#dataReset')?.addEventListener('click',async()=>{
     if(!confirm('Reset your progress?\n\nThis clears your lessons, streak, badges and certificates on every device. Your harps, your name and your settings stay.\n\nThis cannot be undone.')) return;
@@ -3946,15 +3963,46 @@ function buildYou(){
   const v=document.getElementById('youVersion'); if(v) v.textContent='Strings of Hope · v'+SOH_VERSION+' · works offline';
   try{ if(typeof sohRenderAuth==='function') sohRenderAuth(); }catch(e){}
 }
+/* Show a notification through the SERVICE WORKER when we can — the plain
+   Notification constructor doesn't fire from an installed iOS PWA, but
+   registration.showNotification() does. Falls back to the constructor on
+   desktop browsers without an active SW. */
+async function sohNotify(title, body){
+  const opts={ body, icon:'img/icon-192.png', badge:'img/icon-192.png', tag:'soh-practice' };
+  try{ if('serviceWorker' in navigator){ const reg=await navigator.serviceWorker.getRegistration();
+    if(reg && reg.showNotification){ await reg.showNotification(title, opts); return true; } } }catch(e){}
+  try{ new Notification(title, opts); return true; }catch(e){}
+  return false;
+}
+/* Where reminders stand for THIS member, honestly:
+   'unsupported' no Notification API · 'needs-install' iOS in a browser tab
+   (notifications only work once added to the Home Screen) · then the real
+   permission state. */
+function sohNotifyState(){
+  if(!('Notification' in window)) return 'unsupported';
+  const p=sohPlatform();
+  if((p==='iphone'||p==='ipad') && !sohStandalone()) return 'needs-install';
+  return Notification.permission;   // 'default' | 'granted' | 'denied'
+}
 function youToggleReminder(){
   let on=false; try{ on=localStorage.getItem('soh-reminders')==='1'; }catch(e){}
   if(on){ try{ localStorage.setItem('soh-reminders','0'); }catch(e){} buildYou(); buzz(); return; }
-  if(!('Notification' in window)){ try{ localStorage.setItem('soh-reminders','1'); }catch(e){} buildYou(); return; }
-  try{ Notification.requestPermission().then(p=>{
+  const st=sohNotifyState();
+  if(st==='unsupported'){ try{ localStorage.setItem('soh-reminders','1'); }catch(e){} buildYou(); return; }
+  if(st==='needs-install'){ buildYou(); buzz(); return; }   // the UI explains: add to Home Screen first
+  if(st==='denied'){ buildYou(); buzz(); return; }          // the UI explains: enable in Settings
+  try{ Notification.requestPermission().then(async p=>{
     try{ localStorage.setItem('soh-reminders', p==='granted'?'1':'0'); }catch(e){}
-    if(p==='granted'){ try{ new Notification('Reminders on 🎵',{body:'We’ll cheer you on to keep your streak alive.',icon:'img/icon-192.png'}); }catch(e){} }
+    if(p==='granted'){ try{ sohPulse('reminders-on'); }catch(e){}
+      await sohNotify('Reminders on 🎵','I’ll gently nudge you here to keep your practice alive.'); }
     buildYou();
   }); }catch(e){ buildYou(); }
+}
+async function sohTestNotification(){
+  const ok=await sohNotify('Strings of Hope 🎵','This is what a gentle practice reminder feels like. ✦');
+  try{ sohPulse('reminder-test'); }catch(e){}
+  if(!ok) alert('Your device didn’t show the notification. On iPhone/iPad, reminders only work once the app is added to your Home Screen.');
+  buzz();
 }
 function youMaybeRemind(){
   try{
@@ -3965,7 +4013,7 @@ function youMaybeRemind(){
     if(localStorage.getItem('soh-remind-last')===today) return;
     if(lastVisit && lastVisit!==today){
       const js=journalStats(); const msg=js.streak>0?`Your ${js.streak}-day streak is waiting 🔥`:'A few minutes at the harp today?';
-      new Notification('Strings of Hope 🎵',{body:msg, icon:'img/icon-192.png'});
+      sohNotify('Strings of Hope 🎵', msg);
       localStorage.setItem('soh-remind-last',today);
     }
   }catch(e){}

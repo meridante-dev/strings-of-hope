@@ -26,7 +26,7 @@ const SOH_FLAGS={
   chen:false,         // Chen · Symmetry — deep material, needs guided intro
   sightread:true,     // graduated 2026-07-19 — inherits the tuner's hardened detection; hold-bleed fixed via Tuner.clearHold()
   eartraining:true,   // graduated 2026-07-16 as the Which Mode? drill (4-rung ladder + mixed)
-  rhythm:false,       // Rhythm engine — groove content needs curation
+  rhythm:true,        // graduated 2026-07-19 — 8 synth presets incl. 7/8 Sephardic & 10/8 Middle Eastern; sample kits stay off until recordings exist
   repertoire:false,   // Repertoire — too thin to show yet
 };
 /* what the Learn hub teases as coming */

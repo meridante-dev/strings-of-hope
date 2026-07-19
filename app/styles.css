@@ -279,6 +279,33 @@ body::before{
 .td-cta{font-size:13px;font-weight:600;color:rgba(255,255,255,.82);margin-top:18px}
 
 /* ============================================================
+   Install — Add to Home Screen (native-feel)
+   ============================================================ */
+.ins-card{ position:relative;margin-bottom:14px;padding:15px 16px;border-radius:18px;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--gold) 15%,var(--surface)),var(--surface));
+  border:1px solid color-mix(in srgb,var(--gold) 30%,var(--line)) }
+.ins-x{ position:absolute;top:9px;right:10px;width:30px;height:30px;border:0;background:transparent;color:var(--ink-faint);cursor:pointer;font-size:15px;border-radius:8px }
+.ins-x:active{ transform:scale(.9) }
+.ins-head{ display:flex;gap:12px;align-items:flex-start;padding-right:26px }
+.ins-i{ font-size:24px;line-height:1;flex:0 0 auto }
+.ins-t{ font-family:"Playfair Display",serif;font-size:17px;font-weight:600;color:var(--ink);line-height:1.25 }
+.ins-s{ font-size:13.5px;line-height:1.5;color:var(--ink-soft);margin-top:3px;text-wrap:pretty }
+.ins-cta{ display:block;width:100%;margin-top:13px;min-height:46px;border:0;border-radius:13px;cursor:pointer;
+  font-size:15px;font-weight:700;color:var(--on-accent);background:linear-gradient(90deg,var(--gold-grad-a),var(--gold-grad-b)) }
+.ins-cta:active{ transform:scale(.99) }
+.ins-toggle{ margin-top:11px;border:1px solid var(--line-2);background:transparent;color:var(--gold-deep);cursor:pointer;
+  font-size:13.5px;font-weight:700;border-radius:999px;padding:8px 15px;min-height:40px }
+.ins-toggle span{ display:inline-block;transition:transform .2s } .ins-toggle.open span{ transform:rotate(90deg) }
+.ins-detail{ margin-top:12px }
+.ins-steps{ margin:0;padding-left:20px;display:flex;flex-direction:column;gap:9px }
+.ins-steps li{ font-size:14px;line-height:1.5;color:var(--ink-soft) }
+.ins-steps b{ color:var(--ink) }
+.ins-ic{ display:inline-flex;vertical-align:-4px;width:17px;height:17px;color:var(--gold-deep);
+  background:color-mix(in srgb,var(--gold) 16%,transparent);border-radius:5px;padding:1px;margin:0 1px }
+.ins-ic svg{ width:100%;height:100% }
+[data-theme="light"] .ins-card{ background:linear-gradient(150deg,rgba(255,247,225,.9),rgba(255,253,246,.7));border:1px solid rgba(180,140,66,.3) }
+
+/* ============================================================
    Consistency — the daily glance (home)
    ============================================================ */
 .cons-card{ margin-top:14px;padding:16px 16px 14px;background:var(--surface);border:1px solid var(--line);border-radius:18px }

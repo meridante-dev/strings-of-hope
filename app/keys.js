@@ -60,6 +60,7 @@ const SOH_KEYS = {
   'soh-labs':          {scope:'device', what:'preview mode'},
   'soh-auth-choice':   {scope:'device', what:'whether you dismissed the sign-in screen'},
   'soh-tuner-noisy':   {scope:'device', what:'the tuner’s noisy-room setting'},
+  'soh-install-hide':  {scope:'device', what:'whether you dismissed the “add to Home Screen” tip'},
 };
 
 /* Look a key up. Supports one wildcard form: 'soh-path-*' matches the

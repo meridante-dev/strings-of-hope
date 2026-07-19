@@ -78,6 +78,86 @@ function sohApplyFlags(){
 }
 
 /* ============================================================
+   INSTALL — put Strings of Hope on the Home Screen (native-feel overhaul 2/3)
+   Members literally ask "is there an app to download?" and don't know they
+   can add the PWA to their home screen — the single biggest researched gap.
+   iOS has no programmatic install prompt (verified: webkit), so for iPhone/
+   iPad we teach the Share → Add to Home Screen gesture with the real icon in
+   the real place; Android/desktop get a true one-tap install via
+   beforeinstallprompt when the browser offers it. iOS 26 makes every add a
+   real web app, so this is now a UX problem, not a platform one.
+   ============================================================ */
+let _bipEvent=null;   // Android/desktop deferred install prompt
+try{ window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); _bipEvent=e;
+  try{ if(typeof buildInstall==='function') buildInstall(); }catch(_){}
+}); }catch(e){}
+try{ window.addEventListener('appinstalled', ()=>{ _bipEvent=null; try{ sohPulse('installed'); }catch(_){}
+  try{ buildInstall(); if(typeof buildYou==='function') buildYou(); }catch(_){}
+}); }catch(e){}
+function sohStandalone(){
+  try{ return window.matchMedia('(display-mode: standalone)').matches
+     || window.navigator.standalone===true
+     || document.referrer.indexOf('android-app://')===0; }catch(e){ return false; }
+}
+function sohPlatform(){
+  const ua=navigator.userAgent||'', mac=navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1;
+  if(/iPad/.test(ua) || mac) return 'ipad';
+  if(/iPhone|iPod/.test(ua)) return 'iphone';
+  if(/Android/.test(ua)) return 'android';
+  return 'desktop';
+}
+function sohCanInstall(){
+  if(sohStandalone()) return false;
+  try{ if(localStorage.getItem('soh-install-hide')==='1') return false; }catch(e){}
+  return true;
+}
+/* Share-sheet glyph, so the tip points at the exact control iOS shows. */
+const _SHARE_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>';
+function installStepsHTML(){
+  const p=sohPlatform();
+  if(p==='iphone') return `<ol class="ins-steps">
+    <li>Tap the <b>Share</b> button <span class="ins-ic">${_SHARE_SVG}</span> at the <b>bottom</b> of Safari.</li>
+    <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+    <li>Tap <b>Add</b> — then open Strings of Hope from your home screen, like any app.</li></ol>`;
+  if(p==='ipad') return `<ol class="ins-steps">
+    <li>Tap the <b>Share</b> button <span class="ins-ic">${_SHARE_SVG}</span> at the <b>top</b> of Safari.</li>
+    <li>Tap <b>Add to Home Screen</b>.</li>
+    <li>Tap <b>Add</b> — Strings of Hope now opens like any app.</li></ol>`;
+  return `<ol class="ins-steps">
+    <li>Open your browser’s menu (⋮).</li>
+    <li>Choose <b>Install app</b> or <b>Add to Home screen</b>.</li>
+    <li>Confirm — it opens in its own window, like any app.</li></ol>`;
+}
+async function sohDoInstall(){
+  if(_bipEvent){ try{ _bipEvent.prompt(); const r=await _bipEvent.userChoice;
+    sohPulse(r&&r.outcome==='accepted'?'installed':'install-dismissed'); _bipEvent=null; buildInstall(); return true; }catch(e){} }
+  return false;
+}
+function sohInstallHide(){ try{ localStorage.setItem('soh-install-hide','1'); }catch(e){} buildInstall(); }
+function buildInstall(){
+  const host=document.getElementById('installCard'); if(!host) return;
+  if(!sohCanInstall()){ host.innerHTML=''; host.hidden=true; return; }
+  host.hidden=false;
+  const p=sohPlatform(), oneTap=!!_bipEvent;
+  host.innerHTML=`<div class="ins-card reveal">
+    <button class="ins-x" id="insX" aria-label="Dismiss">✕</button>
+    <div class="ins-head"><span class="ins-i">📲</span><div>
+      <div class="ins-t">Keep Strings of Hope on your ${p==='desktop'?'device':'Home Screen'}</div>
+      <div class="ins-s">Add it once and it opens like a real app — full screen, works offline, saves your place.</div></div></div>
+    ${oneTap ? `<button class="ins-cta" id="insGo">Add to my device</button>`
+             : `<button class="ins-toggle" id="insHow">Show me how <span>›</span></button>
+                <div class="ins-detail" id="insDetail" hidden>${installStepsHTML()}</div>`}
+  </div>`;
+  host.querySelector('#insX')?.addEventListener('click',()=>{ sohInstallHide(); buzz(); });
+  host.querySelector('#insGo')?.addEventListener('click',()=>{ sohDoInstall(); buzz(); });
+  host.querySelector('#insHow')?.addEventListener('click',()=>{
+    const d=host.querySelector('#insDetail'), t=host.querySelector('#insHow');
+    if(d){ d.hidden=!d.hidden; t.classList.toggle('open',!d.hidden); try{ if(!d.hidden) sohPulse('install-how'); }catch(e){} } buzz();
+  });
+  observeReveals(host); triggerReveals(host);
+}
+
+/* ============================================================
    SOH PULSE — privacy-light usage telemetry (Cycle 2, 2026-07-15)
    Counts only — event names and daily tallies, never content or
    identity beyond the user's own synced profile. Stored as
@@ -2131,6 +2211,7 @@ function renderHome(){
   renderNxHero();
   try{ if(typeof buildTodayPath==='function') buildTodayPath(); }catch(e){}
   try{ buildConsistency(); }catch(e){}
+  try{ buildInstall(); }catch(e){}
   renderVerse();
   try{
     if(typeof sohProfile==='function' && !sohProfile().harp && !window._sohObSeen){
@@ -3806,6 +3887,10 @@ function buildYou(){
       <div><div class="pr-t">Daily practice reminder</div><div class="pr-d">A gentle nudge to keep your streak alive</div></div>
       <button class="pr-switch${remOn?' on':''}" id="reminderToggle" role="switch" aria-checked="${remOn}"><span class="pr-knob"></span></button>
     </div>
+    ${(typeof sohStandalone==='function' && !sohStandalone()) ? `<div class="prof-sec-t">On your Home Screen</div>
+    <div class="prof-data"><p class="pd-lead">Add Strings of Hope to your Home Screen and it opens like a real app — full screen, offline, one tap from anywhere.</p>
+      ${installStepsHTML()}</div>` : ''}
+
     <div class="prof-sec-t">Your data</div>
     <div class="prof-data">
       <p class="pd-lead">${(window.SOH_SYNC&&SOH_SYNC.user&&!SOH_SYNC.user.isAnonymous)
